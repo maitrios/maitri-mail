@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rebrand:
+    name: Rebrand check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - run: tools/rebrand.sh --check
+
+  rust:
+    name: Backend (Rust)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: "1.98.1"
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - run: cargo test --locked --features integration-test-credentials
+      - run: cargo build --locked --release --bin maitri-mail
+      - name: Check the backend API contract against this revision's binary
+        run: |
+          set -euo pipefail
+          python3 scripts/package-backend.py check-api
+          python3 tests/test_backend_api.py --binary target/release/maitri-mail
+          python3 tests/test_agent_native_bridge.py
+      - name: Stage the packaged layout
+        run: |
+          set -euo pipefail
+          make install DESTDIR="$RUNNER_TEMP/pkg"
+          test "$("$RUNNER_TEMP/pkg/usr/bin/maitri-mail" --version)" = "maitri-mail $(cat backend-version)"
+          test -f "$RUNNER_TEMP/pkg/usr/share/maitri/shell/plugins/mail/manifest.json"
+
+  plugin:
+    name: Plugin (JS, shell, QML)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - name: Fetch maitri's shell for the API compatibility check
+        run: git clone --quiet --depth 1 --filter=blob:none --sparse https://github.com/maitrios/maitri.git "$RUNNER_TEMP/maitri" && git -C "$RUNNER_TEMP/maitri" sparse-checkout set shell
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: "1.98.1"
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: jurplel/install-qt-action/action@d325aaf2a8baeeda41ad0b5d39f84a6af9bcf005 # v4.3.0
+        with:
+          version: "6.8.3"
+          cache: true
+          aqtversion: "==3.3.0"
+          py7zrversion: "==1.0.0"
+      - run: make test-js
+      # test-shell-libcurl asserts the installed libcurl's own behaviour and
+      # only means something on an Arch host; run it locally with `make test`.
+      - run: make test-shell-portable
+        env:
+          MAITRI_SHELL_DIR: ${{ runner.temp }}/maitri/shell
+      - run: make test-qml
+        env:
+          QT_QPA_PLATFORM: offscreen
+      - run: git diff --check

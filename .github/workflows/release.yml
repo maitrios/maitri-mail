@@ -1,0 +1,68 @@
+name: Release
+
+# A pushed tag vX.Y.Z (or vX.Y.Z-maitri.N for a maitri-only fix on the same
+# upstream release) publishes a source tarball and its checksum for maitri-pkgs.
+# Binaries are built by maitri-pkgs, not here.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Publish the source tarball
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: "1.98.1"
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - name: Require the tag to match the tree's version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ $TAG =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-maitri\.[0-9]+)?$ ]] || { echo "::error::tag $TAG is not vX.Y.Z or vX.Y.Z-maitri.N"; exit 1; }
+          version=${BASH_REMATCH[1]}
+          cargo=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml","rb"))["package"]["version"])')
+          manifest=$(python3 -c 'import json; print(json.load(open("manifest.json"))["version"])')
+          pin=$(cat backend-version)
+          if [[ $cargo != "$version" || $manifest != "$version" || $pin != "$version" ]]; then
+            echo "::error::tag $TAG, Cargo $cargo, manifest $manifest and backend-version $pin must agree"
+            exit 1
+          fi
+          tools/rebrand.sh --check
+
+      - name: Test and build the backend
+        run: |
+          set -euo pipefail
+          cargo test --locked --features integration-test-credentials
+          cargo build --locked --release --bin maitri-mail
+          python3 tests/test_backend_api.py --binary target/release/maitri-mail
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          name="maitri-mail-${TAG#v}"
+          mkdir dist
+          git archive --format=tar.gz --prefix="$name/" -o "dist/$name.tar.gz" "$TAG"
+          (cd dist && sha256sum "$name.tar.gz" > SHA256SUMS)
+          gh release create "$TAG" --verify-tag --title "maitri-mail $TAG" \
+            --notes "Source for maitri-mail $TAG, the maitri build of [huacnlee/omamail](https://github.com/huacnlee/omamail) by Jason Lee. Packaged in maitri-pkgs." \
+            "dist/$name.tar.gz" dist/SHA256SUMS
