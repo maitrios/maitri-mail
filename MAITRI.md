@@ -76,7 +76,8 @@ Expect sync conflicts in these files; resolve toward maitri's side unless upstre
 | `tests/test_backend_runtime.py`, `ui/tests/qml/tst_backend_setup.qml` | Tests for the above. |
 | `Makefile`, `tests/test_source.sh` | Dropped standalone app, release and plugin-link targets and checks; `make install` stages the package layout. |
 | `README.md`, `MAITRI.md`, `AGENTS.md` (last section), `docs/BACKEND-RUNTIME.md` (opening) | maitri documentation. |
-| `manifest.json` | `homepage`. |
+| `manifest.json` | `homepage`; the suggested toggle binding is `SUPER + ALT + M` (upstream's `SUPER + SHIFT + G` is Signal in maitri). |
+| `ui/components/SettingsPage.qml`, `scripts/default-mail.sh`, `ui/components/HeySetupPage.qml`, `docs/MAILBOXES.md` | Same binding suggestion; no claim that maitri binds `SUPER+SHIFT+E` to HEY or installs hey-cli; removal is the `maitri-mail` package (Install › Mail, Remove › Mail). |
 | `ui/assets/maitri-mail.svg`, `docs/images/maitri-mail.svg`, `ui/components/GmailIcon.qml`, `ui/components/MaitriMailLogo.qml`, `scripts/notify-mail.py` (icon painting), `tests/test_notification.py`, `ui/tests/qml/tst_maitri_mail_logo.qml`, `ui/tests/qml/tst_bar_widget_icon.qml` | The maitri heart seal mark: a frame and V fold in the foreground with a heart in the accent, replacing omamail's M. The SVG marks shapes with `class="foreground"` / `class="accent"` and `notify-mail.py` paints by class. Always resolve toward maitri's side; `tests/test_maitri.sh` fails if the M comes back. |
 | `.github/workflows/`, `tools/`, `tests/test_maitri*.{sh,py}` | maitri-only files. |
 
