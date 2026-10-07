@@ -1,44 +1,12 @@
 # Backend runtimes and releases
 
-## maitri plugin-owned backend
+## maitri packaged backend
 
-maitri's Plugin Marketplace owns the checkout and its UI. maitri mail keeps exactly
-one executable at `${XDG_DATA_HOME:-~/.local/share}/maitri-mail/bin/maitri-mail`. Keeping
-the mutable runtime outside the recursively watched plugin tree prevents an
-installation or CLI operation from reloading the interface. The root `backend-version`
-file requires an exact version, independent of PATH and system packages. Service
-starts one persistent `maitri-mail serve` process over stdin/stdout and checks its
-exact binary version, protocol and API revision before dispatching migrated calls.
-The plugin-local `backend-api.json` describes its required API; it is not fetched
-from main or from a latest-release endpoint.
+maitri ships the backend in the `maitri-mail` package at `/usr/bin/maitri-mail`, beside the plugin under `/usr/share/maitri/shell/plugins/mail/`. The plugin never downloads, replaces or links an executable. `scripts/backend-runtime.py status` reports whether the packaged binary answers `--version` with the exact version in the root `backend-version` file, and with the API revision `backend-api.json` requires; any other command is refused. Service starts one persistent `maitri-mail serve` process over stdin/stdout and checks its exact binary version, protocol and API revision before dispatching calls. A missing or mismatched backend is a packaging problem, and the setup page says to run `maitri update`. See [MAITRI.md](../MAITRI.md) for how the package is staged.
 
-On a missing or mismatched runtime, the UI explains what is needed. Installation
-is explicit; simply loading the plugin never starts a download. From the plugin
-directory, `scripts/install-backend.sh` requests the same installation and
-`python3 scripts/backend-runtime.py status` reports local state without network
-access. Linux x86_64 and aarch64 are supported. Installation downloads only from
-the pinned release in `huacnlee/omamail`, verifies SHA256SUMS and the strict archive
-layout, checks the candidate executable's version and atomically replaces the
-old executable. A failed installation preserves the working runtime. Checksums
-protect integrity, not against a compromised publisher.
+For development, `./dev backend` builds the binary and `./dev run` builds then prints environment and launch instructions. `MAITRI_MAIL_BIN` is an explicit development path; it must still report the pinned version. Environment changes in your terminal do not change an already running shell: follow the printed instructions to make the override available when the shell constructs the plugin. Rust mail migration remains incomplete; see [BACKEND.md](BACKEND.md).
 
-`python3 scripts/backend-runtime.py enable-cli` explicitly creates
-`~/.local/bin/maitri-mail` as a symlink to that same private executable; it refuses
-an unrelated file or link. An owned link into a previous maitri mail plugin checkout's
-runtime is repointed without modifying that watched directory. Nothing edits PATH. Run `disable-cli` before removing
-the plugin, since maitri has no verified uninstall hook for that external link.
-`scripts/uninstall-backend.sh` removes the runtime only. Neither operation deletes
-accounts, drafts, caches or keyring entries. Marketplace checkouts contain no
-symlinks; the optional CLI link is outside the checkout.
-
-For development, `./dev backend` builds the binary and `./dev run` builds then
-prints environment and launch instructions. It does not open or restart the
-shell. `MAITRI_MAIL_BIN` is an explicit development
-path; the installer must never replace that file. Environment changes in your
-terminal do not change an already running shell: follow the printed instructions
-to make the override available when the shell constructs the plugin, restarting
-the shell with that environment when needed. This is not a second Quickshell
-application. Rust mail migration remains incomplete; see [BACKEND.md](BACKEND.md).
+The sections below describe upstream's own release and pin process, which maitri mail does not run; they explain what `backend-version` and `backend-api.json` mean.
 
 ### Forcing a clean reconnect
 

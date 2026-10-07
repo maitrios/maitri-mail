@@ -58,3 +58,13 @@ Read the relevant document before changing its area; these contain constraints t
 - Preserve `scripts/release-notes.sh` aggregation of PR release-note sections; GitHub-generated notes are not a substitute.
 - Run `make validate` after QML or behavior changes. `make test` includes Rust, JavaScript, source regressions and QML tests. Inspect the Makefile for the current targets.
 - QML tests and `qmllint` are local gates using the installed Qt; release CI uses `make test-js test-shell`. Unresolved `qs.Ui` / `qs.Commons` lint warnings are expected; the exit code is the gate.
+
+## maitri mail
+
+This is maitri's fork of omamail; read [MAITRI.md](MAITRI.md) before syncing or changing packaging. <!-- rebrand:keep -->
+
+- Never merge a raw omamail tag. Sync through `tools/sync-upstream.sh <tag>`, which rebrands onto the `upstream` branch first. <!-- rebrand:keep -->
+- Run `tools/rebrand.sh --check` before committing. Files maitri mail drops for good go in `DELETE_LIST` in `tools/rebrand.sh`, or the next sync restores them.
+- The plugin is maitri's first-party `maitri.mail` and runs the packaged `/usr/bin/maitri-mail`. Do not add a backend download, install or PATH link.
+- Upstream's release flow (`make publish`, release notes, published-backend gates) does not exist here. Release tags are `vX.Y.Z` or `vX.Y.Z-maitri.N`; maitri-pkgs builds from them.
+- `make test` covers Rust, JS, shell and offscreen QML. Set `MAITRI_SHELL_DIR` to a maitri checkout's `shell/` to also check shell API compatibility.
