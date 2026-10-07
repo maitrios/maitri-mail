@@ -78,7 +78,7 @@ QML_FILES := ui/Service.qml ui/BarWidget.qml ui/App.qml ui/compose/RecoveryContr
 	ui/components/WindowMoveArea.qml \
 	ui/bar/BarPreview.qml
 .PHONY: test test-js test-shell test-shell-portable test-shell-libcurl \
-	test-qml test-local test-backend-process qml-check validate bench
+	test-qml test-local test-backend-process qml-check validate bench install
 
 test: test-rust test-js test-shell test-qml
 
@@ -244,3 +244,6 @@ qml-check:
 validate: test qml-check
 	maitri plugin validate .
 	git diff --check
+
+install:
+	bash tools/install.sh --destdir "$(DESTDIR)" --binary target/release/maitri-mail
