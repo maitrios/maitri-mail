@@ -64,25 +64,17 @@ Item {
       compare(check.parent,version.parent)
       verify(check.x>=version.x+version.width)
     }
-    function test_install_changes_button_and_hint() {
-      var button=findChild(page,"backend-install-cli")
-      compare(button.text,"Install CLI")
-      verify(button.enabled)
-      mouseClick(button)
-      compare(runtime.installs,1)
-      compare(button.text,"Remove CLI")
-      verify(button.enabled)
-      verify(findChild(page,"backend-cli-note").text.indexOf("is linked")>=0)
-      mouseClick(button)
-      compare(runtime.installs,1)
-      compare(button.text,"Install CLI")
-      verify(!runtime.cliInstalled)
+    function test_packaged_backend_offers_no_install_or_cli_link() {
+      runtime.state = "missing"
+      runtime.installedVersion = ""
+      verify(waitForRendering(page))
+      compare(findChild(page, "backend-install"), null)
+      compare(findChild(page, "backend-install-cli"), null)
+      compare(findChild(page, "backend-cli-note"), null)
+      runtime.state = "ready"
+      runtime.installedVersion = "0.9.0"
     }
-    function test_existing_link_and_reopen() {
-      runtime.cliInstalled=true
-      var button=findChild(page,"backend-install-cli")
-      compare(button.text,"Remove CLI")
-      verify(button.enabled)
+    function test_reopening_checks_again() {
       page.visible=false
       var before=runtime.checks
       page.visible=true

@@ -69,7 +69,7 @@ Column {
       ? "Included with this app. Reinstall this version if the bundled backend is missing or damaged."
       : root.runtime && root.runtime.development
       ? "Development executable: " + root.runtime.developmentExecutable + ". Build the required version, then check again."
-      : "Required for the app’s mail features. The backend is installed and managed inside this plugin."
+      : "Required for the app’s mail features. maitri installs it with the maitri-mail package."
     color: root.dimColor
     font.family: root.panelFontFamily
     font.pixelSize: Style.font.body
@@ -86,18 +86,6 @@ Column {
   Flow {
     width: parent.width
     spacing: Style.space(8)
-    Button {
-      bordered: true
-      accent: root.accentColor
-      fontFamily: root.panelFontFamily
-      objectName: "backend-install"
-      visible: !!root.runtime && !root.runtime.bundled && !root.runtime.development
-        && root.runtime.state !== "ready"
-      enabled: !!root.runtime && root.runtime.canInstall
-      text: root.runtime && root.runtime.installedVersion ? "Update backend" : "Install backend"
-      foreground: root.accentColor
-      onClicked: root.runtime.install()
-    }
     IconButton {
       objectName: "backend-diagnose"
       visible: root.diagnosisAvailable
@@ -112,47 +100,6 @@ Column {
       accent: root.accentColor
       fontFamily: root.panelFontFamily
       onClicked: root.diagnosisRequested()
-    }
-  }
-  Column {
-    width: parent.width
-    spacing: Style.space(8)
-    visible: !!root.runtime && !root.runtime.bundled && !root.runtime.development
-      && root.runtime.state === "ready"
-    Text {
-      text: "CLI command"
-      color: root.textColor
-      font.family: root.panelFontFamily
-      font.pixelSize: Style.font.body
-      font.bold: true
-    }
-    Button {
-      id: installCli
-      objectName: "backend-install-cli"
-      visible: !!root.runtime && !root.runtime.bundled && !root.runtime.development
-        && root.runtime.state === "ready"
-      bordered: true
-      accent: root.accentColor
-      fontFamily: root.panelFontFamily
-      text: root.runtime && root.runtime.cliInstalled ? "Remove CLI" : "Install CLI"
-      enabled: !!root.runtime && !root.runtime.busy
-      foreground: root.textColor
-      onClicked: {
-        if (root.runtime.cliInstalled) root.runtime.disableCli()
-        else root.runtime.enableCli()
-      }
-    }
-    Text {
-      width: parent.width
-      objectName: "backend-cli-note"
-      visible: installCli.visible
-      wrapMode: Text.WordWrap
-      text: root.runtime && root.runtime.cliInstalled
-        ? "maitri-mail is linked in ~/.local/bin. Remove CLI deletes only this link; the mail backend stays installed."
-        : "Optional. Links the installed backend to ~/.local/bin/maitri-mail on your PATH for use in the terminal."
-      color: root.dimColor
-      font.family: root.panelFontFamily
-      font.pixelSize: Style.font.bodySmall
     }
   }
 }
