@@ -47,9 +47,8 @@ Install it once:
 maitri-mise-install github:basecamp/hey-cli hey
 ```
 
-Recent versions of maitri install it for you as a lazy mise tool, so that line
-is only for doing it by hand; [37signals' own installer][hey-cli] is the other
-route. Either way it lands in `~/.local/bin`, which is where maitri mail looks when
+maitri does not install it for you; [37signals' own installer][hey-cli] is the
+other route. Either way it lands in `~/.local/bin`, which is where maitri mail looks when
 it is not already on `PATH`. Then choose **HEY** on the setup page and press
 **Sign in to HEY** — that opens HEY in your browser, and nothing else is asked
 of you.
@@ -93,29 +92,22 @@ server is set.
 
 The sent copy is filed by maitri mail rather than left to the server: a message handed to SMTP submission lands nowhere on its own. It goes to the server's own Sent folder, named by the server rather than guessed, and arrives already marked read; a server that reports no Sent folder holds no copy, and the status row says so. One thing worth knowing: a Gmail account read over IMAP has Google file its own copy of anything sent through Gmail's SMTP, so those accounts hold two.
 
-If you enabled the optional CLI link, first run
-`python3 scripts/backend-runtime.py disable-cli` from the plugin directory.
-maitri has no verified uninstall hook to remove that external link for you.
-Then remove the plugin:
+maitri ships maitri mail as the `maitri-mail` package, which holds the plugin and the `maitri-mail` backend and CLI together. Add or remove it from the maitri menu with **Install › Mail** and **Remove › Mail**, or with `maitri pkg add maitri-mail` and `maitri pkg drop maitri-mail`.
+
+Removing the package leaves account data, caches, drafts and keyring entries in place. Removing those is separate and up to you:
 
 ```bash
-maitri plugin remove maitri.mail
-```
-
-That removes the plugin and its private runtime. Account data, caches, drafts
-and keyring entries stay in place. Removing those is separate and up to you:
-
-```bash
-secret-tool clear service maitri-mail    # refresh tokens and JMAP and IMAP passwords
-hey auth logout                      # the HEY session, if you added one
+secret-tool clear service omamail        # refresh tokens and JMAP and IMAP passwords (the keyring keeps omamail's name) rebrand:keep
+hey auth logout                          # the HEY session, if you added one
 rm -rf ~/.config/maitri-mail             # the OAuth client and account list
-rm -rf ~/.cache/maitri-mail              # cached mail
+rm -rf ~/.cache/maitri-mail ~/.local/state/maitri-mail   # cached mail, outbox and diagnostics
 rm ~/.local/share/applications/maitri-mail.desktop
 ```
 
-Signing out from inside the app clears the keyring entry on its own. The plugin
-never edits your shell, Hyprland or theme configuration. The keybinding above
-and the mailto desktop file are yours to add and yours to remove.
+Signing out from inside the app clears the keyring entry on its own. The only
+Hyprland change Mail makes is the marked SUPER+SHIFT+E block that **Settings ›
+Default mail client › Set as default** adds to `~/.config/hypr/bindings.lua`;
+**Undo** removes it.
 
 
 [Back to installation](../README.md#install)

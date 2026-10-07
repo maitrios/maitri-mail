@@ -10,16 +10,18 @@ maitri mail is a fork of [omamail](https://github.com/huacnlee/omamail) by [Jaso
 
 maitri mail ships with maitri as the `maitri-mail` package and sits on the default bar. Click the envelope, then add your mailbox.
 
-If it is missing, install it with:
+If it is missing, add it from the maitri menu with **Install › Mail**, or:
 
 ```bash
 maitri pkg add maitri-mail
 ```
 
-To open it from the keyboard and make it the `mailto:` handler, choose **Settings → Default mail client → Set as default**. That binds `SUPER+SHIFT+E` (and `SUPER+SHIFT+ALT+E` for a new message) in a marked block of `~/.config/hypr/bindings.lua`, and **Undo** removes the block. To bind the toggle yourself instead:
+**Remove › Mail** takes it out again; your accounts, cache and keyring entries stay.
+
+To open it from the keyboard and make it the `mailto:` handler, choose **Settings → Default mail client → Set as default**. That binds `SUPER+SHIFT+E` (and `SUPER+SHIFT+ALT+E` for a new message) in a marked block of `~/.config/hypr/bindings.lua`, and **Undo** removes the block. To bind a toggle of your own instead, pick a free key such as:
 
 ```lua
-o.bind("SUPER + SHIFT + E", "Mail", "maitri-shell shell toggle maitri.mail '{}'")
+o.bind("SUPER + ALT + M", "Mail", "maitri-shell shell toggle maitri.mail '{}'")
 ```
 
 Press `?` in the window for the shortcut sheet, or see the [keyboard guide](docs/KEYS.md).
