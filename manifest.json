@@ -60,7 +60,7 @@
         "type": "boolean",
         "label": "Show the icon in the bar",
         "defaultValue": true,
-        "description": "Turn this off to run Mail with no envelope in the bar. Mail is still checked and still notifies; only the icon goes. With it off the window opens from a keybinding or a terminal and nowhere else, so bind a key first: o.bind(\"SUPER + SHIFT + G\", \"Mail\", \"maitri-shell shell toggle maitri.mail '{}'\")"
+        "description": "Turn this off to run Mail with no envelope in the bar. Mail is still checked and still notifies; only the icon goes. With it off the window opens from a keybinding or a terminal and nowhere else, so bind a key first: o.bind(\"SUPER + ALT + M\", \"Mail\", \"maitri-shell shell toggle maitri.mail '{}'\")"
       },
       {
         "key": "refreshIntervalSec",

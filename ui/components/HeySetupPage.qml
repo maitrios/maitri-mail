@@ -123,7 +123,7 @@ Column {
 
     Text {
       width: parent.width
-      text: "Recent versions of maitri install it for you — maitri-mise-install github:basecamp/hey-cli hey does the same thing. Either way it lands in ~/.local/bin."
+      text: "maitri does not install it for you: run maitri-mise-install github:basecamp/hey-cli hey, or use 37signals' installer. Either way it lands in ~/.local/bin."
       color: root.dimColor
       font.family: root.panelFontFamily
       font.pixelSize: Style.font.caption

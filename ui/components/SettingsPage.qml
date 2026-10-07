@@ -417,7 +417,7 @@ Column {
 
       Text {
         width: parent.width
-        text: "o.bind(\"SUPER + SHIFT + G\", \"Mail\", "
+        text: "o.bind(\"SUPER + ALT + M\", \"Mail\", "
           + "\"maitri-shell shell toggle maitri.mail '\{}'\")"
         color: root.dimColor
         font.family: root.panelFontFamily
@@ -442,9 +442,9 @@ Column {
 
   // --------------------------------------------------- default mail client
   //
-  // maitri opens HEY's web app on SUPER+SHIFT+E, and mailto: links go to
-  // whatever claimed them. scripts/default-mail.sh moves both, and undoing it
-  // gives the key back to maitri.
+  // mailto: links go to whatever claimed them, and maitri binds nothing to
+  // SUPER+SHIFT+E. scripts/default-mail.sh claims both, and undoing it removes
+  // the binding again.
 
   Text {
     id: mailClientHeading
@@ -522,7 +522,7 @@ Column {
         && root.service.defaultMailClient !== ""
       text: mailClientRow.isDefault ? "Undo" : "Set as default"
       tooltipText: mailClientRow.isDefault
-        ? "Give SUPER+SHIFT+E back to maitri's own email binding"
+        ? "Remove Mail's SUPER+SHIFT+E binding"
         : "Make Mail open mailto: links and SUPER+SHIFT+E"
       foreground: root.textColor
       fontFamily: root.panelFontFamily

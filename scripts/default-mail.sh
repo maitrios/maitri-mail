@@ -2,11 +2,11 @@
 # Makes Mail the desktop's mail client, or hands the job back.
 #
 #   default-mail.sh on <plugin-dir>   claim mailto: and SUPER+SHIFT+E
-#   default-mail.sh off               restore maitri's own email bindings
+#   default-mail.sh off               remove those bindings again
 #   default-mail.sh status            print `default` or `not-default`
 #
 # Two things decide "which mail client" on maitri, and a switch that moved
-# only one would leave the other opening HEY:
+# only one would leave the other pointing somewhere else:
 #
 #   - the x-scheme-handler/mailto default, which register-mailto.sh owns
 #   - SUPER+SHIFT+E and SUPER+SHIFT+ALT+E, overridden by a managed block in
@@ -92,7 +92,7 @@ case "${1:-}" in
     [ "$#" -eq 1 ] || usage
     remove_block
     reload_hyprland
-    printf '%s\n' "SUPER+SHIFT+E is maitri's own email binding again."
+    printf '%s\n' 'SUPER+SHIFT+E and SUPER+SHIFT+ALT+E are unbound again.'
     ;;
   status)
     [ "$#" -eq 1 ] || usage
