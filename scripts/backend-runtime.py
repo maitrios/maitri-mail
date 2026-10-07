@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
-"""Report the packaged backend's state to the plugin.
-
-maitri ships the backend in the maitri-mail package, so the plugin never
-downloads, replaces or links an executable. This only checks that the packaged
-binary answers with the exact version this plugin revision pins, and reports
-the API revision the plugin requires, in the JSON shape ui/backend/Runtime.js
-decodes.
-"""
+"""Report the packaged backend's state to the plugin, in the JSON shape
+ui/backend/Runtime.js decodes."""
 import contextlib
 import json
 import os
@@ -20,8 +14,9 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parent.parent
-# Installed by the maitri-mail package. MAITRI_MAIL_BIN overrides it for
-# development only and must name an absolute executable.
+# Why packaged, not downloaded: maitri builds the plugin and this backend from
+# the same tag into one package, so their versions cannot drift, and a distro
+# package should not fetch executables at runtime. MAITRI_MAIL_BIN is for development.
 BINARY = Path("/usr/bin/maitri-mail")
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?")
 PACKAGED = "maitri installs the mail backend with the maitri-mail package. Run maitri update if it is missing or out of date."
