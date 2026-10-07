@@ -40,6 +40,16 @@ if grep -rn -E 'releases/download|install-backend|enable-cli' ui scripts --inclu
   fail "the plugin must not download, install or link a backend"
 fi
 
+# The heart seal replaces upstream's M everywhere the mark is drawn. A sync that
+# resolves a conflict toward upstream's side brings the M back.
+grep -q 'd="M10 19L32 35L54 19"' ui/assets/maitri-mail.svg && grep -q 'class="accent"' ui/assets/maitri-mail.svg \
+  && grep -q 'd="M10 19L32 35L54 19"' docs/images/maitri-mail.svg \
+  || fail "the mark assets must draw the V fold and heart seal"
+grep -q 'bezierCurveTo' ui/components/GmailIcon.qml && ! grep -q 'innerW \* 0.30' ui/components/GmailIcon.qml \
+  || fail "the bar glyph must draw the heart seal, not the M"
+grep -qF '[[10, 19], [32, 35], [54, 19]]' ui/components/MaitriMailLogo.qml \
+  || fail "the animated logo must trace the V fold"
+
 for dropped in app install.sh install.ps1 docs/index.html scripts/link-plugin.sh scripts/publish.sh \
     scripts/install-backend.sh .github/workflows/pages.yml .github/workflows/native-credentials.yml; do
   [[ ! -e $dropped ]] || fail "$dropped is on maitri-mail's delete list but came back"

@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtTest 1.3
 import "../.." as MaitriMail
+import "../../components" as Components
 import "../../bar/Bridge.js" as BarBridge
 
 // The bar widget with its icon turned off.
@@ -62,6 +63,16 @@ Item {
     property var shell: fakeShell
     property bool vertical: false
     property color barForeground: Qt.rgba(1, 1, 1, 1)
+  }
+
+  // The mark at a size where its parts are a few pixels apart, painted in
+  // colours no theme uses so each sample says which part drew it.
+  Components.GmailIcon {
+    id: mark
+    x: 300
+    iconSize: 64
+    color: Qt.rgba(0, 0, 1, 1)
+    markColor: Qt.rgba(1, 0, 0, 1)
   }
 
   MaitriMail.BarWidget {
@@ -217,6 +228,23 @@ Item {
     // The shell is swapped for one holding no service, because a fake that
     // always answers with one leaves this branch unmeasured: `drawsIcon` is
     // true there whether the missing service means "draw" or "do not".
+    function inked(image, x, y, r, g, b) {
+      var c = image.pixel(x, y)
+      return c.a > 0.9 && Math.abs(c.r - r) < 0.15 && Math.abs(c.g - g) < 0.15 && Math.abs(c.b - b) < 0.15
+    }
+
+    function test_the_mark_is_a_v_fold_with_a_heart_seal() {
+      verify(waitForRendering(mark))
+      var image = grabImage(mark)
+      verify(inked(image, 4, 32, 0, 0, 1), "the frame follows the foreground")
+      verify(inked(image, 20, 27, 0, 0, 1), "the left leg of the V fold follows the foreground")
+      verify(inked(image, 44, 27, 0, 0, 1), "the right leg of the V fold follows the foreground")
+      verify(inked(image, 32, 36, 1, 0, 0), "the heart seal on the fold's point follows the accent")
+      verify(inked(image, 32, 41, 1, 0, 0), "the heart reaches down to its tip")
+      verify(!inked(image, 21, 40, 0, 0, 1) && !inked(image, 21, 40, 1, 0, 0), "no M stem on the left")
+      verify(!inked(image, 43, 44, 0, 0, 1) && !inked(image, 43, 44, 1, 0, 0), "no M stem on the right")
+    }
+
     function test_no_service_yet_still_draws() {
       fakeBar.shell = startingShell
       compare(widget.gmail, null, "the shell has no service to hand over yet")

@@ -34,12 +34,21 @@ class NotificationTest(unittest.TestCase):
                                             'Quotes " \\ 你好\nbody'])
                 self.assertIn('--action=default=Read...', args)
                 svg = ET.parse(args[args.index('-i') + 1]).getroot()
-                self.assertEqual(svg[0].get('stroke'), '#' + foreground[-6:])
-                if len(foreground) == 9:
-                    self.assertAlmostEqual(float(svg[0].get('stroke-opacity')), 128 / 255)
-                self.assertEqual(svg[1].get('stroke'), '#' + accent[-6:])
-                if len(accent) == 9:
-                    self.assertAlmostEqual(float(svg[1].get('stroke-opacity')), 64 / 255)
+                roles = {}
+                for shape in svg:
+                    roles.setdefault(shape.get('class'), []).append(shape)
+                self.assertEqual({role: len(shapes) for role, shapes in roles.items()},
+                                 {'foreground': 2, 'accent': 1})
+                seal = roles['accent'][0]
+                for shape in roles['foreground']:
+                    self.assertEqual(shape.get('stroke'), '#' + foreground[-6:])
+                    self.assertEqual(shape.get('fill'), 'none')
+                    if len(foreground) == 9:
+                        self.assertAlmostEqual(float(shape.get('stroke-opacity')), 128 / 255)
+                for attribute in ('stroke', 'fill'):
+                    self.assertEqual(seal.get(attribute), '#' + accent[-6:])
+                    if len(accent) == 9:
+                        self.assertAlmostEqual(float(seal.get(attribute + '-opacity')), 64 / 255)
             before = sorted((tmp / 'cache').rglob('*'))
             (tmp / 'argv').unlink()
             for bad in ['red"/><image href="https://example.org"', '#ffffff\n', '#ffffff\r', '#fff']:

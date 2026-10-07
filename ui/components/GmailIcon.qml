@@ -5,9 +5,9 @@ import qs.Ui
 // The mark, drawn rather than rasterised from an SVG: the bar slot is about
 // 16px and Qt's SVG renderer smears strokes at that size.
 //
-// The fold is an M, not the V of a generic mail glyph — that is the whole
-// difference between this application's mark and every other envelope in the
-// bar. The frame follows the bar foreground. The M follows the theme accent.
+// The fold is a plain V; the heart seal sitting on its point is what sets
+// this mark apart from every other envelope in the bar. The frame and the fold
+// follow the bar foreground. The heart follows the theme accent.
 Item {
   id: root
 
@@ -58,24 +58,32 @@ Item {
       ctx.rect(left, top, right - left, bottom - top)
       ctx.stroke()
 
-      // The M, inset inside the body: down the left stem, into the valley, back
-      // up, and down the right stem.
-      //
-      // Smaller and lighter than the frame around it. At bar size the two
-      // strokes at equal weight put more ink in a 12px square than it can hold,
-      // and the mark turns into a solid block; letting the M sit clear of the
-      // envelope on all four sides, at about two thirds the stroke, keeps both
-      // shapes readable.
-      var innerW = right - left
-      var innerH = bottom - top
-      ctx.strokeStyle = root.markColor
-      ctx.lineWidth = Math.max(1, stroke * 0.54)
+      // The fold and the seal come from the mark's 64-unit artwork
+      // (ui/assets/maitri-mail.svg), whose frame spans x 5..59 and y 13..51.
+      var sx = (right - left) / 54
+      var sy = (bottom - top) / 38
+      function x(u) { return left + (u - 5) * sx }
+      function y(v) { return top + (v - 13) * sy }
+
       ctx.beginPath()
-      ctx.moveTo(left + innerW * 0.30, bottom - innerH * 0.18)
-      ctx.lineTo(left + innerW * 0.30, top + innerH * 0.36)
-      ctx.lineTo(left + innerW * 0.50, top + innerH * 0.60)
-      ctx.lineTo(left + innerW * 0.70, top + innerH * 0.36)
-      ctx.lineTo(left + innerW * 0.70, bottom - innerH * 0.18)
+      ctx.moveTo(x(10), y(19))
+      ctx.lineTo(x(32), y(35))
+      ctx.lineTo(x(54), y(19))
+      ctx.stroke()
+
+      ctx.fillStyle = root.markColor
+      ctx.strokeStyle = root.markColor
+      ctx.lineWidth = Math.max(0.5, 2 * sx)
+      ctx.beginPath()
+      ctx.moveTo(x(32.00), y(32.97))
+      ctx.bezierCurveTo(x(30.88), y(30.07), x(28.64), y(28.95), x(27.53), y(28.95))
+      ctx.bezierCurveTo(x(24.39), y(28.95), x(22.61), y(32.97), x(25.74), y(36.11))
+      ctx.lineTo(x(32.00), y(42.37))
+      ctx.lineTo(x(38.26), y(36.11))
+      ctx.bezierCurveTo(x(41.39), y(32.97), x(39.61), y(28.95), x(36.47), y(28.95))
+      ctx.bezierCurveTo(x(35.36), y(28.95), x(33.12), y(30.07), x(32.00), y(32.97))
+      ctx.closePath()
+      ctx.fill()
       ctx.stroke()
     }
   }

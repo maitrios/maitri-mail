@@ -120,6 +120,7 @@ jobs:
           \`\`\`
 
             Push that branch and open its pull request; this one closes once \`upstream\` is in \`main\`.
+          - Resolve conflicts in maitri's own deltas (the packaged backend probe, the heart seal mark, the README) toward maitri's side; MAITRI.md lists them.
           - Files maitri-mail drops for good belong in \`DELETE_LIST\` in \`tools/rebrand.sh\`.
           EOF
           title="chore: sync omamail $TAG"

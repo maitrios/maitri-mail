@@ -11,9 +11,20 @@ from html import escape
 
 def paint(element, color):
     # QColor stringifies translucent colors as #AARRGGBB; SVG uses #RRGGBB.
-    element.set('stroke', '#' + color[-6:])
-    if len(color) == 9:
-        element.set('stroke-opacity', str(int(color[1:3], 16) / 255))
+    attributes = ['stroke'] + (['fill'] if element.get('fill', 'none') != 'none' else [])
+    for attribute in attributes:
+        element.set(attribute, '#' + color[-6:])
+        if len(color) == 9:
+            element.set(attribute + '-opacity', str(int(color[1:3], 16) / 255))
+
+
+def paint_roles(root, colors):
+    """The asset marks each shape with the theme role it takes: the frame and
+    fold class="foreground", the heart seal class="accent"."""
+    for element in root.iter():
+        role = element.get('class')
+        if role in colors:
+            paint(element, colors[role])
 
 
 def main(args):
@@ -31,8 +42,7 @@ def main(args):
     # A new path per palette also prevents image caches retaining the old theme.
     path = directory / (foreground[1:] + '-' + accent[1:] + '.svg')
     svg = ET.parse(Path(__file__).resolve().parents[1] / 'ui/assets/maitri-mail.svg')
-    paint(svg.getroot()[0], foreground)
-    paint(svg.getroot()[1], accent)
+    paint_roles(svg.getroot(), {'foreground': foreground, 'accent': accent})
     # Atomic publication: concurrent accounts must never see a partial image.
     temporary = None
     try:

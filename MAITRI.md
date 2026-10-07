@@ -77,6 +77,7 @@ Expect sync conflicts in these files; resolve toward maitri's side unless upstre
 | `Makefile`, `tests/test_source.sh` | Dropped standalone app, release and plugin-link targets and checks; `make install` stages the package layout. |
 | `README.md`, `MAITRI.md`, `AGENTS.md` (last section), `docs/BACKEND-RUNTIME.md` (opening) | maitri documentation. |
 | `manifest.json` | `homepage`. |
+| `ui/assets/maitri-mail.svg`, `docs/images/maitri-mail.svg`, `ui/components/GmailIcon.qml`, `ui/components/MaitriMailLogo.qml`, `scripts/notify-mail.py` (icon painting), `tests/test_notification.py`, `ui/tests/qml/tst_maitri_mail_logo.qml`, `ui/tests/qml/tst_bar_widget_icon.qml` | The maitri heart seal mark: a frame and V fold in the foreground with a heart in the accent, replacing omamail's M. The SVG marks shapes with `class="foreground"` / `class="accent"` and `notify-mail.py` paints by class. Always resolve toward maitri's side; `tests/test_maitri.sh` fails if the M comes back. |
 | `.github/workflows/`, `tools/`, `tests/test_maitri*.{sh,py}` | maitri-only files. |
 
 ## Packaging

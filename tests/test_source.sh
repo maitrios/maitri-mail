@@ -776,6 +776,17 @@ grep -q 'MAX_SUMMARIES_PER_QUERY' cache/Cache.js \
 grep -q 'assets/maitri-mail.svg' ../scripts/notify-mail.py \
   || fail "new-mail notifications need the Mail app icon"
 [ -f assets/maitri-mail.svg ] || fail "the notification app icon is missing"
+# The icon is themed by role, not by child position: the frame and fold take
+# the foreground, the heart seal takes the accent.
+[ "$(grep -c 'class="foreground"' assets/maitri-mail.svg)" -eq 2 ] \
+  || fail "the mark's frame and fold must be class=\"foreground\""
+[ "$(grep -c 'class="accent"' assets/maitri-mail.svg)" -eq 1 ] \
+  || fail "the mark's heart seal must be class=\"accent\""
+grep -q "paint_roles(svg.getroot(), {'foreground': foreground, 'accent': accent})" ../scripts/notify-mail.py \
+  || fail "notify-mail.py must paint the mark by class role"
+if grep -qE 'getroot\(\)\[[0-9]\]' ../scripts/notify-mail.py; then
+  fail "notify-mail.py must not paint the mark by child index"
+fi
 
 # Account actions live on the account's edit page. The switcher only changes
 # accounts and leads to management; the management list only leads to editing.
