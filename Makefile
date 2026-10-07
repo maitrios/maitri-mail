@@ -77,20 +77,8 @@ QML_FILES := ui/Service.qml ui/BarWidget.qml ui/App.qml ui/compose/RecoveryContr
 	ui/components/WeekCalendarView.qml \
 	ui/components/WindowMoveArea.qml \
 	ui/bar/BarPreview.qml
-APP_QML_FILES := app/qml/Main.qml app/qml/StandaloneShell.qml app/qml/StandaloneManifest.qml
-APP_BUILD_DIR ?= app/build
-APP_EXEEXT := $(if $(filter Windows_NT,$(OS)),.exe,)
-APP_TARGET_DIR ?= $(CURDIR)/target/standalone
-APP_BACKEND := $(APP_TARGET_DIR)/debug/maitri-mail$(APP_EXEEXT)
-APP_EXECUTABLE := $(CURDIR)/$(APP_BUILD_DIR)/maitri-mail-app$(APP_EXEEXT)
-
 .PHONY: test test-js test-shell test-shell-portable test-shell-libcurl \
-	test-qml test-app-qml test-local test-backend-process qml-check validate bench install \
-	app-build app-run help
-
-help:
-	@echo "make app-build  Build the standalone backend and Qt desktop host"
-	@echo "make app-run    Build and run the desktop host from source resources"
+	test-qml test-local test-backend-process qml-check validate bench
 
 test: test-rust test-js test-shell test-qml
 
@@ -114,8 +102,6 @@ backend:
 # The parsing, formatting, and decision rules live in plain JS precisely so
 # they can be tested without a compositor. These run anywhere node does.
 test-js:
-	node app/tests/test_theme.js
-	node app/tests/test_shell_theme.js
 	node ui/tests/test_bar_bridge.js
 	node ui/tests/test_backend_wire.js
 	node ui/tests/test_backend_queue.js
@@ -175,13 +161,9 @@ test-shell: test-shell-portable test-shell-libcurl
 # Everything here drives one of our own scripts against a fake server and
 # asserts what the script did with the answer, so any libcurl can run it.
 test-shell-portable:
-	python3 tests/test_app_make.py
 	python3 tests/test_diagnostics.py
 	python3 tests/test_network_migration.py
-	python3 tests/test_plugin_workflow.py
 	python3 tests/test_backend_runtime.py
-	python3 tests/test_backend_release.py
-	python3 tests/test_runtime_release_contract.py
 	sh tests/test_dev.sh
 	python3 tests/test_attachment_common.py
 	python3 tests/test_notification.py
@@ -195,7 +177,6 @@ test-shell-portable:
 	bash tests/test_service_source.sh
 	bash tests/test_config_store.sh
 	bash tests/test_agent_job.sh
-	bash tests/test_link_plugin.sh
 	bash tests/test_mailto.sh
 	bash tests/test_default_mail.sh
 	bash tests/test_transport.sh
@@ -207,10 +188,6 @@ test-shell-portable:
 	bash tests/test_calendar_transport.sh
 	bash tests/test_calendar_write.sh
 	bash tests/test_calendar_delete.sh
-	bash tests/test_release_notes.sh
-	bash tests/test_publish.sh
-	python3 tests/test_publish_backend.py
-	bash tests/test_release_source.sh
 
 # This one asserts libcurl's own behaviour rather than ours: which of its two
 # output channels a single-UID BODY.PEEK fetch arrives on. That is a property
@@ -253,24 +230,6 @@ test-qml:
 	python3 tests/test_sidebar_text.py "$(QMLTESTRUNNER)"
 	QMLTESTRUNNER="$(QMLTESTRUNNER)" cargo test --locked --lib message::html::tests::native_output_cannot_trigger_qt_resource_requests -- --ignored
 
-test-app-qml:
-	@test -n "$(QMLTESTRUNNER)" || { \
-		echo "qmltestrunner not found: install Qt 6 QML test tooling" >&2; \
-		exit 1; \
-	}
-	cmake -S app -B "$(APP_BUILD_DIR)" -DMAITRI_MAIL_BACKEND="$(APP_BACKEND)" -DQMLTESTRUNNER_EXECUTABLE="$(QMLTESTRUNNER)"
-	cmake --build "$(APP_BUILD_DIR)" --parallel
-	python3 app/tests/test_qml_inventory.py
-	QT_QPA_PLATFORM=offscreen ctest --test-dir "$(APP_BUILD_DIR)" --output-on-failure --no-tests=error -R 'tst_standalone_composition'
-
-app-build:
-	cargo build --locked --no-default-features --features standalone --target-dir "$(APP_TARGET_DIR)" --bin maitri-mail
-	cmake -S app -B "$(APP_BUILD_DIR)" -DMAITRI_MAIL_BACKEND="$(APP_BACKEND)"
-	cmake --build "$(APP_BUILD_DIR)" --parallel
-
-app-run: app-build
-	MAITRI_MAIL_DEVELOPMENT_RESOURCES=1 MAITRI_MAIL_BIN="$(APP_BACKEND)" "$(APP_EXECUTABLE)"
-
 # Both engines on the same fixtures. The QML column is the one that decides
 # anything — the shell runs that engine, not node's — so run it on the machine
 # the shell runs on. Not part of `test`: it takes a few seconds and measures
@@ -281,27 +240,7 @@ bench:
 # Needs the maitri shell's qs.Commons / qs.Ui on the import path.
 qml-check:
 	$(QMLLINT) -I /usr/share/maitri/shell $(QML_FILES)
-	$(QMLLINT) -I app/qml/imports -I app/build/qml $(APP_QML_FILES)
 
-validate: test test-app-qml qml-check
+validate: test qml-check
 	maitri plugin validate .
 	git diff --check
-
-# Development only: the Marketplace installs the plugin for ordinary users.
-.PHONY: install-backend-local install-plugin
-install-backend-local: backend
-	python3 scripts/backend-runtime.py install-local
-
-install: install-backend-local
-	bash scripts/link-plugin.sh
-
-# Reset the private runtime so the setup page exercises a fresh installation.
-install-plugin:
-	python3 scripts/backend-runtime.py uninstall
-	bash scripts/link-plugin.sh
-
-# Prepare release/X.Y.Z and its PR; CI publishes, verifies, then updates its pin.
-# VERSION defaults to the next patch. Main changes only when the PR is merged.
-.PHONY: publish
-publish:
-	bash scripts/publish.sh "$(VERSION)"

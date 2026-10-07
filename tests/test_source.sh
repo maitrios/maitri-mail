@@ -1067,8 +1067,6 @@ oversized=$(cd ..
       [ -f "$file" ] || continue
       case "$file" in
         (preview.png) ceiling=$preview_limit ;;
-        (app/assets/fonts/SymbolsNerdFontMono-Regular.ttf) ceiling=2610012 ;;
-        (app/resources/macos/maitri-mail.icns) ceiling=111809 ;;
         (*) ceiling=$limit ;;
       esac
       size=$(wc -c < "$file")
@@ -1080,47 +1078,6 @@ if [ -n "$oversized" ]; then
   printf '%s\n' "$oversized" >&2
   fail "the files above are over their size ceiling; keep large assets out of the clone"
 fi
-
-# The standalone host embeds one exact upstream Nerd Fonts icon asset. Keep its
-# exception tied to reviewed bytes and to the provenance shipped beside it; a
-# different font must update all three deliberately.
-font_provenance=app/assets/fonts/NerdFonts-PROVENANCE.md
-[ -f "../$font_provenance" ] || fail "bundled fonts must record their provenance"
-while read -r expected file; do
-  actual=$(cd .. && shasum -a 256 "$file" | awk '{print $1}')
-  [ "$actual" = "$expected" ] || fail "$file does not match its reviewed upstream checksum"
-  grep -q "$expected" "../$font_provenance" \
-    || fail "$file checksum is missing from its shipped provenance"
-done <<'FONT_CHECKSUMS'
-fe471e538392f51910faab985fa8e192a39dd3426125edd15b71b3680df0e749 app/assets/fonts/SymbolsNerdFontMono-Regular.ttf
-FONT_CHECKSUMS
-
-# The macOS bundle icon is generated from the small reviewed SVG beside it.
-# Keep the binary exception pinned to its exact bytes and documented recipe;
-# changing the artwork or encoder must be an explicit review rather than an
-# accidental expansion of the repository-wide asset ceiling.
-icon_provenance=app/resources/macos/ICON-PROVENANCE.md
-[ -f "../$icon_provenance" ] || fail "the macOS icon must record its provenance"
-mac_icon=app/resources/macos/maitri-mail.icns
-[ "$(cd .. && wc -c < "$mac_icon")" -eq 111809 ] \
-  || fail "$mac_icon does not match its reviewed byte size"
-mac_icon_checksum=bd29ce1e72aa9db37ed5b1cb930956d2d933dc4426e7cea7f1b8baf2edb9262d
-actual_mac_icon_checksum=$(cd .. && shasum -a 256 "$mac_icon" | awk '{print $1}')
-[ "$actual_mac_icon_checksum" = "$mac_icon_checksum" ] \
-  || fail "$mac_icon does not match its reviewed checksum"
-grep -q "$mac_icon_checksum" "../$icon_provenance" \
-  || fail "$mac_icon checksum is missing from its shipped provenance"
-grep -q '1277a2cf247b275a15961fb20175420abb5dfc5489acb95313f4f604c09b6e78' "../$icon_provenance" \
-  || fail "the macOS icon source checksum is missing from its shipped provenance"
-windows_icon=app/resources/windows/maitri-mail.ico
-windows_icon_checksum=2562966adb272711ae0274f7eade7ef2680781bb4405182280a310658752131d
-actual_windows_icon_checksum=$(cd .. && shasum -a 256 "$windows_icon" | awk '{print $1}')
-[ "$actual_windows_icon_checksum" = "$windows_icon_checksum" ] \
-  || fail "$windows_icon does not match its reviewed checksum"
-grep -q "$windows_icon_checksum" "../$icon_provenance" \
-  || fail "$windows_icon checksum is missing from its shipped provenance"
-grep -q '3c780a0881ca98ffb717eb2877bf2e8a877deb9ddc3593a2bcca1d19139616e4' "../$icon_provenance" \
-  || fail "the canonical Mail logo checksum is missing from icon provenance"
 
 # The compose form, account boundary and raw-message builder must keep the
 # selected send-as address all the way to the provider. A missing link silently
@@ -1136,8 +1093,6 @@ grep -q 'function beginDraft' components/ComposeView.qml \
   || fail "ComposeView must fill a new draft from a mailto"
 grep -q 'maitri-shell shell summon' ../scripts/mailto.sh \
   || fail "the mailto handler must summon Mail, not toggle it"
-grep -q 'register-mailto.sh' ../scripts/link-plugin.sh \
-  || fail "link-plugin.sh must register the mailto desktop handler"
 grep -q 'registerMailtoHandler' Service.qml \
   || fail "the service must register the mailto handler when the plugin loads"
 grep -q '("bcc", "Bcc")' ../src/providers/hey_actions.rs \
