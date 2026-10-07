@@ -188,6 +188,7 @@ test-shell-portable:
 	bash tests/test_calendar_transport.sh
 	bash tests/test_calendar_write.sh
 	bash tests/test_calendar_delete.sh
+	bash tests/test_maitri.sh
 
 # This one asserts libcurl's own behaviour rather than ours: which of its two
 # output channels a single-UID BODY.PEEK fetch arrives on. That is a property
