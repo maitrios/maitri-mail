@@ -54,7 +54,7 @@ The plugin never downloads or replaces its backend. It checks that `/usr/bin/mai
 
 ### Coming from omamail <!-- rebrand:keep -->
 
-maitri mail reads `~/.config/maitri-mail`, not `~/.config/omamail`, and stores keyring entries under the `maitri-mail` service. Move the config directory across before the first start, or add your mailboxes again. <!-- rebrand:keep -->
+maitri mail keeps omamail's keyring entries as they are, so saved sign-ins carry over. Its files live in `~/.config/maitri-mail`, `~/.cache/maitri-mail` and `~/.local/state/maitri-mail`; maitri's migration moves the omamail directories there and retires the old third-party plugin. See [MAITRI.md](MAITRI.md#moving-an-omamail-user-to-maitri-mail) for the full list. <!-- rebrand:keep -->
 
 ## Develop
 

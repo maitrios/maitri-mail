@@ -47,7 +47,7 @@ By hand, without the workflow: `tools/sync-upstream.sh v0.10.9` advances `upstre
 | `Omarchy 4` | `maitri` | the shell generation the plugin targets |
 | `OMARCHY`, `Omarchy`, `omarchy` | `MAITRI`, `maitri`, `maitri` | shell commands (`maitri-shell`, `maitri-default-agent`, …), paths (`/usr/share/maitri/shell`, `~/.local/state/maitri/current/theme`) and prose |
 
-Protected tokens survive untouched: `huacnlee/omamail`, `huacnlee.github.io/omamail`, `github.com/basecamp/omarchy`, `omacom/omarchy`, `omarchy.org`, and one JMAP fixture whose byte size a test asserts. Two Omarchy documentation links are rewritten to `docs/maitri-shell.md` in maitri. Paths are renamed with the same rules (`ui/components/OmamailLogo.qml` → `ui/components/MaitriMailLogo.qml`).
+Protected tokens survive untouched: `huacnlee/omamail`, `huacnlee.github.io/omamail`, `github.com/basecamp/omarchy`, `omacom/omarchy`, `omarchy.org`, one JMAP fixture whose byte size a test asserts, and the keyring identifiers (`service=omamail` and the older `service=omarchy-gmail` in Secret Service attributes, `org.omamail.credentials.v1` and the `omamail:v1:` id prefix on macOS and Windows) so an omamail user's saved sign-ins are found without a secret migration. Two Omarchy documentation links are rewritten to `docs/maitri-shell.md` in maitri. Paths are renamed with the same rules (`ui/components/OmamailLogo.qml` → `ui/components/MaitriMailLogo.qml`).
 
 `--all` also applies omamail's own release pin commit: a tag is cut before omamail's release workflow advances `backend-version` and folds the unreleased API step in `backend-api.json`, so the tag tree still pins the previous backend. maitri builds the backend from the same tree, so `backend-version` becomes the Cargo version and the contract is folded exactly as `scripts/package-backend.py pin` does upstream.
 
@@ -91,6 +91,25 @@ Expect sync conflicts in these files; resolve toward maitri's side unless upstre
 The plugin requires the backend's `--version` to equal `backend-version` exactly, so the backend and plugin must come from the same tag and the same package.
 
 Release tags are `vX.Y.Z`, matching the synced omamail version, or `vX.Y.Z-maitri.N` for a maitri-only fix on top of it. Pushing one runs `.github/workflows/release.yml`, which checks that the tag, `Cargo.toml`, `manifest.json` and `backend-version` agree, tests the backend, and publishes `maitri-mail-<version>.tar.gz` with `SHA256SUMS`.
+
+## Moving an omamail user to maitri mail
+
+Audited against the code and a live omamail install on maitri (third-party plugin at `~/.config/maitri/plugins/omamail`). Nothing omamail persists embeds its own paths or name, so the three data directories move as they are. The rest is outside them and needs its own step. Do it while no omamail backend runs (after the old plugin is gone and the shell has reloaded), or the old `omamail serve` keeps writing to the old paths.
+
+| omamail state | maitri mail | Migration |
+|---|---|---|
+| `~/.config/omamail/` (`accounts.json`, `credentials.json` OAuth clients, `calendars.json`, `calendar-reminders.json`, `compose.json` drafts, `contacts.json`, `window.json`, lock files) | `~/.config/maitri-mail/` | Move. |
+| `~/.cache/omamail/` (`account-*.json` lists and bodies, `calendar*.json`, `notification-icons/`) | `~/.cache/maitri-mail/` | Move; notification icons regenerate. |
+| `~/.local/state/omamail/` (`outbox.json` with pending sends, `outbox.sock`, `assistant/` AI chats, `diagnostics/`) | `~/.local/state/maitri-mail/` | Move. A stale `outbox.sock` is unlinked on bind. Pre-migration Claude chats stay readable but may not continue, because Claude keys sessions by the worker's directory. |
+| Secret Service items with `service=omamail` | same | Nothing; the name is kept. |
+| `~/.config/maitri/plugins/omamail/` (third-party checkout) | `/usr/share/maitri-plugins/mail/` (`maitri.mail`) | Remove, e.g. `maitri plugin remove omamail --yes`. Left in place, both plugins load under different ids, poll twice and fight over `mailto:`. |
+| `~/.config/maitri/shell.json`: a bar layout entry `{"id": "omamail", …}` holding the plugin's settings inline | `{"id": "maitri.mail", …}` | Rewrite the id in place and keep the entry's settings and position. Setting keys are unchanged. Drop a second `maitri.mail` entry if the layout already has one. |
+| `~/.config/hypr/bindings.lua` block between `-- >>> omamail default mail client, do not edit by hand` and `-- <<< omamail default mail client`, calling `omarchy-shell shell summon omamail` | Same block with `maitri-mail` markers and `maitri-shell shell summon maitri.mail` | Replace the block (or remove it and let **Set as default** write the new one). Otherwise the keys call a missing command and Settings reports Mail as not the default. |
+| `~/.local/share/applications/omamail.desktop` (Exec into the old checkout) and `x-scheme-handler/mailto=omamail.desktop` in `~/.config/mimeapps.list` | `maitri-mail.desktop` | Delete the old desktop file and run `update-desktop-database ~/.local/share/applications`. The plugin writes `maitri-mail.desktop` and claims `mailto:` itself on first load. |
+| `~/.local/share/omamail/` (`bin/omamail` private runtime, `runtime.lock`, `local-build.json`) and the `~/.local/bin/omamail` link into it | `/usr/bin/maitri-mail` | Delete both; remove the link only if it points into `~/.local/share/omamail`. |
+| `$XDG_RUNTIME_DIR/omamail/` | `$XDG_RUNTIME_DIR/maitri-mail/` | Nothing; runtime only. |
+
+There are no systemd or autostart units, and no MCP configuration is written into the user's Claude, Codex or OpenCode config; Mail passes it on each run.
 
 ## Shell compatibility
 
