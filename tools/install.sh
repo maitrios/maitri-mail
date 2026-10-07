@@ -6,7 +6,7 @@
 #   tools/install.sh --destdir DIR [--binary PATH]
 #
 #   /usr/bin/maitri-mail                         backend + CLI (the plugin's fixed path)
-#   /usr/share/maitri/shell/plugins/mail/        first-party shell plugin (id maitri.mail)
+#   /usr/share/maitri-plugins/mail/              first-party add-on plugin (id maitri.mail)
 #   /usr/share/licenses/maitri-mail/LICENSE
 
 set -euo pipefail
@@ -28,7 +28,7 @@ done
 [[ -n $destdir ]] || { echo "install.sh: --destdir is required" >&2; exit 2; }
 [[ -x $binary ]] || { echo "install.sh: build the backend first: $binary" >&2; exit 1; }
 
-plugin_dir="$destdir/usr/share/maitri/shell/plugins/mail"
+plugin_dir="$destdir/usr/share/maitri-plugins/mail"
 
 # Development and release helpers that never run inside the installed plugin.
 DEV_ONLY=(

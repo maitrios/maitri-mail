@@ -44,7 +44,7 @@ See [mailbox setup](docs/MAILBOXES.md) for provider instructions and limitations
 | Path | What |
 | --- | --- |
 | `/usr/bin/maitri-mail` | The backend the plugin runs, which is also the `maitri-mail` CLI |
-| `/usr/share/maitri/shell/plugins/mail/` | The first-party shell plugin, id `maitri.mail` |
+| `/usr/share/maitri-plugins/mail/` | The first-party add-on plugin the maitri shell loads, id `maitri.mail` |
 | `~/.config/maitri-mail/` | Accounts and settings |
 | `~/.cache/maitri-mail/`, `~/.local/state/maitri-mail/` | Message cache, drafts, diagnostics and AI history |
 
@@ -64,7 +64,7 @@ cargo build --release --locked  # target/release/maitri-mail
 make install DESTDIR=/tmp/pkg   # stage the packaged layout
 ```
 
-To run a checkout's backend in the shell, start `maitri-shell` with `MAITRI_MAIL_BIN` pointing at the binary (`./dev run` prints the steps). To load a checkout of the plugin itself, link it into a maitri development checkout as `shell/plugins/mail` and use `maitri dev link`.
+To run a checkout's backend in the shell, start `maitri-shell` with `MAITRI_MAIL_BIN` pointing at the binary (`./dev run` prints the steps). To load a checkout of the plugin itself, symlink it to `/usr/share/maitri-plugins/mail` in place of the packaged copy and run `maitri-shell shell rescanPlugins`.
 
 Working agreements for code changes are in [AGENTS.md](AGENTS.md). How the fork tracks omamail, and what it changes, is in [MAITRI.md](MAITRI.md). <!-- rebrand:keep -->
 

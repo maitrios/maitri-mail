@@ -85,7 +85,7 @@ Expect sync conflicts in these files; resolve toward maitri's side unless upstre
 `tools/install.sh --destdir DIR` (or `make install DESTDIR=DIR`) stages what maitri-pkgs ships:
 
 - `/usr/bin/maitri-mail`: the backend the plugin launches, and the CLI
-- `/usr/share/maitri/shell/plugins/mail/`: `manifest.json`, `backend-version`, `backend-api.json`, `LICENSE`, `ui/` without `ui/tests`, and `scripts/` without the release helpers
+- `/usr/share/maitri-plugins/mail/`: `manifest.json`, `backend-version`, `backend-api.json`, `LICENSE`, `ui/` without `ui/tests`, and `scripts/` without the release helpers
 - `/usr/share/licenses/maitri-mail/LICENSE`
 
 The plugin requires the backend's `--version` to equal `backend-version` exactly, so the backend and plugin must come from the same tag and the same package.

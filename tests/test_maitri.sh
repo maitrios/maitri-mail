@@ -62,7 +62,7 @@ printf '#!/bin/sh\nprintf "maitri-mail 0.0.0\\n"\n' > "$tmp/bin/maitri-mail"
 chmod 755 "$tmp/bin/maitri-mail"
 tools/install.sh --destdir "$tmp/pkg" --binary "$tmp/bin/maitri-mail"
 
-plugin="$tmp/pkg/usr/share/maitri/shell/plugins/mail"
+plugin="$tmp/pkg/usr/share/maitri-plugins/mail"
 [[ -x $tmp/pkg/usr/bin/maitri-mail ]] || fail "install.sh must place the backend at /usr/bin/maitri-mail"
 [[ -f $tmp/pkg/usr/share/licenses/maitri-mail/LICENSE ]] || fail "install.sh must install the license"
 for f in manifest.json backend-version backend-api.json ui/Service.qml ui/BarWidget.qml ui/App.qml scripts/backend-runtime.py; do
@@ -71,9 +71,9 @@ done
 [[ ! -e $plugin/ui/tests ]] || fail "install.sh must not ship ui/tests"
 [[ -x $plugin/scripts/mailto.sh && -x $plugin/scripts/default-mail.sh ]] || fail "plugin scripts must stay executable"
 [[ ! -x $plugin/manifest.json ]] || fail "plugin data files must not be executable"
-# maitri's PluginRegistry treats any manifest.json or *.manifest.json up to three
-# levels below shell/plugins as another first-party plugin.
-extra=$(cd "$tmp/pkg/usr/share/maitri/shell/plugins" && find . -mindepth 2 -maxdepth 3 -type f \( -name manifest.json -o -name '*.manifest.json' \) ! -path ./mail/manifest.json)
+# maitri's PluginRegistry treats any manifest.json or *.manifest.json a few
+# levels below a plugin root as another first-party plugin.
+extra=$(cd "$tmp/pkg/usr/share/maitri-plugins" && find . -mindepth 2 -maxdepth 3 -type f \( -name manifest.json -o -name '*.manifest.json' \) ! -path ./mail/manifest.json)
 [[ -z $extra ]] || fail "the staged plugin carries extra manifests the shell would load: $extra"
 
 python3 tests/test_maitri_shell_api.py

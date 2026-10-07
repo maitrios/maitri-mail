@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           make install DESTDIR="$RUNNER_TEMP/pkg"
           test "$("$RUNNER_TEMP/pkg/usr/bin/maitri-mail" --version)" = "maitri-mail $(cat backend-version)"
-          test -f "$RUNNER_TEMP/pkg/usr/share/maitri/shell/plugins/mail/manifest.json"
+          test -f "$RUNNER_TEMP/pkg/usr/share/maitri-plugins/mail/manifest.json"
 
   plugin:
     name: Plugin (JS, shell, QML)
