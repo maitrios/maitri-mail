@@ -1,28 +1,28 @@
 import QtQuick
 import QtTest
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../providers" as Providers
 import "BackendFixture.js" as BackendFixture
 
 Item {
   id: root
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: pluginService
-    manifest: ({id:"omamail",name:"Omamail",version:"0.10.1"})
+    manifest: ({id:"maitri.mail",name:"Mail",version:"0.10.1"})
   }
 
   QtObject {
     id: standaloneHost
     property bool standalone: true
-    property string backendPath: "/synthetic/omamail"
+    property string backendPath: "/synthetic/maitri-mail"
     property var capabilities: ({agent:false,tray:false,mailto:false,notifications:false})
   }
 
   Component {
     id: standaloneFactory
-    Omamail.Service {
-      manifest: ({id:"omamail",name:"Omamail",version:"0.10.1"})
+    MaitriMail.Service {
+      manifest: ({id:"maitri.mail",name:"Mail",version:"0.10.1"})
       platform: standaloneHost
     }
   }

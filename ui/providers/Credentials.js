@@ -317,7 +317,7 @@ function usingBuiltin(fileText, accountId) {
 
 function path(home) {
   var base = trimmed(home)
-  return (base || "~") + "/.config/omamail/credentials.json"
+  return (base || "~") + "/.config/maitri-mail/credentials.json"
 }
 
 // ----------------------------------------------------------------- keyring
@@ -429,7 +429,7 @@ function outlookKeyringAttributes(clientId, accountId) {
   ]
 }
 
-// Entries from before the Omamail rename also predate Calendar permission.
+// Entries from before the Mail rename also predate Calendar permission.
 // Their exact old shape lets the upgrade identify them without using them.
 function renamedKeyringAttributes(clientId, accountId) {
   var attributes = previousGrantKeyringAttributes(clientId, accountId)
@@ -473,7 +473,7 @@ function refreshTokenAttributes(clientId, accountId, stage) {
 //
 //   stdout                                    stderr
 //   [/12]                                     attribute.service = omamail
-//   label = Omamail refresh token             attribute.kind = refresh-token
+//   label = Mail refresh token             attribute.kind = refresh-token
 //   secret = 1//0the-token                    attribute.client-id = 1234-abc...
 //   created = 2026-08-21 13:01:00             attribute.account = one@gmail.com
 //   schema = org.freedesktop.Secret.Generic

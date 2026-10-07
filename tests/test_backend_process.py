@@ -55,7 +55,7 @@ Scope {
     onReadyChanged: {
       if (!ready || root.began) return
       root.began = true
-      root.check(protocolInfo.name === "omamail", "handshake")
+      root.check(protocolInfo.name === "maitri-mail", "handshake")
       call("accounts.list", {}, function(result, error) {
         root.check(!error && result.accounts.length === 1, "account listing")
         root.check(result.accounts[0].id === "local@example.org", "account identity")
@@ -152,9 +152,9 @@ def main():
     qs = shutil.which("qs")
     if not qs:
         raise SystemExit("Quickshell is required: install it, then rerun make test-backend-process")
-    binary = ROOT / "target/debug/omamail"
+    binary = ROOT / "target/debug/maitri-mail"
     version = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
-    with tempfile.TemporaryDirectory(prefix="omamail-backend-process-") as directory:
+    with tempfile.TemporaryDirectory(prefix="maitri-mail-backend-process-") as directory:
         temporary = Path(directory)
         env = os.environ.copy()
         for key in list(env):
@@ -166,7 +166,7 @@ def main():
             path.mkdir(mode=0o700)
             env[key] = str(path)
         env.update(QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software", QT_QPA_PLATFORMTHEME="")
-        registry = Path(env["XDG_CONFIG_HOME"]) / "omamail/accounts.json"
+        registry = Path(env["XDG_CONFIG_HOME"]) / "maitri-mail/accounts.json"
         registry.parent.mkdir()
         source = json.dumps({"version": 1, "accounts": [
             {"email": "local@example.org", "clientSecret": "synthetic-secret"}

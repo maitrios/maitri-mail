@@ -12,7 +12,7 @@ QtObject {
 
   property var values: ({})
   readonly property var slots: Palette.keys()
-  // The shell decides whether an Omarchy palette exists. Standalone hosts
+  // The shell decides whether a maitri palette exists. Standalone hosts
   // leave this empty and use the semantic colours supplied by App.qml.
   property string palettePath: ""
 

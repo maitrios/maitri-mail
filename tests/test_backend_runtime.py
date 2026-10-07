@@ -32,9 +32,9 @@ class RuntimeTests(unittest.TestCase):
         spec.loader.exec_module(self.manager)
         (self.root / "backend-version").write_text("0.8.2\n")
         (self.root / "backend-api.json").write_text('{"apiVersion": 1, "releasedApiVersion": 1, "unreleased": {"methods": [], "cases": []}}')
-        self.data = Path(self.tmp.name).resolve() / "data/omamail"
+        self.data = Path(self.tmp.name).resolve() / "data/maitri-mail"
         self.home = Path(self.tmp.name).resolve() / "home"
-        self.binary = self.data / "bin/omamail"
+        self.binary = self.data / "bin/maitri-mail"
         patch.object(self.manager, "DATA_ROOT", self.data).start()
         patch.object(self.manager, "BINARY", self.binary).start()
         patch.object(self.manager, "LOCAL_BUILD", self.data / "local-build.json").start()
@@ -55,17 +55,17 @@ class RuntimeTests(unittest.TestCase):
         manager = importlib.util.module_from_spec(spec)
         with patch.dict(os.environ, {"XDG_DATA_HOME": str(data)}, clear=True):
             spec.loader.exec_module(manager)
-        self.assertEqual(manager.BINARY, data / "omamail/bin/omamail")
+        self.assertEqual(manager.BINARY, data / "maitri-mail/bin/maitri-mail")
         self.assertFalse(manager.BINARY.is_relative_to(manager.ROOT))
         spec = importlib.util.spec_from_file_location("home_runtime_manager", target)
         manager = importlib.util.module_from_spec(spec)
         with patch.dict(os.environ, {}, clear=True), patch.object(Path, "home", return_value=home):
             spec.loader.exec_module(manager)
-        self.assertEqual(manager.BINARY, home / ".local/share/omamail/bin/omamail")
+        self.assertEqual(manager.BINARY, home / ".local/share/maitri-mail/bin/maitri-mail")
 
     def old(self):
         self.binary.parent.mkdir(parents=True, exist_ok=True)
-        self.binary.write_bytes(b"#!/bin/sh\nprintf 'omamail 0.8.1\\n'\n")
+        self.binary.write_bytes(b"#!/bin/sh\nprintf 'maitri-mail 0.8.1\\n'\n")
         self.binary.chmod(0o700)
         return self.binary.read_bytes()
 
@@ -81,12 +81,12 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.manager.run("enable-cli")["state"], "ready")
         self.assertEqual(self.plugin_tree(), before)
         self.assertTrue(self.binary.is_file())
-        self.assertEqual(os.readlink(self.home / ".local/bin/omamail"), str(self.binary))
+        self.assertEqual(os.readlink(self.home / ".local/bin/maitri-mail"), str(self.binary))
 
     def test_install_local_checks_version_and_preserves_old_runtime_on_failure(self):
-        source = self.root / "target/release/omamail"
+        source = self.root / "target/release/maitri-mail"
         source.parent.mkdir(parents=True)
-        source.write_text("#!/bin/sh\nprintf 'omamail 0.8.2\\n'\n")
+        source.write_text("#!/bin/sh\nprintf 'maitri-mail 0.8.2\\n'\n")
         source.chmod(0o700)
         result = self.manager.run("install-local")
         self.assertEqual(result["state"], "ready", result)
@@ -94,7 +94,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(installed.read_bytes(), source.read_bytes())
         self.assertEqual(installed.stat().st_mode & 0o777, 0o700)
         previous = installed.read_bytes()
-        source.write_text("#!/bin/sh\nprintf 'omamail 9.9.9\\n'\n")
+        source.write_text("#!/bin/sh\nprintf 'maitri-mail 9.9.9\\n'\n")
         self.assertEqual(self.manager.run("install-local")["state"], "error")
         self.assertEqual(installed.read_bytes(), previous)
         source.unlink()
@@ -111,11 +111,11 @@ root = pathlib.Path.cwd()
 args = sys.argv[1:]
 assert args[:3] == ['build', '--locked', '--release']
 assert args[args.index('--target-dir') + 1] == str(root / 'target')
-assert args[args.index('--bin') + 1] == 'omamail'
+assert args[args.index('--bin') + 1] == 'maitri-mail'
 if os.environ.get('BUILD_FAIL'): sys.exit(1)
-binary = root / 'target/release/omamail'
+binary = root / 'target/release/maitri-mail'
 binary.parent.mkdir(parents=True, exist_ok=True)
-binary.write_text("#!/bin/sh\\nprintf 'omamail 0.8.2\\\\n'\\n")
+binary.write_text("#!/bin/sh\\nprintf 'maitri-mail 0.8.2\\\\n'\\n")
 binary.chmod(0o700)
 ''')
         cargo.chmod(0o700)
@@ -130,8 +130,8 @@ runpy.run_path(sys.argv[0], run_name="__main__")
         link = self.root / "scripts/link-plugin.sh"
         link.write_text(f'''#!/bin/sh
 set -eu
-test "$({self.binary} --version)" = 'omamail 0.8.2'
-cmp target/release/omamail {self.binary}
+test "$({self.binary} --version)" = 'maitri-mail 0.8.2'
+cmp target/release/maitri-mail {self.binary}
 touch linked
 ''')
         env = dict(os.environ, PATH=str(tools) + os.pathsep + os.defpath,
@@ -152,9 +152,9 @@ touch linked
     def local_checkout(self):
         (self.root / ".git").mkdir()
         (self.root / "Cargo.toml").write_text('[package]\nversion = "0.9.0"\n')
-        source = self.root / "target/release/omamail"
+        source = self.root / "target/release/maitri-mail"
         source.parent.mkdir(parents=True)
-        source.write_text("#!/bin/sh\nprintf 'omamail 0.9.0\\n'\n")
+        source.write_text("#!/bin/sh\nprintf 'maitri-mail 0.9.0\\n'\n")
         source.chmod(0o700)
         return source
 
@@ -240,8 +240,8 @@ touch linked
             self.assertEqual(marker.read_bytes(), previous_marker)
             self.assertEqual(self.manager.run("status")["state"], "ready")
 
-    def archive(self, name="omamail", kind=tarfile.REGTYPE, version="0.8.2", extra=False):
-        content = ("#!/bin/sh\nprintf 'omamail " + version + "\\n'\n").encode()
+    def archive(self, name="maitri-mail", kind=tarfile.REGTYPE, version="0.8.2", extra=False):
+        content = ("#!/bin/sh\nprintf 'maitri-mail " + version + "\\n'\n").encode()
         stream = io.BytesIO()
         with tarfile.open(fileobj=stream, mode="w:gz") as archive:
             entry = tarfile.TarInfo(name)
@@ -257,7 +257,7 @@ touch linked
 
     def release(self, archive, bad_hash=False, after=None):
         digest = "0" * 64 if bad_hash else hashlib.sha256(archive).hexdigest()
-        sums = (digest + "  omamail-linux-x86_64.tar.gz\n").encode()
+        sums = (digest + "  maitri-mail-linux-x86_64.tar.gz\n").encode()
         def download(url, limit):
             self.assertTrue(url.startswith("https://github.com/huacnlee/omamail/releases/download/v0.8.2/"))
             if after:
@@ -303,7 +303,7 @@ touch linked
 
     def test_failed_mutations_exit_nonzero_with_json_through_wrappers(self):
         old = self.old()
-        environment = {"OMAMAIL_BIN": str(self.binary), "PATH": str(Path(sys.executable).parent) + os.pathsep + os.defpath}
+        environment = {"MAITRI_MAIL_BIN": str(self.binary), "PATH": str(Path(sys.executable).parent) + os.pathsep + os.defpath}
         commands = [[sys.executable, str(self.root / "scripts/backend-runtime.py"), action]
                     for action in ("install", "uninstall", "enable-cli", "disable-cli")]
         for wrapper in ("install-backend.sh", "uninstall-backend.sh"):
@@ -326,7 +326,7 @@ touch linked
         self.assertNotEqual(completed.returncode, 0)
 
     def test_missing_and_mismatched_status_exit_successfully(self):
-        environment = {"OMAMAIL_BIN": str(self.binary)}
+        environment = {"MAITRI_MAIL_BIN": str(self.binary)}
         command = [sys.executable, str(self.root / "scripts/backend-runtime.py"), "status"]
         missing = subprocess.run(command, env=environment, capture_output=True, text=True, timeout=10)
         self.assertEqual(json.loads(missing.stdout)["state"], "missing")
@@ -378,9 +378,9 @@ touch linked
             metadata = tarfile.TarInfo("././@LongLink")
             metadata.type = tarfile.GNUTYPE_LONGNAME
             metadata.size = 8
-            archive.addfile(metadata, io.BytesIO(b"omamail\0"))
-            payload = b"#!/bin/sh\nprintf 'omamail 0.8.2\\n'\n"
-            entry = tarfile.TarInfo("omamail")
+            archive.addfile(metadata, io.BytesIO(b"maitri-mail\0"))
+            payload = b"#!/bin/sh\nprintf 'maitri-mail 0.8.2\\n'\n"
+            entry = tarfile.TarInfo("maitri-mail")
             entry.size = len(payload)
             archive.addfile(entry, io.BytesIO(payload))
         self.release(stream.getvalue())
@@ -416,7 +416,7 @@ touch linked
 
     def test_ambiguous_checksum_preserves_old_binary(self):
         old = self.old()
-        sums = ("a" * 64 + "  omamail-linux-x86_64.tar.gz\n") * 2
+        sums = ("a" * 64 + "  maitri-mail-linux-x86_64.tar.gz\n") * 2
         with patch.object(self.manager, "download", return_value=sums.encode()):
             self.assertEqual(self.manager.run("install")["state"], "error")
         self.assertEqual(self.binary.read_bytes(), old)
@@ -430,7 +430,7 @@ touch linked
 
     def test_all_development_mutations_refused(self):
         old = self.old()
-        with patch.dict(os.environ, {"OMAMAIL_BIN": str(self.binary)}):
+        with patch.dict(os.environ, {"MAITRI_MAIL_BIN": str(self.binary)}):
             for command in ("install", "uninstall", "enable-cli", "disable-cli"):
                 self.assertEqual(self.manager.run(command)["state"], "error")
         self.assertEqual(self.binary.read_bytes(), old)
@@ -455,7 +455,7 @@ touch linked
 
     def test_development_status_uses_exact_explicit_executable(self):
         self.old()
-        with patch.dict(os.environ, {"OMAMAIL_BIN": str(self.binary)}):
+        with patch.dict(os.environ, {"MAITRI_MAIL_BIN": str(self.binary)}):
             result = self.manager.run("status")
             self.assertEqual(result["state"], "mismatch")
             self.assertEqual(result["installedVersion"], "0.8.1")
@@ -480,14 +480,14 @@ touch linked
     def test_development_binary_is_never_overwritten(self):
         external = self.root / "development"
         external.write_text("developer")
-        with patch.dict(os.environ, {"OMAMAIL_BIN": str(external)}):
+        with patch.dict(os.environ, {"MAITRI_MAIL_BIN": str(external)}):
             self.assertEqual(self.manager.run("install")["state"], "error")
         self.assertEqual(external.read_text(), "developer")
 
     def test_cli_link_never_replaces_unrelated_file(self):
         self.release(self.archive())
         self.assertEqual(self.manager.run("install")["state"], "ready")
-        link = self.home / ".local/bin/omamail"
+        link = self.home / ".local/bin/maitri-mail"
         link.parent.mkdir(parents=True)
         with patch.object(self.manager.Path, "home", return_value=self.home):
             link.write_text("unrelated")
@@ -506,10 +506,10 @@ touch linked
     def test_cli_install_replaces_the_owned_legacy_runtime_link(self):
         self.release(self.archive())
         self.assertEqual(self.manager.run("install")["state"], "ready")
-        legacy = self.root / "runtime/bin/omamail"
+        legacy = self.root / "runtime/bin/maitri-mail"
         legacy.parent.mkdir(parents=True)
         legacy.write_text("old plugin-owned runtime")
-        link = self.home / ".local/bin/omamail"
+        link = self.home / ".local/bin/maitri-mail"
         link.parent.mkdir(parents=True)
         link.symlink_to(legacy)
         with patch.object(self.manager.Path, "home", return_value=self.home):
@@ -518,20 +518,20 @@ touch linked
         self.assertEqual(os.readlink(link), str(self.binary))
         self.assertEqual(legacy.read_text(), "old plugin-owned runtime")
 
-    def test_cli_install_recognizes_a_previous_omamail_checkout(self):
+    def test_cli_install_recognizes_a_previous_maitri_mail_checkout(self):
         self.release(self.archive())
         self.assertEqual(self.manager.run("install")["state"], "ready")
         previous = Path(self.tmp.name).resolve() / "previous-plugin"
-        legacy = previous / "runtime/bin/omamail"
+        legacy = previous / "runtime/bin/maitri-mail"
         legacy.parent.mkdir(parents=True)
         legacy.write_text("old plugin-owned runtime")
         legacy.chmod(0o700)
         (previous / "manifest.json").write_text(json.dumps({
             "schemaVersion": 1,
-            "id": "omamail",
+            "id": "maitri.mail",
             "description": "x" * 2048,
         }))
-        link = self.home / ".local/bin/omamail"
+        link = self.home / ".local/bin/maitri-mail"
         link.parent.mkdir(parents=True)
         link.symlink_to(legacy)
         result = self.manager.run("enable-cli")
@@ -542,8 +542,8 @@ touch linked
     def test_failed_legacy_cli_migration_preserves_the_owned_link(self):
         self.release(self.archive())
         self.assertEqual(self.manager.run("install")["state"], "ready")
-        legacy = self.root / "runtime/bin/omamail"
-        link = self.home / ".local/bin/omamail"
+        legacy = self.root / "runtime/bin/maitri-mail"
+        link = self.home / ".local/bin/maitri-mail"
         link.parent.mkdir(parents=True)
         link.symlink_to(legacy)
         with patch.object(self.manager.os, "replace", side_effect=OSError("synthetic failure")):
@@ -553,7 +553,7 @@ touch linked
     def test_cli_status_requires_exact_owned_link_and_valid_private_runtime(self):
         self.release(self.archive())
         self.assertFalse(self.manager.run("install")["cliInstalled"])
-        link = self.home / ".local/bin/omamail"
+        link = self.home / ".local/bin/maitri-mail"
         link.parent.mkdir(parents=True)
         foreign = self.root / "foreign"
         foreign.write_text("#!/bin/sh\ntouch " + str(self.root / "executed") + "\n")

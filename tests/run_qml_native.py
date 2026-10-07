@@ -17,13 +17,13 @@ ALLOWED={'providers.resolve','model.intent','model.apply','model.unified','accou
 
 def main():
     runner=sys.argv[1]
-    with tempfile.TemporaryDirectory(prefix='omamail-native-qml-') as directory:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-native-qml-') as directory:
         directory=Path(directory)
         env=dict(os.environ,HOME=str(directory/'home'),XDG_CONFIG_HOME=str(directory/'config'),
                  XDG_CACHE_HOME=str(directory/'cache'),XDG_DATA_HOME=str(directory/'data'),XDG_STATE_HOME=str(directory/'state'),
                  QT_QPA_PLATFORM='offscreen',QT_QUICK_BACKEND='software',QT_QPA_PLATFORMTHEME='',GSETTINGS_BACKEND='memory')
         for name in ['home','config','cache','data','state']:(directory/name).mkdir()
-        backend=subprocess.Popen([str(ROOT/'target/debug/omamail'),'serve'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env)
+        backend=subprocess.Popen([str(ROOT/'target/debug/maitri-mail'),'serve'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env)
         lock=threading.Lock()
         secret=secrets.token_urlsafe(24)
         class Handler(http.server.BaseHTTPRequestHandler):
@@ -54,7 +54,7 @@ def main():
         imports=directory/'imports'
         shutil.copytree(ROOT/'ui/tests/qml/imports',imports)
         mock=imports/'Quickshell/Quickshell.qml'
-        mock.write_text(mock.read_text().replace('function env(name) { return "" }','function env(name) { return name === "OMAMAIL_TEST_BACKEND_URL" ? '+json.dumps(endpoint)+' : "" }'))
+        mock.write_text(mock.read_text().replace('function env(name) { return "" }','function env(name) { return name === "MAITRI_MAIL_TEST_BACKEND_URL" ? '+json.dumps(endpoint)+' : "" }'))
         try:
             arguments=[]
             rest=iter(sys.argv[2:])
@@ -65,7 +65,7 @@ def main():
                     arguments.extend([argument,path])
                 else:arguments.append(argument)
             command=[runner,*arguments,'-import',str(imports)]
-            completed=subprocess.run(command,cwd=ROOT,env=dict(env,OMAMAIL_TEST_BACKEND_URL=endpoint))
+            completed=subprocess.run(command,cwd=ROOT,env=dict(env,MAITRI_MAIL_TEST_BACKEND_URL=endpoint))
         finally:
             server.shutdown();server.server_close()
             backend.terminate()

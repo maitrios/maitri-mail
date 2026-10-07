@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../bar/Bridge.js" as BarBridge
 
 // The bar widget with its icon turned off.
@@ -21,7 +21,7 @@ Item {
     property bool ready: true
     property bool windowOpen: false
     property int unreadTotal: 3
-    property string barTooltip: "Omamail"
+    property string barTooltip: "Mail"
     property var barMessages: []
     property var barEvents: []
     property string contentDirection: "Auto"
@@ -64,7 +64,7 @@ Item {
     property color barForeground: Qt.rgba(1, 1, 1, 1)
   }
 
-  Omamail.BarWidget {
+  MaitriMail.BarWidget {
     id: widget
     bar: fakeBar
     settings: ({ refreshIntervalSec: 300, showBarIcon: true })

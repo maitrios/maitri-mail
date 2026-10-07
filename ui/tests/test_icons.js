@@ -6,7 +6,7 @@ const { load } = require("./load")
 const icons = load("components/Icons.js")
 
 // Every name resolves to exactly one character from the Nerd Font range that
-// holds the Material Design Icons — the range the Omarchy shell draws from.
+// holds the Material Design Icons — the range the maitri shell draws from.
 for (const name of icons.names()) {
   const text = icons.glyph(name)
   assert.strictEqual([...text].length, 1, `${name} is one glyph`)

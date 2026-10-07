@@ -15,7 +15,7 @@ Item {
   Account.MailAccount {
     id: tokenAccount
 
-    pluginDir: "/tmp/omamail-test"
+    pluginDir: "/tmp/maitri-mail-test"
     accountId: "jmap:ada@example.org"
     configuredEmail: "ada@example.org"
     providerId: "jmap"
@@ -34,7 +34,7 @@ Item {
   Account.MailAccount {
     id: freshAccount
 
-    pluginDir: "/tmp/omamail-test"
+    pluginDir: "/tmp/maitri-mail-test"
     accountId: "jmap:grace@example.org"
     configuredEmail: "grace@example.org"
     providerId: "jmap"

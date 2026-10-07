@@ -2,7 +2,7 @@ import QtQuick
 import QtTest
 import Quickshell
 import qs.Commons
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../account" as Account
 import "BackendFixture.js" as BackendFixture
 import "../../account/Accounts.js" as Accounts
@@ -19,22 +19,22 @@ Item {
     property int opens: 0
     function updateEntryInline(id, entry) {}
     function summon(id, payload) {
-      if (id !== "omamail") throw new Error("Wrong application")
+      if (id !== "maitri.mail") throw new Error("Wrong application")
       opens++
       app.open(payload)
     }
   }
-  Omamail.Service {
+  MaitriMail.Service {
     id: service
     shell: host
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-test" })
   }
-  Omamail.App { id: app; service: service }
+  MaitriMail.App { id: app; service: service }
 
   Component {
     id: nativeNotificationFactory
     Account.NewMailNotification {
-      pluginDir: "/tmp/omamail-test"
+      pluginDir: "/tmp/maitri-mail-test"
       accountId: "imap:plain@example.org"
       notificationForeground: "#112233"
       notificationAccent: "#445566"
@@ -45,7 +45,7 @@ Item {
   Component {
     id: unavailableNotificationFactory
     Account.NewMailNotification {
-      pluginDir: "/tmp/omamail-test"
+      pluginDir: "/tmp/maitri-mail-test"
       accountId: "imap:plain@example.org"
       notificationForeground: "#112233"
       notificationAccent: "#445566"

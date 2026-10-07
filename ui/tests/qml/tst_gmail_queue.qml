@@ -10,7 +10,7 @@ Item {
   Component {
     id: backendFactory
     QtObject {
-      property string executable: "/test/omamail"
+      property string executable: "/test/maitri-mail"
       property bool ready: true
       property var calls: []
       signal notification(string method, var params)

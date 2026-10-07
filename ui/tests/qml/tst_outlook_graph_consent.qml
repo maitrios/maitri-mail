@@ -37,7 +37,7 @@ Item {
   Component {
     id: factory
     Providers.OutlookAuth {
-      pluginDir: "/tmp/omamail-test"
+      pluginDir: "/tmp/maitri-mail-test"
       accountId: "outlook:alice@example.test"
       configuredClientId: "12345678-1234-4abc-9def-1234567890ab"
       configuredEmail: "alice@example.test"

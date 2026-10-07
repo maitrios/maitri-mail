@@ -128,7 +128,7 @@ mod tests {
     fn only_model_configuration_crosses_into_mail_runtime() {
         let source = json!({"model":"fixture/test","providers":{"fixture":{"settings":{"apiKey":"synthetic"}}},
             "plugins":["unrelated-plugin"],"mcp":{"servers":{"unrelated":{"command":["touch","forbidden"]}}},
-            "skills":["https://invalid.example"],"warming":true,"agents":{"omamail":{"system":"replace"}},"compaction":{"auto":true}});
+            "skills":["https://invalid.example"],"warming":true,"agents":{"maitri-mail":{"system":"replace"}},"compaction":{"auto":true}});
         assert_eq!(
             provider_settings(&source),
             json!({"model":"fixture/test","providers":source["providers"],"compaction":{"auto":true}})

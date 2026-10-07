@@ -3,7 +3,7 @@ QMLLINT := /usr/lib/qt6/bin/qmllint
 QML_FILES := ui/Service.qml ui/BarWidget.qml ui/App.qml ui/compose/RecoveryController.qml \
 	ui/tests/compatibility/tst_published_agent.qml \
 	ui/backend/Backend.qml ui/backend/Runtime.qml ui/diagnostics/Diagnostics.qml \
-	ui/components/BackendSetup.qml ui/components/OmamailLogo.qml \
+	ui/components/BackendSetup.qml ui/components/MaitriMailLogo.qml \
 	ui/account/MailAccount.qml ui/account/BackendSync.qml ui/account/SendQueue.qml ui/account/Intents.qml ui/account/BatchAction.qml ui/account/Rsvp.qml ui/account/LabelActions.qml ui/account/Unsubscribe.qml ui/account/NewMailNotification.qml \
 	ui/cache/CacheStore.qml ui/cache/BodyCache.qml \
 	ui/providers/AuthManager.qml ui/providers/GmailApiClient.qml \
@@ -81,8 +81,8 @@ APP_QML_FILES := app/qml/Main.qml app/qml/StandaloneShell.qml app/qml/Standalone
 APP_BUILD_DIR ?= app/build
 APP_EXEEXT := $(if $(filter Windows_NT,$(OS)),.exe,)
 APP_TARGET_DIR ?= $(CURDIR)/target/standalone
-APP_BACKEND := $(APP_TARGET_DIR)/debug/omamail$(APP_EXEEXT)
-APP_EXECUTABLE := $(CURDIR)/$(APP_BUILD_DIR)/omamail-app$(APP_EXEEXT)
+APP_BACKEND := $(APP_TARGET_DIR)/debug/maitri-mail$(APP_EXEEXT)
+APP_EXECUTABLE := $(CURDIR)/$(APP_BUILD_DIR)/maitri-mail-app$(APP_EXEEXT)
 
 .PHONY: test test-js test-shell test-shell-portable test-shell-libcurl \
 	test-qml test-app-qml test-local test-backend-process qml-check validate bench install \
@@ -99,8 +99,8 @@ test: test-rust test-js test-shell test-qml
 test-local: test test-backend-process
 
 test-backend-process:
-	cargo build --locked --target-dir "$(CURDIR)/target" --bin omamail
-	node ui/tests/test_backend_queue.js target/debug/omamail
+	cargo build --locked --target-dir "$(CURDIR)/target" --bin maitri-mail
+	node ui/tests/test_backend_queue.js target/debug/maitri-mail
 	python3 tests/test_backend_process.py
 	python3 tests/test_agent_native_bridge.py
 
@@ -109,7 +109,7 @@ test-rust:
 	cargo test --locked --features integration-test-credentials
 
 backend:
-	cargo build --locked --release --target-dir "$(CURDIR)/target" --bin omamail
+	cargo build --locked --release --target-dir "$(CURDIR)/target" --bin maitri-mail
 
 # The parsing, formatting, and decision rules live in plain JS precisely so
 # they can be tested without a compositor. These run anywhere node does.
@@ -214,7 +214,7 @@ test-shell-portable:
 
 # This one asserts libcurl's own behaviour rather than ours: which of its two
 # output channels a single-UID BODY.PEEK fetch arrives on. That is a property
-# of the installed libcurl and it differs by version — Omarchy's 8.21 puts the
+# of the installed libcurl and it differs by version — maitri's 8.21 puts the
 # message on stdout, and the libcurl on a GitHub runner delivers neither the
 # body there nor a complete one through the header callback. Running it on a
 # runner reports on a library nobody here runs, which is why the release
@@ -247,7 +247,7 @@ test-qml:
 		echo "  Arch:   qt6-declarative" >&2; \
 		echo "  Ubuntu: qt6-declarative-dev-tools qml6-module-qttest" >&2; \
 		exit 1; }
-	cargo build --locked --bin omamail
+	cargo build --locked --bin maitri-mail
 	python3 tests/run_qml_native.py "$(QMLTESTRUNNER)" -input ui/tests/qml
 	python3 tests/test_outlook_http.py "$(QMLTESTRUNNER)"
 	python3 tests/test_sidebar_text.py "$(QMLTESTRUNNER)"
@@ -258,18 +258,18 @@ test-app-qml:
 		echo "qmltestrunner not found: install Qt 6 QML test tooling" >&2; \
 		exit 1; \
 	}
-	cmake -S app -B "$(APP_BUILD_DIR)" -DOMAMAIL_BACKEND="$(APP_BACKEND)" -DQMLTESTRUNNER_EXECUTABLE="$(QMLTESTRUNNER)"
+	cmake -S app -B "$(APP_BUILD_DIR)" -DMAITRI_MAIL_BACKEND="$(APP_BACKEND)" -DQMLTESTRUNNER_EXECUTABLE="$(QMLTESTRUNNER)"
 	cmake --build "$(APP_BUILD_DIR)" --parallel
 	python3 app/tests/test_qml_inventory.py
 	QT_QPA_PLATFORM=offscreen ctest --test-dir "$(APP_BUILD_DIR)" --output-on-failure --no-tests=error -R 'tst_standalone_composition'
 
 app-build:
-	cargo build --locked --no-default-features --features standalone --target-dir "$(APP_TARGET_DIR)" --bin omamail
-	cmake -S app -B "$(APP_BUILD_DIR)" -DOMAMAIL_BACKEND="$(APP_BACKEND)"
+	cargo build --locked --no-default-features --features standalone --target-dir "$(APP_TARGET_DIR)" --bin maitri-mail
+	cmake -S app -B "$(APP_BUILD_DIR)" -DMAITRI_MAIL_BACKEND="$(APP_BACKEND)"
 	cmake --build "$(APP_BUILD_DIR)" --parallel
 
 app-run: app-build
-	OMAMAIL_DEVELOPMENT_RESOURCES=1 OMAMAIL_BIN="$(APP_BACKEND)" "$(APP_EXECUTABLE)"
+	MAITRI_MAIL_DEVELOPMENT_RESOURCES=1 MAITRI_MAIL_BIN="$(APP_BACKEND)" "$(APP_EXECUTABLE)"
 
 # Both engines on the same fixtures. The QML column is the one that decides
 # anything — the shell runs that engine, not node's — so run it on the machine
@@ -278,13 +278,13 @@ app-run: app-build
 bench:
 	bash ui/tests/bench.sh
 
-# Needs the Omarchy shell's qs.Commons / qs.Ui on the import path.
+# Needs the maitri shell's qs.Commons / qs.Ui on the import path.
 qml-check:
-	$(QMLLINT) -I /usr/share/omarchy/shell $(QML_FILES)
+	$(QMLLINT) -I /usr/share/maitri/shell $(QML_FILES)
 	$(QMLLINT) -I app/qml/imports -I app/build/qml $(APP_QML_FILES)
 
 validate: test test-app-qml qml-check
-	omarchy plugin validate .
+	maitri plugin validate .
 	git diff --check
 
 # Development only: the Marketplace installs the plugin for ordinary users.

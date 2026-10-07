@@ -25,7 +25,7 @@ Read the relevant document before changing its area; these contain constraints t
 
 ## UI
 
-- Use the active Omarchy theme. Pass semantic colors from `App.qml` as required component properties; derive variants with alpha or `Style.normalFillFor` / `hoverFillFor` / `selectedFillFor`. Secondary text mixes foreground toward background, never `Qt.darker`. Provider artwork retains its original colors.
+- Use the active maitri theme. Pass semantic colors from `App.qml` as required component properties; derive variants with alpha or `Style.normalFillFor` / `hoverFillFor` / `selectedFillFor`. Secondary text mixes foreground toward background, never `Qt.darker`. Provider artwork retains its original colors.
 - Render sender-controlled labels with `Text.PlainText`, never `AutoText`. Rich message bodies go through the sanitizer. Do not fetch remote message resources directly through Qt.
 - Never convey state by color alone. Use accurate labels; suffix actions that open another dialog/page/browser/terminal workflow with `...`.
 - An open popup keeps its trigger selected. Anchor to the control's edge, not the pointer. Place after opening and on height changes; on overflow, flip, clamp to the window, then clamp to zero.

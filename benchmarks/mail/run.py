@@ -30,7 +30,7 @@ def run_process(command, payload, directory, name):
         raise RuntimeError(f'{name} failed: '+completed.stderr.decode(errors='replace')[-2500:])
     text=result_file.read_text()
     if name=='qml':
-        text=next(line.split('OMAMAIL_BENCH_RESULT ',1)[1] for line in completed.stderr.decode().splitlines() if 'OMAMAIL_BENCH_RESULT ' in line)
+        text=next(line.split('MAITRI_MAIL_BENCH_RESULT ',1)[1] for line in completed.stderr.decode().splitlines() if 'MAITRI_MAIL_BENCH_RESULT ' in line)
     return json.loads(text),dict(processWallSeconds=time.perf_counter()-start,
         peakRssKiB=json.loads(memory_file.read_text())['peakRssKiB'])
 
@@ -114,7 +114,7 @@ def main():
     build_started=time.perf_counter()
     subprocess.run(['cargo','build','--locked','--release','--example','mail_bench','--target-dir',str(ROOT/'target')],cwd=ROOT,check=True)
     build_seconds=time.perf_counter()-build_started
-    with tempfile.TemporaryDirectory(prefix='omamail-mail-bench-') as directory:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-mail-bench-') as directory:
         directory=Path(directory)
         js,js_process=run_process(['node',str(HERE/'node.cjs')],payload,directory,'node')
         native,native_process=run_process([str(ROOT/'target/release/examples/mail_bench')],payload,directory,'rust')

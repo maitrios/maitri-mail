@@ -129,7 +129,7 @@ fn collect(store: &super::storage::Store, id: &str, history: bool) -> Result<Val
 }
 
 pub fn tool() -> Value {
-    json!({"name":"propose_draft", "description":"Propose an email subject and the new reply body for the owner to review. This only creates a preview; it never changes the editor or sends mail. Answer questions normally and use this tool only when a draft is useful. Retain the supplied signature and reply subject unless asked otherwise. When replyDefaults.historyIncluded is true, do not reproduce quoted history: Omamail retains it separately and adds it when the owner applies or sends the reply. For existing drafts, preserve the supplied text unless asked otherwise.",
+    json!({"name":"propose_draft", "description":"Propose an email subject and the new reply body for the owner to review. This only creates a preview; it never changes the editor or sends mail. Answer questions normally and use this tool only when a draft is useful. Retain the supplied signature and reply subject unless asked otherwise. When replyDefaults.historyIncluded is true, do not reproduce quoted history: Mail retains it separately and adds it when the owner applies or sends the reply. For existing drafts, preserve the supplied text unless asked otherwise.",
         "inputSchema":{"type":"object", "properties":{
             "subject":{"type":"string","maxLength":4096},
             "body":{"type":"string","maxLength":65536}},

@@ -55,8 +55,8 @@ impl Provider {
             Self::Claude => {
                 command.args(["--tools", "", "--strict-mcp-config"]);
                 let servers = if proposals {
-                    command.args(["--allowedTools", "mcp__omamail__propose_draft"]);
-                    json!({"omamail":{"type":"stdio","command":exe,"args":["agent-mcp",id]}})
+                    command.args(["--allowedTools", "mcp__maitri-mail__propose_draft"]);
+                    json!({"maitri-mail":{"type":"stdio","command":exe,"args":["agent-mcp",id]}})
                 } else {
                     json!({})
                 };
@@ -77,7 +77,7 @@ impl Provider {
                     "web_search=\"disabled\"",
                 ]);
                 if proposals {
-                    command.arg("-c").arg(format!("mcp_servers.omamail={{command={},args=[\"agent-mcp\",{}],env_vars=[\"XDG_STATE_HOME\"],enabled_tools=[\"propose_draft\"],required=true,tools={{propose_draft={{approval_mode=\"approve\"}}}}}}",json!(exe).to_string(),json!(id).to_string()));
+                    command.arg("-c").arg(format!("mcp_servers.maitri-mail={{command={},args=[\"agent-mcp\",{}],env_vars=[\"XDG_STATE_HOME\"],enabled_tools=[\"propose_draft\"],required=true,tools={{propose_draft={{approval_mode=\"approve\"}}}}}}",json!(exe).to_string(),json!(id).to_string()));
                 }
                 for setting in [
                     "features.goals=false",
@@ -94,7 +94,7 @@ impl Provider {
                     "skills.bundled.enabled=false",
                     // Keep the sole mail tool visible even when model metadata
                     // requires code-mode-only tools. No general tool discovery.
-                    "features.code_mode={enabled=false,direct_only_tool_namespaces=[\"mcp__omamail\"]}",
+                    "features.code_mode={enabled=false,direct_only_tool_namespaces=[\"mcp__maitri-mail\"]}",
                     "features.tool_search=false",
                 ] {
                     command.args(["-c", setting]);

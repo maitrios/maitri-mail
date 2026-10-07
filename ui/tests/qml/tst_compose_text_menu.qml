@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 // A right-click in the compose form: Cut, Copy, Paste and Select all on
 // whichever field was clicked, with Paste going the way Ctrl+V goes — through
@@ -38,7 +38,7 @@ Item {
     }
   }
 
-  Omamail.ComposeView {
+  MaitriMail.ComposeView {
     id: compose
     anchors.fill: parent
     service: mailService

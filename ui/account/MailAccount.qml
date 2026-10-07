@@ -711,7 +711,7 @@ Item {
       // answer from the window. `sendAsLoaded` stays false, so the next time
       // this account becomes ready or active it tries again.
       if (error) {
-        console.warn("omamail: could not read the send-as addresses:",
+        console.warn("maitri-mail: could not read the send-as addresses:",
           OAuth.redact(String(error)))
         return
       }

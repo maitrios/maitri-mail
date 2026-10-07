@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtTest 1.3
 import qs.Commons
 import "../../components" as Mail
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../account/Accounts.js" as Accounts
 
 // A mailbox can be named where it is set up: the name goes to the store
@@ -76,10 +76,10 @@ Item {
     panelFontFamily: "monospace"
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: realService
     shell: shellStore
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-test" })
   }
   QtObject {
     id: shellStore

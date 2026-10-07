@@ -20,7 +20,7 @@ for (const name of ["newHandle", "abortRequest", "listMessages", "getMessage", "
 for (const name of ["usesBackend", "invalidateBackend", "backendError", "backendRequest"])
   if (source.includes("  function " + name + "(")) vm.runInContext(method(name), context)
 let pending, request, calls = 0
-context.backend = { executable: "/test/omamail", call(method, params, cb) { calls++; request = { method, params }; pending = cb } }
+context.backend = { executable: "/test/maitri-mail", call(method, params, cb) { calls++; request = { method, params }; pending = cb } }
 context.request = () => assert.fail("configured backend must not issue QML HTTP")
 context.listMessages("unread", 25, "cursor", (result, error) => { assert.strictEqual(error, ""); assert.strictEqual(result.ids[0], "one") })
 assert.strictEqual(request.method, "gmail.list")
@@ -92,7 +92,7 @@ context.listMessages("", 25, "", () => {})
 context.getAttachment("one", "part", () => {})
 assert.strictEqual(legacy, 0)
 assert(!source.includes("XMLHttpRequest"), "Gmail transport must remain native")
-context.backend = { executable: "/test/omamail", call(method, params, cb) { request = { method, params }; pending = cb } }
+context.backend = { executable: "/test/maitri-mail", call(method, params, cb) { request = { method, params }; pending = cb } }
 for (const name of ["modifyMessage", "batchModify", "createLabel", "renameLabel", "deleteLabel", "sendMessage", "saveDraft", "updateDraft", "deleteDraft"])
   vm.runInContext(method(name), context)
 for (const [name, rpc, args] of [
@@ -127,7 +127,7 @@ for (const name of ['trashMessage','untrashMessage','trashEach'])
   vm.runInContext(method(name),context)
 const trashRequests=[]
 context.auth={loggedIn:true,accountId:'synthetic@example.org'}
-context.backend={executable:'/test/omamail',call(method,params,callback){trashRequests.push({method,params,callback})}}
+context.backend={executable:'/test/maitri-mail',call(method,params,callback){trashRequests.push({method,params,callback})}}
 context.selectedId='first'
 context.trashMessage('first',()=>{})
 context.selectedId='second'

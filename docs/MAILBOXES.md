@@ -20,7 +20,7 @@ a fresh sign-in, check the Cloud project's enabled APIs before anything else.
 Calendar sync reads the account's **primary** calendar only. A secondary,
 shared, or delegated calendar — including the separate "Birthdays" calendar
 Google generates from Contacts — is never fetched, and editing one has no
-effect on what Omamail shows. Older Google accounts can also carry birthday
+effect on what maitri mail shows. Older Google accounts can also carry birthday
 events written directly into the primary calendar from before Google split
 Birthdays out on its own; those show up here and have to be removed from the
 primary calendar itself, not from the Birthdays calendar.
@@ -30,26 +30,26 @@ existing entry's provider: a mailbox already saved as IMAP for the same
 address stays a separate row until the OAuth one is signed in and working,
 and only then is the IMAP row worth removing.
 
-**Outlook** signs in on Microsoft's own page and uses [Microsoft's supported OAuth route for IMAP and SMTP][microsoft-mail-oauth]. It works with Outlook.com, Hotmail, Live and MSN accounts; Omamail never asks for the Microsoft account password. Until Omamail ships a maintainer-owned public client, the setup page asks for an Application (client) ID from a one-time Microsoft Entra app registration. Make it a public client for personal Microsoft accounts; the sign-in asks for `IMAP.AccessAsUser.All`, `SMTP.Send`, `offline_access` and `openid` and shows the device code to enter in the Microsoft page it opens. Microsoft Graph — sending where the tenant has SMTP off, the calendar — is a second code for `Mail.Send` and `Calendars.ReadWrite`, asked for once, when Microsoft refuses the Graph exchange for want of consent: straight after the sign-in where the mailbox sends through Graph, else from the mailbox's settings (*Allow Microsoft Graph...*).
+**Outlook** signs in on Microsoft's own page and uses [Microsoft's supported OAuth route for IMAP and SMTP][microsoft-mail-oauth]. It works with Outlook.com, Hotmail, Live and MSN accounts; maitri mail never asks for the Microsoft account password. Until maitri mail ships a maintainer-owned public client, the setup page asks for an Application (client) ID from a one-time Microsoft Entra app registration. Make it a public client for personal Microsoft accounts; the sign-in asks for `IMAP.AccessAsUser.All`, `SMTP.Send`, `offline_access` and `openid` and shows the device code to enter in the Microsoft page it opens. Microsoft Graph — sending where the tenant has SMTP off, the calendar — is a second code for `Mail.Send` and `Calendars.ReadWrite`, asked for once, when Microsoft refuses the Graph exchange for want of consent: straight after the sign-in where the mailbox sends through Graph, else from the mailbox's settings (*Allow Microsoft Graph...*).
 
 A **work or school** mailbox (Microsoft 365) is the same sign-in addressed to its own tenant: turn on *Work or school account* on the setup page, and register the client in that tenant, or as multi-tenant. Where the tenant has switched authenticated SMTP off — the common Microsoft 365 default, which fails a send with "SmtpClientAuthentication is disabled" — turn on *Send through Microsoft Graph*: the same message goes to Graph's `sendMail` with a token of Graph's own audience, obtained with the same refresh token, and Graph files the sent copy itself. That needs the `Mail.Send` permission on the registration.
 
 Before signing in, enable IMAP in Outlook.com: **Settings > Mail > Forwarding and IMAP > Let devices and apps use IMAP**, then save. Microsoft disables IMAP by default; OAuth consent alone does not enable mailbox access. See [Microsoft's IMAP setup instructions](https://support.microsoft.com/en-us/outlook/pop-imap-and-smtp-settings-for-outlook-com).
 
 **HEY** needs no address and no password. HEY publishes no IMAP, no POP and no
-public API, so Omamail reads it through the [HEY CLI][hey-cli] client 37signals
+public API, so maitri mail reads it through the [HEY CLI][hey-cli] client 37signals
 ship for exactly this — which means the sign-in, the token and the keyring entry
-it lives in are all `hey`'s, and Omamail never asks for your HEY password.
+it lives in are all `hey`'s, and maitri mail never asks for your HEY password.
 
 Install it once:
 
 ```bash
-omarchy-mise-install github:basecamp/hey-cli hey
+maitri-mise-install github:basecamp/hey-cli hey
 ```
 
-Recent versions of Omarchy install it for you as a lazy mise tool, so that line
+Recent versions of maitri install it for you as a lazy mise tool, so that line
 is only for doing it by hand; [37signals' own installer][hey-cli] is the other
-route. Either way it lands in `~/.local/bin`, which is where Omamail looks when
+route. Either way it lands in `~/.local/bin`, which is where maitri mail looks when
 it is not already on `PATH`. Then choose **HEY** on the setup page and press
 **Sign in to HEY** — that opens HEY in your browser, and nothing else is asked
 of you.
@@ -69,7 +69,7 @@ on all work.
 Three more differences worth knowing. A HEY row is a *conversation*, not a
 single message. Message bodies read as `hey` serves them — as the sender's own
 HTML where your `hey` is new enough to hand it over, and as text elsewhere;
-Omamail asks for the richer one every time and takes whichever comes back, so
+maitri mail asks for the richer one every time and takes whichever comes back, so
 upgrading `hey` improves it with nothing to change here. And the meeting card,
 the one-click unsubscribe, attachments and the Screener are all read out of
 parts of a message that `hey` does not serve, or out of an endpoint it does not
@@ -91,26 +91,26 @@ could not keep. Archive appears only when the server has an archive folder to
 move to. Sending goes out over SMTP, or the mailbox is read-only if no SMTP
 server is set.
 
-The sent copy is filed by Omamail rather than left to the server: a message handed to SMTP submission lands nowhere on its own. It goes to the server's own Sent folder, named by the server rather than guessed, and arrives already marked read; a server that reports no Sent folder holds no copy, and the status row says so. One thing worth knowing: a Gmail account read over IMAP has Google file its own copy of anything sent through Gmail's SMTP, so those accounts hold two.
+The sent copy is filed by maitri mail rather than left to the server: a message handed to SMTP submission lands nowhere on its own. It goes to the server's own Sent folder, named by the server rather than guessed, and arrives already marked read; a server that reports no Sent folder holds no copy, and the status row says so. One thing worth knowing: a Gmail account read over IMAP has Google file its own copy of anything sent through Gmail's SMTP, so those accounts hold two.
 
 If you enabled the optional CLI link, first run
 `python3 scripts/backend-runtime.py disable-cli` from the plugin directory.
-Omarchy has no verified uninstall hook to remove that external link for you.
+maitri has no verified uninstall hook to remove that external link for you.
 Then remove the plugin:
 
 ```bash
-omarchy plugin remove omamail
+maitri plugin remove maitri.mail
 ```
 
 That removes the plugin and its private runtime. Account data, caches, drafts
 and keyring entries stay in place. Removing those is separate and up to you:
 
 ```bash
-secret-tool clear service omamail    # refresh tokens and JMAP and IMAP passwords
+secret-tool clear service maitri-mail    # refresh tokens and JMAP and IMAP passwords
 hey auth logout                      # the HEY session, if you added one
-rm -rf ~/.config/omamail             # the OAuth client and account list
-rm -rf ~/.cache/omamail              # cached mail
-rm ~/.local/share/applications/omamail.desktop
+rm -rf ~/.config/maitri-mail             # the OAuth client and account list
+rm -rf ~/.cache/maitri-mail              # cached mail
+rm ~/.local/share/applications/maitri-mail.desktop
 ```
 
 Signing out from inside the app clears the keyring entry on its own. The plugin

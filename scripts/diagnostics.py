@@ -181,7 +181,7 @@ def storage():
     with contextlib.ExitStack() as stack:
         fd = os.open(base, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         stack.callback(os.close, fd)
-        for name in ['omamail', 'diagnostics']:
+        for name in ['maitri-mail', 'diagnostics']:
             try:
                 os.mkdir(name, 0o700, dir_fd=fd)
             except FileExistsError:
@@ -201,7 +201,7 @@ def storage():
                 if time.monotonic() >= deadline:
                     raise ValueError('Diagnostic storage busy')
                 time.sleep(.02)
-        yield fd, base / 'omamail/diagnostics'
+        yield fd, base / 'maitri-mail/diagnostics'
 
 
 def read(fd, name):
@@ -259,24 +259,24 @@ def main(mode):
             return
         # No task contents, configuration, URLs, stderr or environment values.
         manifest = json.loads((ROOT / 'manifest.json').read_text())
-        report = 'Omamail diagnostics\n'
+        report = 'Mail diagnostics\n'
         report += 'plugin: ' + str(manifest['version']) + '\n'
         report += 'pinned backend: ' + (ROOT / 'backend-version').read_text().strip() + '\n'
         report += 'API revision: ' + str(json.loads((ROOT / 'backend-api.json').read_text())['apiVersion']) + '\n'
         report += '\nRecent backend errors (only known error identifiers are retained):\n'
         report += '\n'.join(json.dumps(event, ensure_ascii=True) for event in entries) or '(none recorded)'
         write(fd, 'report.txt', report + '\n')
-    prompt = ('Diagnose an Omamail error using the local report at ' + str(folder / 'report.txt')
+    prompt = ('Diagnose a Mail error using the local report at ' + str(folder / 'report.txt')
               + '. Start with read-only investigation. Explain the cause and propose a fix. '
                 'Do not send mail, retry failed operations, change settings, delete or move AI history, '
                 'or read mail bodies, credentials or conversation files without explicit user approval. '
                 'An unknown error means the original text was omitted for privacy. '
                 'agent_invalid_state can indicate AI history written by an incompatible backend version. '
                 'The source checkout or installed plugin is at ' + str(ROOT) + '.')
-    # omarchy-agent execs the terminal and can stay in the foreground for the
+    # maitri-agent execs the terminal and can stay in the foreground for the
     # whole TUI session. Waiting with a timeout kills that window (SIGKILL).
     proc = subprocess.Popen(
-        ['omarchy-agent', '--prompt', prompt],
+        ['maitri-agent', '--prompt', prompt],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,

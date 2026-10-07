@@ -54,7 +54,7 @@ impl Profile {
                     if key == "experimental_bearer_token" {
                         let token = item.as_str().ok_or("agent_config_invalid")?;
                         let variable = format!(
-                            "OMAMAIL_CODEX_TOKEN_{}",
+                            "MAITRI_MAIL_CODEX_TOKEN_{}",
                             name.bytes().map(|b| format!("{b:02x}")).collect::<String>()
                         );
                         command.env(&variable, token).args([
@@ -66,7 +66,7 @@ impl Profile {
                             item.as_table_like().ok_or("agent_config_invalid")?.iter()
                         {
                             let variable = format!(
-                                "OMAMAIL_CODEX_HEADER_{}_{}",
+                                "MAITRI_MAIL_CODEX_HEADER_{}_{}",
                                 name.bytes().map(|b| format!("{b:02x}")).collect::<String>(),
                                 header
                                     .bytes()

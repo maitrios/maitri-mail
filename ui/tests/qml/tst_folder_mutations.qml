@@ -8,7 +8,7 @@ Item {
     id: credentials
     property string accountId: "imap:synthetic@example.com"
     property string authMode: ""
-    property string pluginDir: "/tmp/omamail-test"
+    property string pluginDir: "/tmp/maitri-mail-test"
     property var settings: ({ imapHost: "imap.example.com", imapPort: 993, username: "synthetic", insecure: false })
     property int reads: 0
     function withCredentials(callback) { reads++; callback("synthetic:secret", "") }

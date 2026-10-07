@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "NativeDomainFixture.js" as NativeDomain
 
 // `n` and `p` walk the conversation rail; Shift+J and Shift+K scroll the open message.
@@ -203,7 +203,7 @@ Item {
     function note(text) { actionStatus = String(text || "") }
   }
 
-  Omamail.App {
+  MaitriMail.App {
     id: app
     service: mailService
     shell: fakeShell

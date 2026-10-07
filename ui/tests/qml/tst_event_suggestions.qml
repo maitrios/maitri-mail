@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtTest 1.3
 import qs.Commons
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../components" as Mail
 import "../../account/Accounts.js" as Accounts
 import "BackendFixture.js" as BackendFixture
@@ -24,10 +24,10 @@ Item {
     function hide(_id) {}
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: mailService
     shell: shellStore
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-test" })
   }
 
   // The runner's backend: the real projection, a listing the test sets, and

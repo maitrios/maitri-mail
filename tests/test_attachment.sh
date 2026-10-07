@@ -8,7 +8,7 @@ set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
 script="$root/scripts/attachment.sh"
-work=$(mktemp -d "${TMPDIR:-/tmp}/omamail-attach-test.XXXXXX")
+work=$(mktemp -d "${TMPDIR:-/tmp}/maitri-mail-attach-test.XXXXXX")
 trap 'rm -rf "$work"' EXIT INT TERM HUP
 
 failures=0
@@ -200,24 +200,24 @@ check "clipboard pdf data is the stub bytes" \
   "$(json_field data "$answer" | base64 -d)" "$(printf '%%PDF-1.4\nclipboard-pdf\n')"
 
 # A chooser in its own process, not Qt's in-process FileDialog.
-cat > "$work/bin/omarchy-file-select" <<'STUB'
+cat > "$work/bin/maitri-file-select" <<'STUB'
 #!/bin/sh
-printf '%s\n' "$OMAMAIL_PICK_OUT"
-exit "${OMAMAIL_PICK_EXIT:-0}"
+printf '%s\n' "$MAITRI_MAIL_PICK_OUT"
+exit "${MAITRI_MAIL_PICK_EXIT:-0}"
 STUB
-chmod +x "$work/bin/omarchy-file-select"
-OMAMAIL_PICK_OUT=$(printf '%s\n' one.png two.pdf)
-export OMAMAIL_PICK_OUT
+chmod +x "$work/bin/maitri-file-select"
+MAITRI_MAIL_PICK_OUT=$(printf '%s\n' one.png two.pdf)
+export MAITRI_MAIL_PICK_OUT
 answer=$(sh "$script" pick)
 check "pick says ok" "$(json_field ok "$answer")" "True"
 picked=$(printf '%s' "$answer" | python3 -c 'import json,sys; print("\n".join(json.load(sys.stdin)["paths"]))')
 check "pick returns both paths" "$picked" "$(printf '%s\n' one.png two.pdf)"
-OMAMAIL_PICK_EXIT=1
-OMAMAIL_PICK_OUT=
-export OMAMAIL_PICK_EXIT OMAMAIL_PICK_OUT
+MAITRI_MAIL_PICK_EXIT=1
+MAITRI_MAIL_PICK_OUT=
+export MAITRI_MAIL_PICK_EXIT MAITRI_MAIL_PICK_OUT
 answer=$(sh "$script" pick)
 check "a cancelled picker is cancelled, not an error" "$(json_field error "$answer")" "cancelled"
-unset OMAMAIL_PICK_OUT OMAMAIL_PICK_EXIT
+unset MAITRI_MAIL_PICK_OUT MAITRI_MAIL_PICK_EXIT
 
 # forget only deletes files this script wrote into the compose dir.
 printf 'keep\n' > "$work/outside.txt"

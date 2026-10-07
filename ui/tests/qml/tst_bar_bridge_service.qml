@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../bar/Bridge.js" as BarBridge
 
 Item {
@@ -18,12 +18,12 @@ Item {
     property bool vertical: false
     property color barForeground: Qt.rgba(1, 1, 1, 1)
   }
-  Omamail.BarWidget {
+  MaitriMail.BarWidget {
     id: widget
     bar: bar
     settings: ({ refreshIntervalSec: 300, showBarIcon: true })
   }
-  Component { id: serviceFactory; Omamail.Service {} }
+  Component { id: serviceFactory; MaitriMail.Service {} }
 
   TestCase {
     name: "BarBridgeService"

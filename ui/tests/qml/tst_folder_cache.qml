@@ -10,7 +10,7 @@ Item {
   QtObject {
     id: auth
     property string accountId: "imap:synthetic@example.com"
-    property string pluginDir: "/tmp/omamail-review113-cache"
+    property string pluginDir: "/tmp/maitri-mail-review113-cache"
     property var settings: ({
         imapHost: "imap.example.com",
         imapPort: 993,

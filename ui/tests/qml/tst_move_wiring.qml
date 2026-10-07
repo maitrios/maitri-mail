@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "BackendFixture.js" as BackendFixture
 import "NativeIntentFixture.js" as NativeIntentFixture
 
@@ -16,13 +16,13 @@ Item {
     function hide(_id) {}
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: mailService
     shell: fakeShell
-    manifest: ({ id: "omamail", __sourceDir: "" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "" })
   }
 
-  Omamail.App {
+  MaitriMail.App {
     id: app
     service: mailService
     shell: fakeShell

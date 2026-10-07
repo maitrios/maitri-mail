@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 Item {
   width: 900
@@ -52,7 +52,7 @@ Item {
     }
   }
 
-  Omamail.ComposeView {
+  MaitriMail.ComposeView {
     id: compose
     anchors.fill: parent
     service: mailService

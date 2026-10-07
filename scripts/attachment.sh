@@ -259,14 +259,14 @@ forget_file() {
 }
 
 # A chooser in its own process. Qt's FileDialog aborted the whole shell
-# inside GTK/DBus; this one dying leaves the draft up. omarchy-file-select
+# inside GTK/DBus; this one dying leaves the draft up. maitri-file-select
 # talks to the desktop FileChooser portal. With Omafiles v1.2 that portal
 # is Omafiles; without it the portal still answers from a separate GTK
 # process, never from Quickshell.
 pick_files() {
   list=
-  if command -v omarchy-file-select >/dev/null 2>&1; then
-    list=$(omarchy-file-select --title 'Attach files' --multiple 2>/dev/null || true)
+  if command -v maitri-file-select >/dev/null 2>&1; then
+    list=$(maitri-file-select --title 'Attach files' --multiple 2>/dev/null || true)
   elif command -v zenity >/dev/null 2>&1; then
     list=$(zenity --file-selection --multiple --separator='
 ' --title='Attach files' 2>/dev/null || true)

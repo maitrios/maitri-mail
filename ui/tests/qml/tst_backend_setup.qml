@@ -1,6 +1,6 @@
 import QtQuick
 import QtTest
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 Item {
   width: 720
@@ -21,7 +21,7 @@ Item {
     function enableCli() { installs++; cliInstalled=true }
     function disableCli() { cliInstalled=false }
   }
-  Omamail.BackendSetup {
+  MaitriMail.BackendSetup {
     id: page
     width: 680
     runtime: runtime

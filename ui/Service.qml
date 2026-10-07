@@ -40,7 +40,7 @@ Item {
   property var manifest: null
   property var pluginRegistry: null
   property var barWidgetRegistry: null
-  // Optional host seam. The Omarchy shell does not inject it and therefore
+  // Optional host seam. The maitri shell does not inject it and therefore
   // keeps every existing plugin path; the standalone composition supplies a
   // narrow adapter for native operations and its bundled backend.
   property var platform: null
@@ -49,7 +49,7 @@ Item {
     ? platform.capabilities : ({ agent: true, tray: true, mailto: true, notifications: true })
   readonly property bool standalone: !!platform && platform.standalone === true
   readonly property bool smokeTest: standalone
-    && Quickshell.env("OMAMAIL_SMOKE_TEST") === "1"
+    && Quickshell.env("MAITRI_MAIL_SMOKE_TEST") === "1"
 
   // One plugin-owned runtime and persistent process survive window openings.
   readonly property var backendRuntime: privateRuntime
@@ -60,7 +60,7 @@ Item {
     bundledVersion: root.standalone ? root.version : ""
     bundledApiVersion: root.standalone ? 5 : 0
     bundledMode: root.standalone
-    developmentExecutable: root.standalone ? "" : (Quickshell.env("OMAMAIL_BIN") || "")
+    developmentExecutable: root.standalone ? "" : (Quickshell.env("MAITRI_MAIL_BIN") || "")
     onValidated: Qt.callLater(rustBackend.reconcileProcess)
   }
   readonly property var backend: rustBackend
@@ -111,8 +111,8 @@ Item {
   readonly property var calendarReminderInbox: calendarReminderLoader.item ? calendarReminderLoader.item.inbox : null
 
   readonly property string pluginId: manifest && manifest.id
-    ? String(manifest.id) : "omamail"
-  // Modern Omarchy strips private manifest metadata for third-party plugins.
+    ? String(manifest.id) : "maitri.mail"
+  // Modern maitri strips private manifest metadata for third-party plugins.
   // Helpers live at the plugin root, one level above the UI components.
   readonly property string pluginDir: decodeURIComponent(String(Qt.resolvedUrl(".."))
     .replace(/^file:\/\//, "")).replace(/\/$/, "")
@@ -122,7 +122,7 @@ Item {
   // constructs the service with a stub manifest, and an empty version makes the
   // interface say nothing rather than guess a number.
   readonly property string pluginName: manifest && manifest.name
-    ? String(manifest.name) : "Omamail"
+    ? String(manifest.name) : "Mail"
   readonly property string version: manifest && manifest.version
     ? String(manifest.version) : ""
 
@@ -170,7 +170,7 @@ Item {
   readonly property bool hasMailto: capabilities.mailto === true
   readonly property bool hasNotifications: capabilities.notifications === true
   // Only a host that paints its own window has a palette to choose. The
-  // Omarchy plugin's colours are the shell's, decided in colors.toml.
+  // maitri plugin's colours are the shell's, decided in colors.toml.
   readonly property bool hasAppearance: capabilities.appearance === true
   readonly property string appearance: Appearance.normalizeMode(
     settings ? settings.appearance : null)
@@ -179,7 +179,7 @@ Item {
   readonly property string calendarPalettePath: platform
     && platform.calendarPalettePath !== undefined
       ? String(platform.calendarPalettePath || "")
-      : Quickshell.env("HOME") + "/.local/state/omarchy/current/theme/colors.toml"
+      : Quickshell.env("HOME") + "/.local/state/maitri/current/theme/colors.toml"
   // Credential RPC was introduced in API 4. This minimum stays fixed after
   // release; it is a capability of the connected backend, not release state.
   readonly property bool backendCanStoreCredentials: backend.ready && backend.apiVersion >= 4
@@ -439,7 +439,7 @@ Item {
 
   // Thunderbird and Betterbird keep both explicit and learned addresses in
   // their local profile. The helper reads those databases without modifying
-  // them. Nothing is copied into Omamail's settings or cache.
+  // them. Nothing is copied into Mail's settings or cache.
   property var recipientContacts: []
   property bool contactsLoading: false
 
@@ -458,7 +458,7 @@ Item {
     mailtoInstaller.running = true
   }
 
-  // Whether mailto: links and Omarchy's SUPER+SHIFT+E open Omamail. Empty
+  // Whether mailto: links and maitri's SUPER+SHIFT+E open Mail. Empty
   // until default-mail.sh has been asked; the settings page asks on open,
   // because either half can change behind this window's back.
   property string defaultMailClient: ""
@@ -505,14 +505,14 @@ Item {
     if (platform && typeof platform.configPath === "function")
       return String(platform.configPath(String(name || "")) || "")
     var home = Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")
-    return home + "/omamail/" + String(name || "")
+    return home + "/maitri-mail/" + String(name || "")
   }
 
   function cachePath(name) {
     if (platform && typeof platform.cachePath === "function")
       return String(platform.cachePath(String(name || "")) || "")
     var home = Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")
-    return home + "/omamail/" + String(name || "")
+    return home + "/maitri-mail/" + String(name || "")
   }
 
   function writeConfig(name, text, callback) {
@@ -861,7 +861,7 @@ Item {
   function openNotification(accountId, messageId) {
     if (!Accounts.find(accountList, accountId) || !messageId) return false
     if (shell && typeof shell.summon === "function")
-      return shell.summon("omamail", JSON.stringify({ accountId: accountId, messageId: messageId }))
+      return shell.summon("maitri.mail", JSON.stringify({ accountId: accountId, messageId: messageId }))
     return false
   }
 
@@ -1417,13 +1417,13 @@ Item {
   // The bar answers for all of them: a badge that counted only the mailbox you
   // happen to be looking at would be worse than none.
   readonly property string barTooltip: {
-    if (!ready) return "Omamail · Not connected"
+    if (!ready) return "Mail · Not connected"
     var suffix = unreadTotal === 0 ? "No unread mail"
       : (unreadTotal === 1 ? "1 unread message" : unreadTotal + " unread messages")
     // The address, whatever the number of mailboxes. How many are configured is
     // not something a tooltip on a mail icon is asked, and the count it used to
     // give was of mailboxes rather than of anything waiting in them.
-    return (accountEmail !== "" ? accountEmail : "Omamail") + " · " + suffix
+    return (accountEmail !== "" ? accountEmail : "Mail") + " · " + suffix
   }
 
   // The switcher's model: every mailbox, its count, and why it is not usable.

@@ -1,7 +1,7 @@
 import QtQuick
 import QtTest
 import Quickshell
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../account/Accounts.js" as Accounts
 import "../qml/BackendFixture.js" as BackendFixture
 
@@ -11,8 +11,8 @@ import "../qml/BackendFixture.js" as BackendFixture
 Item {
   width: 1000; height: 720
   QtObject { id: shellStore; function updateEntryInline(id, entry) {} }
-  Omamail.Service { id: service; shell: shellStore; manifest: ({id:"omamail"}) }
-  Omamail.App { id: app; service: service }
+  MaitriMail.Service { id: service; shell: shellStore; manifest: ({id:"maitri.mail"}) }
+  MaitriMail.App { id: app; service: service }
   TestCase {
     name: "PublishedAgentFlow"
     when: windowShown
@@ -23,7 +23,7 @@ Item {
     function forward(params, request) {
       requests = requests.concat([request])
       var xhr = new XMLHttpRequest()
-      xhr.open("POST", Quickshell.env("OMAMAIL_TEST_AGENT_URL"))
+      xhr.open("POST", Quickshell.env("MAITRI_MAIL_TEST_AGENT_URL"))
       xhr.onreadystatechange = function() {
         if (xhr.readyState !== XMLHttpRequest.DONE) return
         if (xhr.status !== 200) { rpcErrors = rpcErrors.concat(["HTTP " + xhr.status]); return }
@@ -35,7 +35,7 @@ Item {
       return undefined
     }
     function initTestCase() {
-      verify(Quickshell.env("OMAMAIL_TEST_AGENT_URL") !== "", "Use the published-binary test wrapper")
+      verify(Quickshell.env("MAITRI_MAIL_TEST_AGENT_URL") !== "", "Use the published-binary test wrapper")
       fixture = BackendFixture.install(service)
       var answers = {}
       var methods = ["agent.jobStart", "agent.jobsList", "agent.jobShow", "agent.jobsProjection"]

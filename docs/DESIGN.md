@@ -1,24 +1,24 @@
-# Omamail Interface Design
+# maitri mail Interface Design
 
-Omamail follows the Omarchy visual language and uses GPUI and GPUI Component as its default product and interaction design model. Their principles apply unless a mail-specific, Qt, or shell constraint gives a concrete reason to adapt them. This document defines that translation and the detailed behavior of the window; it does not make the application look like GPUI Component.
+maitri mail follows the maitri visual language and uses GPUI and GPUI Component as its default product and interaction design model. Their principles apply unless a mail-specific, Qt, or shell constraint gives a concrete reason to adapt them. This document defines that translation and the detailed behavior of the window; it does not make the application look like GPUI Component.
 
-The upstream reference is [GPUI Component Design Guides](http://longbridge.github.io/gpui-component/docs/design-guides). Read it as the general design standard; this document records Omamail's mail-specific application, Qt and shell constraints, and Omarchy visual boundary. Do not duplicate the entire upstream guide here: keep shared principles there and document only the interpretation or exception that future Omamail work needs.
+The upstream reference is [GPUI Component Design Guides](http://longbridge.github.io/gpui-component/docs/design-guides). Read it as the general design standard; this document records maitri mail's mail-specific application, Qt and shell constraints, and maitri visual boundary. Do not duplicate the entire upstream guide here: keep shared principles there and document only the interpretation or exception that future maitri mail work needs.
 
 ## Design character
 
-Omamail is a compact, keyboard-capable desktop mail client. It should feel like part of the shell rather than a web application placed inside it:
+maitri mail is a compact, keyboard-capable desktop mail client. It should feel like part of the shell rather than a web application placed inside it:
 
 - dense enough to scan quickly;
 - quiet enough for the message to remain primary;
 - explicit about state without depending on color alone;
 - predictable under keyboard, pointer, and window resizing;
-- native to the active Omarchy theme.
+- native to the active maitri theme.
 
 The screenshots in `preview.png` express the visual baseline: a narrow mailbox rail, a dense list, a generous reader, monospace typography, restrained rules, and controls that appear where their actions belong.
 
-## What comes from Omarchy
+## What comes from maitri
 
-All visual tokens come from the active Omarchy theme:
+All visual tokens come from the active maitri theme:
 
 - foreground, background, accent, urgent/danger, and popup colors;
 - font family and font scale;
@@ -109,7 +109,7 @@ The collapsed state is a user preference and survives the window. It is not infe
 
 Holding Alt reveals `1` through `0` on the same ordered rows those keys open. The visible hint and the action resolve from one data model. Pointer hover never changes the keyboard cursor.
 
-Groups may scroll when provider folders exceed the available height, but the account footer remains reachable. Header, scrolling content, and footer are layout roles rather than arbitrary children; this mirrors GPUI Component's sidebar composition while retaining Omamail's compact geometry.
+Groups may scroll when provider folders exceed the available height, but the account footer remains reachable. Header, scrolling content, and footer are layout roles rather than arbitrary children; this mirrors GPUI Component's sidebar composition while retaining maitri mail's compact geometry.
 
 ## Message list
 
@@ -196,7 +196,7 @@ A control that opens another surface uses `...` in its label. An action that com
 
 ## Menus
 
-A menu is composed from a surface, rows, separators, optional labels, and submenus. Omamail currently needs rows and separators; future variants should extend the same contract instead of making another private `MenuRow`.
+A menu is composed from a surface, rows, separators, optional labels, and submenus. maitri mail currently needs rows and separators; future variants should extend the same contract instead of making another private `MenuRow`.
 
 A menu row may have:
 
@@ -265,11 +265,11 @@ Text fields own typed characters, not application actions. Modified global actio
 
 ## Settings and forms
 
-Follow [Forms and settings](http://longbridge.github.io/gpui-component/docs/design-guides#forms-and-settings) for control choice, labels, help, validation, submission, and workflow sizing. In Omamail, an independent switch takes effect immediately; account and authentication work remain full pages. Privacy descriptions state what information leaves the machine, who receives it, and whether the choice covers one message, one mailbox, or every mailbox.
+Follow [Forms and settings](http://longbridge.github.io/gpui-component/docs/design-guides#forms-and-settings) for control choice, labels, help, validation, submission, and workflow sizing. In maitri mail, an independent switch takes effect immediately; account and authentication work remain full pages. Privacy descriptions state what information leaves the machine, who receives it, and whether the choice covers one message, one mailbox, or every mailbox.
 
 ## Interface language
 
-Follow [Interface language](http://longbridge.github.io/gpui-component/docs/design-guides#interface-language) for terminology, command labels, confirmation copy, capitalization, punctuation, errors, and localization. Omamail uses the user's mail vocabulary, keeps one term across every surface, and lets the surrounding mailbox or settings context remove redundant words without hiding an action's object, scope, or result.
+Follow [Interface language](http://longbridge.github.io/gpui-component/docs/design-guides#interface-language) for terminology, command labels, confirmation copy, capitalization, punctuation, errors, and localization. maitri mail uses the user's mail vocabulary, keeps one term across every surface, and lets the surrounding mailbox or settings context remove redundant words without hiding an action's object, scope, or result.
 
 Project-specific rules take precedence: use three periods in `Settings...`, `Edit...`, and other commands that open another surface or require more input; an immediate command has no ellipsis. Labels must describe their real scope—`Mark these read` does not claim to affect unloaded mail—and provider capabilities that do not exist are omitted rather than explained by a failing command.
 
@@ -277,7 +277,7 @@ Project-specific rules take precedence: use three periods in `Settings...`, `Edi
 
 The bar widget answers one question — is there mail waiting? — and it answers with a dot on the envelope, never with a number. This is a product decision, not a gap to be filled.
 
-A count on a mail icon is a demand. On a busy mailbox it is never zero, it climbs while you are doing something else, and it asks to be cleared. A dot says something is there and leaves when to look to you, which is what lets Omamail sit in the bar all day without turning the mailbox into a queue to be worked down. The client is meant to be worked asynchronously: mail waits, and the person decides when.
+A count on a mail icon is a demand. On a busy mailbox it is never zero, it climbs while you are doing something else, and it asks to be cleared. A dot says something is there and leaves when to look to you, which is what lets maitri mail sit in the bar all day without turning the mailbox into a queue to be worked down. The client is meant to be worked asynchronously: mail waits, and the person decides when.
 
 A count is also rarely true. Gmail's list endpoint returns an estimate rather than a total, and that estimate is a placeholder on a short page whether four messages match or four thousand; Gmail counts conversations where this client lists messages; and a decade of phone mail apps has taught people that the number on the icon is wrong more often than it is right. A number that is usually wrong teaches people to stop reading it, and from then on it is only noise.
 

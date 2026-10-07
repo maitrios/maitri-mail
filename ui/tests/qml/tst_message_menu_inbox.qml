@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 import "../../account/Model.js" as Model
 
 // "Move to Inbox", where it appears and what it says.
@@ -26,7 +26,7 @@ Item {
     property var messages: []
   }
 
-  Omamail.MessageMenu {
+  MaitriMail.MessageMenu {
     id: menu
     anchors.fill: parent
     service: fakeService

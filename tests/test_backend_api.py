@@ -124,7 +124,7 @@ function storageSnapshot(directory = process.env.HOME) {
 }
 (async () => {
   const info = await call('system.info');
-  assert.equal(info.name, 'omamail');
+  assert.equal(info.name, 'maitri-mail');
   assert.equal(info.protocol, contract.protocolVersion);
   if (process.env.CONTRACT_VERSION) assert.equal(info.version, process.env.CONTRACT_VERSION);
   const api = info.apiVersion === undefined && info.version === '0.9.0' ? 1 : info.apiVersion;
@@ -156,7 +156,7 @@ function storageSnapshot(directory = process.env.HOME) {
       // Match agent::storage::Store, including macOS where XDG_STATE_HOME
       // is unset. Never seed a relative "undefined/" tree in the fixture home.
       const base = process.env.XDG_STATE_HOME || path.join(process.env.HOME, '.local/state');
-      const root = path.join(base, 'omamail/assistant');
+      const root = path.join(base, 'maitri-mail/assistant');
       assert.ok(path.isAbsolute(root), 'agent fixture uses an absolute private state path');
       fs.mkdirSync(root, {recursive:true, mode:0o700});
       const id = n => (n + 1).toString(16).padStart(32, '0');
@@ -276,7 +276,7 @@ def main():
             or not all(isinstance(method, str) and method for method in contract['methods'])
             or len(contract['methods']) != len(set(contract['methods']))):
         raise SystemExit('Invalid backend-api.json')
-    with tempfile.TemporaryDirectory(prefix='omamail-api-contract-') as directory:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-api-contract-') as directory:
         # macOS exposes its temporary root through /var, a symlink to
         # /private/var. The production storage boundary refuses symlinked
         # ancestors, so seed and advertise the canonical isolated root.
@@ -286,10 +286,10 @@ def main():
         if os.name == 'nt':
             config_root = home / 'AppData/Roaming'
             local_root = home / 'AppData/Local'
-            cache_root = local_root / 'OmamailData/Cache'
-            state_root = local_root / 'OmamailData/State'
-            data_root = local_root / 'OmamailData'
-            runtime_root = local_root / 'OmamailData/Runtime'
+            cache_root = local_root / 'MaitriMailData/Cache'
+            state_root = local_root / 'MaitriMailData/State'
+            data_root = local_root / 'MaitriMailData'
+            runtime_root = local_root / 'MaitriMailData/Runtime'
             env.update(USERPROFILE=str(home), APPDATA=str(config_root),
                        LOCALAPPDATA=str(local_root))
         elif sys.platform == 'darwin':
@@ -307,7 +307,7 @@ def main():
             env.update(XDG_CONFIG_HOME=str(config_root), XDG_CACHE_HOME=str(cache_root),
                        XDG_DATA_HOME=str(data_root), XDG_STATE_HOME=str(state_root),
                        XDG_RUNTIME_DIR=str(runtime_root))
-        registry = config_root / 'omamail/accounts.json'
+        registry = config_root / 'maitri-mail/accounts.json'
         env.update(HOME=str(home), TMPDIR=str(runtime_root), TEMP=str(runtime_root),
                    TMP=str(runtime_root), CONTRACT_REGISTRY_PATH=str(registry),
                    CONTRACT_ROOT=str(ROOT), CONTRACT_BINARY=str(binary),
@@ -330,7 +330,7 @@ def main():
                                         'accounts': accounts}))
         registry.chmod(0o600)
         for root in (cache_root, state_root, data_root):
-            sentinel = root / 'omamail/sentinel'
+            sentinel = root / 'maitri-mail/sentinel'
             sentinel.parent.mkdir(parents=True, exist_ok=True)
             if os.name != 'nt':
                 sentinel.parent.chmod(0o700)

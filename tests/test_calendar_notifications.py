@@ -30,7 +30,7 @@ def peer():
 
         @dbus.service.method('org.freedesktop.Notifications', out_signature='ssss')
         def GetServerInformation(self):
-            return ('Synthetic calendar peer', 'Omamail tests', '1', '1.2')
+            return ('Synthetic calendar peer', 'Mail tests', '1', '1.2')
 
         @dbus.service.method('org.freedesktop.Notifications', in_signature='susssasa{sv}i', out_signature='u')
         def Notify(self, app, replaces, icon, summary, body, actions, hints, expires):

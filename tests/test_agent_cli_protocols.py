@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Opt-in real CLI protocol test, with isolated HOME and loopback model fixtures.
 
-OMAMAIL_TEST_OPENCODE / OMAMAIL_TEST_CODEX name real executables to exercise.
+MAITRI_MAIL_TEST_OPENCODE / MAITRI_MAIL_TEST_CODEX name real executables to exercise.
 No provider account, real model, mailbox, credential or existing session is used.
 """
 import json
@@ -16,7 +16,7 @@ import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import agent_broker_fixture
 
-BINARY = Path(os.environ.get('OMAMAIL_TEST_BIN', Path(__file__).resolve().parents[1]/'target/debug/omamail')).resolve()
+BINARY = Path(os.environ.get('MAITRI_MAIL_TEST_BIN', Path(__file__).resolve().parents[1]/'target/debug/maitri-mail')).resolve()
 
 
 class LocalModel(BaseHTTPRequestHandler):
@@ -50,7 +50,7 @@ class LocalModel(BaseHTTPRequestHandler):
             last_user=next((m.get('content',[]) for m in reversed(messages) if m.get('role')=='user'),[])
             tool_result=isinstance(last_user,list) and any(m.get('type')=='tool_result' for m in last_user)
             propose=self.server.propose and not tool_result
-            content=({'type':'tool_use','id':'tool_proposal_'+str(len(self.server.requests)),'name':'mcp__omamail__propose_draft','input':{}} if propose
+            content=({'type':'tool_use','id':'tool_proposal_'+str(len(self.server.requests)),'name':'mcp__maitri-mail__propose_draft','input':{}} if propose
                      else {'type':'text','text':''})
             delta=({'type':'input_json_delta','partial_json':json.dumps({'subject':'Re: Synthetic','body':'The exact proposed body.'})} if propose
                    else {'type':'text_delta','text':'Synthetic answer مرحبا'})
@@ -67,9 +67,9 @@ class LocalModel(BaseHTTPRequestHandler):
             tools=[t['function']['name'] for t in request.get('tools',[])]
             messages=request.get('messages',[])
             last_user=max((i for i,m in enumerate(messages) if m.get('role')=='user'),default=-1)
-            if self.server.propose and 'omamail_propose_draft' in tools and not any(m.get('role')=='tool' for m in messages[last_user+1:]):
+            if self.server.propose and 'maitri-mail_propose_draft' in tools and not any(m.get('role')=='tool' for m in messages[last_user+1:]):
                 for delta,finish in [({'role':'assistant','tool_calls':[{'index':0,'id':'call_proposal','type':'function','function':{
-                    'name':'omamail_propose_draft','arguments':json.dumps({'subject':'Re: Synthetic','body':'The exact proposed body.'})}}]},None),({},'tool_calls')]:
+                    'name':'maitri-mail_propose_draft','arguments':json.dumps({'subject':'Re: Synthetic','body':'The exact proposed body.'})}}]},None),({},'tool_calls')]:
                     chunk={'id':'chatcmpl-proposal','object':'chat.completion.chunk','created':1,'model':'fixture-model',
                            'choices':[{'index':0,'delta':delta,'finish_reason':finish}]}
                     self.wfile.write(('data: '+json.dumps(chunk)+'\n\n').encode())
@@ -84,9 +84,9 @@ class LocalModel(BaseHTTPRequestHandler):
         elif self.path == '/v1/responses':
             inputs=request.get('input',[])
             last_user=max((i for i,m in enumerate(inputs) if m.get('role')=='user'),default=-1)
-            advertised = any(t.get('name') == 'mcp__omamail' and any(tool.get('name') == 'propose_draft' for tool in t.get('tools', [])) for t in request.get('tools', []))
+            advertised = any(t.get('name') == 'mcp__maitri-mail' and any(tool.get('name') == 'propose_draft' for tool in t.get('tools', [])) for t in request.get('tools', []))
             if self.server.propose and advertised and not any(m.get('type')=='function_call_output' for m in inputs[last_user+1:]):
-                call={'id':'fc_proposal','type':'function_call','call_id':'call_proposal','name':'propose_draft','namespace':'mcp__omamail',
+                call={'id':'fc_proposal','type':'function_call','call_id':'call_proposal','name':'propose_draft','namespace':'mcp__maitri-mail',
                       'arguments':json.dumps({'subject':'Re: Synthetic','body':'The exact proposed body.'})}
                 response={'id':'resp_proposal','object':'response','status':'completed','output':[call],
                           'usage':{'input_tokens':5,'output_tokens':3,'total_tokens':8}}
@@ -125,7 +125,7 @@ class NativeCliProtocol(unittest.TestCase):
         threading.Thread(target=server.serve_forever, daemon=True).start()
         self.addCleanup(server.server_close)
         self.addCleanup(server.shutdown)
-        with tempfile.TemporaryDirectory(prefix='omamail-cli-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='maitri-mail-cli-') as tmp:
             root = Path(tmp).resolve()
             toolbin = root/('.local/bin' if sys.platform == 'darwin' else 'bin')
             toolbin.mkdir(parents=True)
@@ -171,8 +171,8 @@ with (Path(os.environ['HOME'])/'synthetic-cli-errors.log').open('w') as errors, 
     raise SystemExit(child.wait())
 ''')
                 tool.chmod(0o700)
-            (toolbin/'omarchy-default-agent').write_text('#!/usr/bin/python3\nprint('+repr(provider)+')\n')
-            (toolbin/'omarchy-default-agent').chmod(0o700)
+            (toolbin/'maitri-default-agent').write_text('#!/usr/bin/python3\nprint('+repr(provider)+')\n')
+            (toolbin/'maitri-default-agent').chmod(0o700)
             config = root/'config/opencode'
             config.mkdir(parents=True)
             model = 'fixture/test' if provider == 'opencode' else 'fixture-model'
@@ -261,17 +261,17 @@ args = [{json.dumps(str(forbidden))}]
                 initial = wait(first)
                 self.assertFalse(forbidden.exists(), 'Unrelated configured MCP/plugin must never start')
                 if provider == 'claude':
-                    self.assertTrue(all([tool['name'] for tool in request.get('tools',[])] == ['mcp__omamail__propose_draft'] for request in server.requests))
+                    self.assertTrue(all([tool['name'] for tool in request.get('tools',[])] == ['mcp__maitri-mail__propose_draft'] for request in server.requests))
                 if provider == 'codex':
                     self.assertNotIn('synthetic-header-secret',(root/'synthetic-cli-argv.json').read_text())
                     self.assertTrue(any(any(key.lower()=='x-synthetic-auth' and value=='synthetic-header-secret' for key,value in headers.items()) for headers in server.headers))
                     catalogs = [[tool.get('name',tool.get('type')) for tool in request.get('tools',[])] for request in server.requests]
-                    allowed = {'list_mcp_resources','list_mcp_resource_templates','read_mcp_resource','mcp__omamail'}
+                    allowed = {'list_mcp_resources','list_mcp_resource_templates','read_mcp_resource','mcp__maitri-mail'}
                     if code_mode_model: allowed |= {'exec','wait'}
                     self.assertTrue(all(set(names) <= allowed for names in catalogs), catalogs)
                     for request in server.requests:
                         for tool in request.get('tools',[]):
-                            if tool.get('name') == 'mcp__omamail':
+                            if tool.get('name') == 'mcp__maitri-mail':
                                 self.assertEqual([t['name'] for t in tool['tools']],['propose_draft'])
                 self.assertEqual(initial['output'],'Synthetic answer مرحبا')
                 self.assertEqual(initial['job']['provider'],provider)
@@ -296,9 +296,9 @@ args = [{json.dumps(str(forbidden))}]
                     self.assertEqual(call('agent.jobShow',{'id':first})['transcript'],initial['transcript'])
                     self.assertGreaterEqual(len(server.requests),2)
                     if provider == 'opencode':
-                        self.assertTrue(all(not request.get('tools') or [t['function']['name'] for t in request['tools']]==['omamail_propose_draft'] for request in server.requests), 'Only the proposal tool may be exposed')
+                        self.assertTrue(all(not request.get('tools') or [t['function']['name'] for t in request['tools']]==['maitri-mail_propose_draft'] for request in server.requests), 'Only the proposal tool may be exposed')
                         systems=[message for request in server.requests for message in request.get('messages',[]) if message.get('role')=='system']
-                        self.assertTrue(any("Omamail's mail conversation assistant" in json.dumps(message) for message in systems))
+                        self.assertTrue(any("Mail's mail conversation assistant" in json.dumps(message) for message in systems))
                 finally:
                     call('agent.jobCancel',{'id':child})
                 server.requests.clear()
@@ -390,35 +390,35 @@ args = [{json.dumps(str(forbidden))}]
                     broker.wait(timeout=10)
                     broker.stderr.close()
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_OPENCODE'), 'set OMAMAIL_TEST_OPENCODE for isolated V2 CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_OPENCODE'), 'set MAITRI_MAIL_TEST_OPENCODE for isolated V2 CLI fixture')
     def test_opencode(self):
-        self.exercise('opencode',os.environ['OMAMAIL_TEST_OPENCODE'])
+        self.exercise('opencode',os.environ['MAITRI_MAIL_TEST_OPENCODE'])
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_OPENCODE'), 'set OMAMAIL_TEST_OPENCODE for isolated V2 CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_OPENCODE'), 'set MAITRI_MAIL_TEST_OPENCODE for isolated V2 CLI fixture')
     def test_opencode_proposal(self):
-        self.exercise('opencode',os.environ['OMAMAIL_TEST_OPENCODE'],proposals=True)
+        self.exercise('opencode',os.environ['MAITRI_MAIL_TEST_OPENCODE'],proposals=True)
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_OPENCODE'), 'set OMAMAIL_TEST_OPENCODE for isolated V2 CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_OPENCODE'), 'set MAITRI_MAIL_TEST_OPENCODE for isolated V2 CLI fixture')
     def test_opencode_durable_completion_without_step_finish(self):
-        self.exercise('opencode',os.environ['OMAMAIL_TEST_OPENCODE'],omit_finish=True)
+        self.exercise('opencode',os.environ['MAITRI_MAIL_TEST_OPENCODE'],omit_finish=True)
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_CODEX'), 'set OMAMAIL_TEST_CODEX for isolated Codex CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_CODEX'), 'set MAITRI_MAIL_TEST_CODEX for isolated Codex CLI fixture')
     def test_codex(self):
-        self.exercise('codex',os.environ['OMAMAIL_TEST_CODEX'])
+        self.exercise('codex',os.environ['MAITRI_MAIL_TEST_CODEX'])
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_CODEX'), 'set OMAMAIL_TEST_CODEX for isolated CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_CODEX'), 'set MAITRI_MAIL_TEST_CODEX for isolated CLI fixture')
     def test_codex_proposal(self):
-        self.exercise('codex',os.environ['OMAMAIL_TEST_CODEX'],proposals=True)
+        self.exercise('codex',os.environ['MAITRI_MAIL_TEST_CODEX'],proposals=True)
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_CODEX'), 'set OMAMAIL_TEST_CODEX for isolated CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_CODEX'), 'set MAITRI_MAIL_TEST_CODEX for isolated CLI fixture')
     def test_codex_code_mode_models(self):
         for model in ['gpt-6-astra', 'gpt-6.1-sol', 'gpt-6-luna']:
             with self.subTest(model=model):
-                self.exercise('codex',os.environ['OMAMAIL_TEST_CODEX'],proposals=True,code_mode_model=model)
+                self.exercise('codex',os.environ['MAITRI_MAIL_TEST_CODEX'],proposals=True,code_mode_model=model)
 
-    @unittest.skipUnless(os.environ.get('OMAMAIL_TEST_CLAUDE'), 'set OMAMAIL_TEST_CLAUDE for isolated CLI fixture')
+    @unittest.skipUnless(os.environ.get('MAITRI_MAIL_TEST_CLAUDE'), 'set MAITRI_MAIL_TEST_CLAUDE for isolated CLI fixture')
     def test_claude_proposal(self):
-        self.exercise('claude',os.environ['OMAMAIL_TEST_CLAUDE'],proposals=True)
+        self.exercise('claude',os.environ['MAITRI_MAIL_TEST_CLAUDE'],proposals=True)
 
 
 if __name__ == '__main__':

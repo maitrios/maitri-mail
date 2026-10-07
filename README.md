@@ -1,23 +1,23 @@
-# Omamail
+# maitri mail
 
-Omamail is a native email and calendar app with multiple accounts and keyboard navigation. It runs either as an Omarchy shell plugin or as a standalone Qt desktop application.
+maitri mail is a native email and calendar app with multiple accounts and keyboard navigation. It runs either as a maitri shell plugin or as a standalone Qt desktop application.
 
-<img width="800" alt="Omamail — reading mail with AI assistance" src="docs/images/full-mail.webp" />
+<img width="800" alt="maitri mail — reading mail with AI assistance" src="docs/images/full-mail.webp" />
 
 ## Install
 
-### Omarchy plugin
+### maitri plugin
 
-The plugin requires **Omarchy 4** and follows the active Omarchy theme. It includes the bar widget, `mailto:` integration, and AI assistance through the configured Omarchy agent.
+The plugin requires **maitri** and follows the active maitri theme. It includes the bar widget, `mailto:` integration, and AI assistance through the configured maitri agent.
 
 ```bash
-omarchy plugin add https://github.com/huacnlee/omamail.git --enable
+maitri plugin add https://github.com/huacnlee/omamail.git --enable
 ```
 
 Update it with:
 
 ```bash
-omarchy plugin update omamail
+maitri plugin update maitri.mail
 ```
 
 Click the envelope in the bar, install the pinned backend when prompted, and add your mailbox. Prebuilt plugin backends are available for Linux x86_64 and aarch64.
@@ -55,11 +55,11 @@ make app-run
 - **Multiple mailboxes:** Gmail, Outlook, HEY, JMAP and IMAP/SMTP, including Fastmail, iCloud and self-hosted servers.
 - **Mail and calendar:** read, search, compose, manage attachments and respond to meeting invitations. Available actions depend on your provider.
 - **Keyboard navigation:** `j`/`k` to move, `r` to reply, `c` to compose, `/` to search and `?` for all shortcuts.
-- **AI assistance in Omarchy:** ask about selected messages and review suggested drafts with Claude, OpenCode V2 or Codex. Follow your Omarchy default, or select an agent and optional model in Settings. An unsupported system default disables the AI action with a setup explanation. Conversations retain follow-ups and draft proposals; `/clear`, `/history` and `/diagnose` manage the chat.
-- **Desktop integration:** native notifications and a compact layout for smaller windows; the Omarchy plugin also provides the bar widget and `mailto:` integration.
+- **AI assistance in maitri:** ask about selected messages and review suggested drafts with Claude, OpenCode V2 or Codex. Follow your maitri default, or select an agent and optional model in Settings. An unsupported system default disables the AI action with a setup explanation. Conversations retain follow-ups and draft proposals; `/clear`, `/history` and `/diagnose` manage the chat.
+- **Desktop integration:** native notifications and a compact layout for smaller windows; the maitri plugin also provides the bar widget and `mailto:` integration.
 - **Privacy controls:** credentials stored in the system keyring and remote images blocked until you choose to load them.
 
-<img width="265" alt="Omamail calendar" src="docs/images/full-calendar.webp" /> <img width="265" alt="Writing a message" src="docs/images/full-compose.webp" /> <img width="265" alt="Compact message list" src="docs/images/mini-list.webp" />
+<img width="265" alt="maitri mail calendar" src="docs/images/full-calendar.webp" /> <img width="265" alt="Writing a message" src="docs/images/full-compose.webp" /> <img width="265" alt="Compact message list" src="docs/images/mini-list.webp" />
 
 ## Add your mailbox
 
@@ -67,27 +67,27 @@ Choose a provider in Settings. Gmail needs a Google OAuth client; Outlook needs 
 
 See [mailbox setup](docs/MAILBOXES.md) for provider instructions and limitations, including Microsoft 365 and Proton Mail Bridge.
 
-## Make Omamail the default mail client
+## Make maitri mail the default mail client
 
-Omarchy opens HEY's web app on `SUPER+SHIFT+E`. Choose **Settings → Default mail client → Set as default** to make Omamail open `mailto:` links, `SUPER+SHIFT+E`, and `SUPER+SHIFT+ALT+E` for a new message.
+maitri opens HEY's web app on `SUPER+SHIFT+E`. Choose **Settings → Default mail client → Set as default** to make maitri mail open `mailto:` links, `SUPER+SHIFT+E`, and `SUPER+SHIFT+ALT+E` for a new message.
 
-The key bindings go in a clearly marked block in `~/.config/hypr/bindings.lua`; Omarchy's own files are never changed. **Undo** removes the block and leaves the file as it was.
+The key bindings go in a clearly marked block in `~/.config/hypr/bindings.lua`; maitri's own files are never changed. **Undo** removes the block and leaves the file as it was.
 
-## Open the Omarchy plugin from the keyboard
+## Open the maitri plugin from the keyboard
 
 To use another key, add this to `~/.config/hypr/bindings.lua`:
 
 ```lua
-o.bind("SUPER + SHIFT + G", "Omamail", "omarchy shell shell toggle omamail '{}'")
+o.bind("SUPER + SHIFT + G", "maitri mail", "maitri-shell shell toggle maitri.mail '{}'")
 ```
 
-Press `?` in Omamail for the shortcut sheet, or see the [keyboard guide](docs/KEYS.md).
+Press `?` in maitri mail for the shortcut sheet, or see the [keyboard guide](docs/KEYS.md).
 
 ## Help and contributing
 
 - [Backend installation, updates, release flow, and recovery](docs/BACKEND-RUNTIME.md)
 - [Contributing](CONTRIBUTING.md)
 
-Omamail is an independent project and is not affiliated with Google, Microsoft or 37signals. Gmail, Outlook and HEY belong to their respective trademark owners.
+maitri mail is an independent project and is not affiliated with Google, Microsoft or 37signals. Gmail, Outlook and HEY belong to their respective trademark owners.
 
 Licensed under the [MIT License](LICENSE).

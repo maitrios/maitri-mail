@@ -41,7 +41,7 @@ if grep -rnE '\$\{[A-Za-z_][A-Za-z0-9_]*//' --include='*.sh' ../scripts; then
   fail "a /bin/sh script uses bash-only global parameter replacement"
 fi
 
-# 1. No hard-coded colours in QML. Every colour comes from the active Omarchy
+# 1. No hard-coded colours in QML. Every colour comes from the active maitri
 #    theme, or a light theme renders unreadable text.
 if grep -nE '(color|Color)\s*:\s*"#[0-9A-Fa-f]{3,8}"' -- "${QML_FILES[@]}"; then
   fail "hard-coded colour in QML: use Color.* or a colour passed in from App.qml"
@@ -203,7 +203,7 @@ done
 
 # The same mistake on the body side. The plain reading of an HTML message
 # carries this client's own `[image N]` markers in front of the sender's first
-# word, so `resolve` on it answers about a Latin "i" that omamail wrote.
+# word, so `resolve` on it answers about a Latin "i" that maitri-mail wrote.
 grep -q 'selectedBody.bodyDirection' components/MessageReader.qml \
   || fail "the reader must consume the native body direction"
 grep -q 'direction::resolve_subject' ../src/message/content.rs \
@@ -223,7 +223,7 @@ fi
 grep -q 'bar ? bar\.barForeground' BarWidget.qml \
   || fail "the bar icon must follow bar.barForeground in transparent mode"
 grep -q 'markColor: root.accent' App.qml \
-  || fail "the Omamail header M must use the active theme accent"
+  || fail "the Mail header M must use the active theme accent"
 grep -q 'markColor: Color.accent' BarWidget.qml \
   || fail "the bar M must use the active theme accent"
 
@@ -289,13 +289,13 @@ if "shell.toggle" not in open_window or open_window.index("shell.toggle") > open
 pressed = widget[widget.index("onPressed: function(buttonCode)"):]
 pressed = pressed[:pressed.index("\n    }")]
 if "buttonCode === Qt.LeftButton" not in pressed or "root.openWindow()" not in pressed:
-    raise SystemExit("test_source.sh: left-clicking the bar icon must open Omamail")
+    raise SystemExit("test_source.sh: left-clicking the bar icon must open Mail")
 PY
 # The shell marks an open bar panel with a short accent line on the bar's inner
-# edge. Omamail's main window is not a bar popout, so its widget draws the same
+# edge. Mail's main window is not a bar popout, so its widget draws the same
 # indicator itself instead of substituting an unrelated grey square.
 grep -q 'id: openIndicator' BarWidget.qml \
-  || fail "the open Omamail window must use the bar's accent-line indicator"
+  || fail "the open Mail window must use the bar's accent-line indicator"
 if grep -q 'id: openFill' BarWidget.qml; then
   fail "the bar icon must not replace the native-style indicator with a selected fill"
 fi
@@ -553,8 +553,8 @@ PY
 grep -q 'CalendarEventDetail {' components/CalendarView.qml \
   || fail "calendar event activation must open the native overview"
 
-if grep -q 'Open Omamail' bar/BarPreview.qml; then
-  fail "the bar preview must not contain a redundant Open Omamail button"
+if grep -q 'Open Mail' bar/BarPreview.qml; then
+  fail "the bar preview must not contain a redundant Open Mail button"
 fi
 grep -q 'messages: host ? host.previewMessages : \[\]' Service.qml \
   || fail "the bar preview must use each account's unread preview feed"
@@ -773,9 +773,9 @@ grep -q 'MAX_SUMMARIES_PER_QUERY' cache/Cache.js \
 
 # New-mail notifications use the application's own mark, not the desktop's
 # generic unread-mail glyph.
-grep -q 'assets/omamail.svg' ../scripts/notify-mail.py \
-  || fail "new-mail notifications need the Omamail app icon"
-[ -f assets/omamail.svg ] || fail "the notification app icon is missing"
+grep -q 'assets/maitri-mail.svg' ../scripts/notify-mail.py \
+  || fail "new-mail notifications need the Mail app icon"
+[ -f assets/maitri-mail.svg ] || fail "the notification app icon is missing"
 
 # Account actions live on the account's edit page. The switcher only changes
 # accounts and leads to management; the management list only leads to editing.
@@ -1068,7 +1068,7 @@ oversized=$(cd ..
       case "$file" in
         (preview.png) ceiling=$preview_limit ;;
         (app/assets/fonts/SymbolsNerdFontMono-Regular.ttf) ceiling=2610012 ;;
-        (app/resources/macos/omamail.icns) ceiling=111809 ;;
+        (app/resources/macos/maitri-mail.icns) ceiling=111809 ;;
         (*) ceiling=$limit ;;
       esac
       size=$(wc -c < "$file")
@@ -1101,7 +1101,7 @@ FONT_CHECKSUMS
 # accidental expansion of the repository-wide asset ceiling.
 icon_provenance=app/resources/macos/ICON-PROVENANCE.md
 [ -f "../$icon_provenance" ] || fail "the macOS icon must record its provenance"
-mac_icon=app/resources/macos/omamail.icns
+mac_icon=app/resources/macos/maitri-mail.icns
 [ "$(cd .. && wc -c < "$mac_icon")" -eq 111809 ] \
   || fail "$mac_icon does not match its reviewed byte size"
 mac_icon_checksum=bd29ce1e72aa9db37ed5b1cb930956d2d933dc4426e7cea7f1b8baf2edb9262d
@@ -1112,7 +1112,7 @@ grep -q "$mac_icon_checksum" "../$icon_provenance" \
   || fail "$mac_icon checksum is missing from its shipped provenance"
 grep -q '1277a2cf247b275a15961fb20175420abb5dfc5489acb95313f4f604c09b6e78' "../$icon_provenance" \
   || fail "the macOS icon source checksum is missing from its shipped provenance"
-windows_icon=app/resources/windows/omamail.ico
+windows_icon=app/resources/windows/maitri-mail.ico
 windows_icon_checksum=2562966adb272711ae0274f7eade7ef2680781bb4405182280a310658752131d
 actual_windows_icon_checksum=$(cd .. && shasum -a 256 "$windows_icon" | awk '{print $1}')
 [ "$actual_windows_icon_checksum" = "$windows_icon_checksum" ] \
@@ -1120,7 +1120,7 @@ actual_windows_icon_checksum=$(cd .. && shasum -a 256 "$windows_icon" | awk '{pr
 grep -q "$windows_icon_checksum" "../$icon_provenance" \
   || fail "$windows_icon checksum is missing from its shipped provenance"
 grep -q '3c780a0881ca98ffb717eb2877bf2e8a877deb9ddc3593a2bcca1d19139616e4' "../$icon_provenance" \
-  || fail "the canonical Omamail logo checksum is missing from icon provenance"
+  || fail "the canonical Mail logo checksum is missing from icon provenance"
 
 # The compose form, account boundary and raw-message builder must keep the
 # selected send-as address all the way to the provider. A missing link silently
@@ -1134,8 +1134,8 @@ grep -q 'Mailto.draftFromPayload(payload)' App.qml \
   || fail "open() must seed compose from a mailto payload"
 grep -q 'function beginDraft' components/ComposeView.qml \
   || fail "ComposeView must fill a new draft from a mailto"
-grep -q 'omarchy-shell shell summon' ../scripts/mailto.sh \
-  || fail "the mailto handler must summon Omamail, not toggle it"
+grep -q 'maitri-shell shell summon' ../scripts/mailto.sh \
+  || fail "the mailto handler must summon Mail, not toggle it"
 grep -q 'register-mailto.sh' ../scripts/link-plugin.sh \
   || fail "link-plugin.sh must register the mailto desktop handler"
 grep -q 'registerMailtoHandler' Service.qml \
@@ -1302,7 +1302,7 @@ python3 - <<'PLUGINDIR'
 from pathlib import Path
 source = Path("Service.qml").read_text()
 if "Qt.resolvedUrl(\"..\")" not in source:
-    raise SystemExit("test_source.sh: Service must resolve its own directory when Omarchy hides __sourceDir")
+    raise SystemExit("test_source.sh: Service must resolve its own directory when maitri hides __sourceDir")
 if "decodeURIComponent" not in source:
     raise SystemExit("test_source.sh: Service must decode its resolved filesystem path")
 PLUGINDIR

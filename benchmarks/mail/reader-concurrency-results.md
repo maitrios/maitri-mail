@@ -62,4 +62,4 @@ CPU: 13th Gen Intel(R) Core(TM) i7-13700KF; load before/after: (1.38037109375, 1
 
 The executable and QML modules are copied and hashed before running. Source hashes describe the checkout snapshot, not attestation that an externally supplied binary was built from it. Raw round durations, every callback latency, peak concurrency and parity counts are in the adjacent JSON.
 
-Reproduce: `python3 benchmarks/mail/reader_concurrency.py --binary target/release/omamail`. Smoke: add `--rounds 3 --cases small_plain newsletter_html --output /tmp/reader-concurrency-smoke.json`.
+Reproduce: `python3 benchmarks/mail/reader_concurrency.py --binary target/release/maitri-mail`. Smoke: add `--rounds 3 --cases small_plain newsletter_html --output /tmp/reader-concurrency-smoke.json`.

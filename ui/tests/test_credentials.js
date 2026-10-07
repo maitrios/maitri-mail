@@ -20,7 +20,7 @@ assert.strictEqual(credentials.isValidClientId(null), false)
 const downloaded = JSON.stringify({
   installed: {
     client_id: "1234-abc.apps.googleusercontent.com",
-    project_id: "omarchy-gmail-42",
+    project_id: "maitri-gmail-42",
     auth_uri: "https://accounts.google.com/o/oauth2/auth",
     token_uri: "https://oauth2.googleapis.com/token",
     client_secret: "GOCSPX-secretvalue",
@@ -33,7 +33,7 @@ assert.strictEqual(parsed.ok, true)
 deepEqual(parsed.credentials, {
   clientId: "1234-abc.apps.googleusercontent.com",
   clientSecret: "GOCSPX-secretvalue",
-  projectId: "omarchy-gmail-42"
+  projectId: "maitri-gmail-42"
 })
 
 // A Web application client hands back a valid-looking id but can never
@@ -84,10 +84,10 @@ assert.strictEqual(credentials.isConfigured(null), false)
 
 // ---------------------------------------------------------------- display
 
-assert.strictEqual(credentials.describe(parsed.credentials), "omarchy-gmail-42 · 1234")
+assert.strictEqual(credentials.describe(parsed.credentials), "maitri-gmail-42 · 1234")
 assert.strictEqual(credentials.describe(credentials.empty()), "")
 assert.strictEqual(
-  credentials.path("/home/jason"), "/home/jason/.config/omamail/credentials.json")
+  credentials.path("/home/jason"), "/home/jason/.config/maitri-mail/credentials.json")
 
 // -------------------------------------------------------- built-in client
 //
@@ -268,7 +268,7 @@ function recordLines(count) {
   var lines = []
   for (var i = 0; i < count; i++) {
     lines.push("[/" + (i + 10) + "]")
-    lines.push("label = Omamail refresh token")
+    lines.push("label = Mail refresh token")
     lines.push("secret = token-" + i)
     lines.push("created = 2026-08-21 13:01:00")
     lines.push("modified = 2026-08-21 13:01:00")
@@ -375,10 +375,10 @@ deepEqual(credentials.forAccount(credentials.emptyStore(), "one@gmail.com"), cre
 // keyring scheme above exists for.
 let store = credentials.emptyStore()
 store = credentials.withAccount(store, "one@gmail.com", {
-  clientId: sharedClient, clientSecret: "GOCSPX-shared", projectId: "omarchy-gmail-42"
+  clientId: sharedClient, clientSecret: "GOCSPX-shared", projectId: "maitri-gmail-42"
 })
 store = credentials.withAccount(store, "two@gmail.com", {
-  clientId: sharedClient, clientSecret: "GOCSPX-shared", projectId: "omarchy-gmail-42"
+  clientId: sharedClient, clientSecret: "GOCSPX-shared", projectId: "maitri-gmail-42"
 })
 store = credentials.withAccount(store, "three@work.com", {
   clientId: "5678-work.apps.googleusercontent.com", clientSecret: "GOCSPX-work", projectId: "work-99"
@@ -413,7 +413,7 @@ assert.notStrictEqual(
 // Saving a client again for an account it already has must not shuffle the
 // panel's order.
 const rewritten = credentials.withAccount(store, "one@gmail.com", {
-  clientId: sharedClient, clientSecret: "GOCSPX-rotated", projectId: "omarchy-gmail-42"
+  clientId: sharedClient, clientSecret: "GOCSPX-rotated", projectId: "maitri-gmail-42"
 })
 deepEqual(credentials.accountIds(rewritten), ["one@gmail.com", "two@gmail.com", "three@work.com"])
 assert.strictEqual(credentials.forAccount(rewritten, "one@gmail.com").clientSecret, "GOCSPX-rotated")

@@ -171,7 +171,7 @@ else
 fi
 
 umask 077
-work=$(mktemp -d "${TMPDIR:-/tmp}/omamail.XXXXXX") || fail 'mail-transport.sh: no temporary directory'
+work=$(mktemp -d "${TMPDIR:-/tmp}/maitri-mail.XXXXXX") || fail 'mail-transport.sh: no temporary directory'
 trap 'rm -rf "$work"' EXIT INT TERM HUP
 
 case "$mode" in smtp|smtp-oauth) sending=1 ;; *) sending=0 ;; esac
@@ -258,7 +258,7 @@ else
     fi
     first=0
     # Desktop HTTP/SOCKS proxy settings are for web traffic. In particular,
-    # Omarchy's local SOCKS proxy accepts the IMAPS socket and then drops its
+    # maitri's local SOCKS proxy accepts the IMAPS socket and then drops its
     # TLS handshake, which curl reports as error 35. Direct mail transport also
     # keeps account credentials from being offered through an unrelated proxy.
     # Repeated because `next` resets this curl option with the rest.

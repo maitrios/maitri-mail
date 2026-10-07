@@ -77,7 +77,7 @@ fn uuid(value: &str) -> bool {
 }
 pub(super) fn label(name: &Value) -> &'static str {
     match name.as_str().unwrap_or("") {
-        "propose_draft" | "mcp__omamail__propose_draft" | "omamail_propose_draft" => {
+        "propose_draft" | "mcp__maitri-mail__propose_draft" | "maitri-mail_propose_draft" => {
             "Creating draft"
         }
         "Bash" => "Running a command",

@@ -22,9 +22,9 @@ import urllib.parse
 import urllib.request
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_ROOT = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "omamail"
-BINARY = DATA_ROOT / "bin/omamail"
-LEGACY_BINARY = ROOT / "runtime/bin/omamail"
+DATA_ROOT = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "maitri-mail"
+BINARY = DATA_ROOT / "bin/maitri-mail"
+LEGACY_BINARY = ROOT / "runtime/bin/maitri-mail"
 LOCAL_BUILD = DATA_ROOT / "local-build.json"
 LOCK = DATA_ROOT / "runtime.lock"
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?")
@@ -112,7 +112,7 @@ def version_of(executable):
                 require(len(output) <= 256, "Invalid backend version response.")
         require(process.wait(timeout=max(0.01, deadline - time.monotonic())) == 0,
                 "Backend version check failed.")
-        match = re.fullmatch(rb"omamail ([^\r\n ]+)\n?", bytes(output))
+        match = re.fullmatch(rb"maitri-mail ([^\r\n ]+)\n?", bytes(output))
         require(match is not None, "Invalid backend version response.")
         version = match[1].decode("ascii")
         require(VERSION.fullmatch(version), "Invalid backend version response.")
@@ -247,7 +247,7 @@ def locked():
 def install(required, architecture):
     safe_path(BINARY)
     safe_path(LOCAL_BUILD)
-    asset = "omamail-linux-" + architecture + ".tar.gz"
+    asset = "maitri-mail-linux-" + architecture + ".tar.gz"
     base = "https://github.com/huacnlee/omamail/releases/download/v" + required + "/"
     with deadline():
         checksums = download(base + "SHA256SUMS", 64 * 1024).decode("ascii")
@@ -262,7 +262,7 @@ def install(required, architecture):
         require(hashlib.sha256(compressed).hexdigest() == entries[0], "Release checksum does not match.")
         safe_path(BINARY.parent, directory=True, create=True)
         with tempfile.TemporaryDirectory(prefix=".install-", dir=BINARY.parent) as staging:
-            candidate = Path(staging) / "omamail"
+            candidate = Path(staging) / "maitri-mail"
             # Parse the first physical header: tarfile iteration hides GNU/PAX entries.
             # Bound decompression too, and accept only zero padding after this one file.
             with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as source:
@@ -270,7 +270,7 @@ def install(required, architecture):
             require(512 <= len(unpacked) <= BINARY_LIMIT + 65536,
                     "Release archive exceeded its size limit.")
             entry = tarfile.TarInfo.frombuf(unpacked[:512], "utf-8", "strict")
-            require(entry.name == "omamail" and entry.type in (tarfile.REGTYPE, tarfile.AREGTYPE)
+            require(entry.name == "maitri-mail" and entry.type in (tarfile.REGTYPE, tarfile.AREGTYPE)
                     and not entry.linkname and 0 < entry.size <= BINARY_LIMIT,
                     "Release archive has an unsafe layout.")
             end = 512 + entry.size
@@ -289,7 +289,7 @@ def install(required, architecture):
 
 def install_local(required):
     """Install an explicitly built checkout binary, without release downloads."""
-    source = ROOT / "target/release/omamail"
+    source = ROOT / "target/release/maitri-mail"
     safe_path(source)
     require(source.is_file(), "Build the local backend first with make backend.")
     with source.open("rb") as compiled:
@@ -297,7 +297,7 @@ def install_local(required):
     require(0 < len(content) <= BINARY_LIMIT, "Local backend exceeded its size limit.")
     safe_path(BINARY.parent, directory=True, create=True)
     with tempfile.TemporaryDirectory(prefix=".install-", dir=BINARY.parent) as staging:
-        candidate = Path(staging) / "omamail"
+        candidate = Path(staging) / "maitri-mail"
         with candidate.open("xb") as destination:
             destination.write(content)
             destination.flush()
@@ -327,7 +327,7 @@ def legacy_cli_target(target):
     if not candidate.is_absolute() or len(candidate.parents) < 3:
         return False
     plugin = candidate.parents[2]
-    if candidate != plugin / "runtime/bin/omamail":
+    if candidate != plugin / "runtime/bin/maitri-mail":
         return False
     manifest = plugin / "manifest.json"
     try:
@@ -338,13 +338,13 @@ def legacy_cli_target(target):
         if len(raw) > MANIFEST_LIMIT:
             return False
         value = json.loads(raw)
-        return isinstance(value, dict) and value.get("id") == "omamail"
+        return isinstance(value, dict) and value.get("id") == "maitri-mail"
     except (OSError, Refused, UnicodeError, json.JSONDecodeError):
         return False
 
 
 def cli_link(enable):
-    link = Path.home() / ".local/bin/omamail"
+    link = Path.home() / ".local/bin/maitri-mail"
     safe_path(link.parent, directory=True, create=enable)
     if link.is_symlink():
         target = os.readlink(link)
@@ -353,8 +353,8 @@ def cli_link(enable):
         if not enable:
             link.unlink()
         elif target != str(BINARY):
-            with tempfile.TemporaryDirectory(prefix=".omamail-cli-", dir=link.parent) as staging:
-                candidate = Path(staging) / "omamail"
+            with tempfile.TemporaryDirectory(prefix=".maitri-mail-cli-", dir=link.parent) as staging:
+                candidate = Path(staging) / "maitri-mail"
                 os.symlink(str(BINARY), candidate)
                 os.replace(candidate, link)
     elif link.exists():
@@ -365,7 +365,7 @@ def cli_link(enable):
 
 def cli_installed():
     """Inspect only the owned link; never execute a PATH or foreign target."""
-    link = Path.home() / ".local/bin/omamail"
+    link = Path.home() / ".local/bin/maitri-mail"
     try:
         safe_path(link.parent, directory=True)
         return link.is_symlink() and os.readlink(link) == str(BINARY)
@@ -379,12 +379,12 @@ def run(command):
         required = pin()
         result["requiredVersion"] = required
         result["requiredApiVersion"], result["latestApiVersion"], result["unreleasedMethods"] = api_pin()
-        development = os.environ.get("OMAMAIL_BIN", "")
+        development = os.environ.get("MAITRI_MAIL_BIN", "")
         executable = Path(development) if development else BINARY
         result["executable"] = str(executable)
         require(command in ("status", "install", "install-local", "uninstall", "enable-cli", "disable-cli"), "Unknown backend operation.")
         if command != "status":
-            require(not development, "Unset OMAMAIL_BIN before managing the installed backend.")
+            require(not development, "Unset MAITRI_MAIL_BIN before managing the installed backend.")
         architecture = {"x86_64": "x86_64", "aarch64": "aarch64", "arm64": "aarch64"}.get(platform.machine())
         if not development and (platform.system() != "Linux" or not architecture):
             result["state"] = "unsupported"
@@ -396,7 +396,7 @@ def run(command):
                 required = local_required(required)
                 result["requiredVersion"] = required
         else:
-            require(executable.is_absolute(), "OMAMAIL_BIN must be an absolute executable path.")
+            require(executable.is_absolute(), "MAITRI_MAIL_BIN must be an absolute executable path.")
         if command != "status":
             with locked():
                 if command == "install":

@@ -131,8 +131,8 @@ def main():
         if hashlib.sha256((HERE/'baseline/ui'/relative).read_bytes()).hexdigest()!=h:raise RuntimeError('Frozen baseline changed')
     cases=corpus()
     if args.cases:cases=[c for c in cases if c['name'] in args.cases]
-    subprocess.run(['cargo','build','--locked','--release','--bin','omamail'],cwd=ROOT,check=True)
-    binary=ROOT/'target/release/omamail'
+    subprocess.run(['cargo','build','--locked','--release','--bin','maitri-mail'],cwd=ROOT,check=True)
+    binary=ROOT/'target/release/maitri-mail'
     version=tomllib.loads((ROOT/'Cargo.toml').read_text())['package']['version']
     env={k:v for k,v in os.environ.items() if not k.startswith(('QML','QS_'))}
     env.pop('WAYLAND_DISPLAY',None)
@@ -140,7 +140,7 @@ def main():
     versions={'rust':subprocess.check_output(['rustc','--version'],text=True).strip(),
       'qt':subprocess.check_output(['/usr/lib/qt6/bin/qml','--version'],env=env,text=True,stderr=subprocess.DEVNULL).strip(),
       'quickshell':subprocess.check_output([shutil.which('qs'),'--version'],env=env,text=True,stderr=subprocess.DEVNULL).strip()}
-    with tempfile.TemporaryDirectory(prefix='omamail-roundtrip-') as folder:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-roundtrip-') as folder:
         temp=Path(folder)
         for key in ['HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','XDG_DATA_HOME','XDG_STATE_HOME','XDG_RUNTIME_DIR']:
             path=temp/key.lower();path.mkdir(mode=0o700);env[key]=str(path)

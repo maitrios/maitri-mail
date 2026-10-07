@@ -259,8 +259,8 @@ impl Prepared {
                 serde_json::to_vec(&json!([fields, stamp, seed])).map_err(|_| "invalid_params")?
             )
         );
-        fields["boundary"] = json!(format!("=_Omamail_{}", &digest[..40]));
-        fields["messageId"] = json!(format!("<{digest}@omamail.invalid>"));
+        fields["boundary"] = json!(format!("=_Mail_{}", &digest[..40]));
+        fields["messageId"] = json!(format!("<{digest}@maitri-mail.invalid>"));
         fields["date"] = json!(
             chrono::DateTime::from_timestamp_millis(
                 i64::try_from(stamp).map_err(|_| "invalid_params")?

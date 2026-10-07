@@ -12,7 +12,7 @@ Item {
     id: backendFactory
     BackendModule.Backend {
       property var runtime
-      executable: "/synthetic/plugin/runtime/bin/omamail"
+      executable: "/synthetic/plugin/runtime/bin/maitri-mail"
       expectedVersion: runtime.requiredVersion
       expectedApiVersion: runtime.requiredApiVersion
       launchEnabled: runtime.state === "ready" && runtime.executable === executable
@@ -27,7 +27,7 @@ Item {
     BackendModule.Runtime {
       pluginDir: "/synthetic/plugin"
       bundledMode: true
-      bundledExecutable: "/synthetic/app/omamail"
+      bundledExecutable: "/synthetic/app/maitri-mail"
       bundledVersion: "0.10.7"
       bundledApiVersion: 5
     }
@@ -60,7 +60,7 @@ Item {
       var process = processOf(runtime)
       process.running = false
       process.stdout.read(JSON.stringify({ state: state, requiredVersion: "0.8.2", requiredApiVersion: 1,
-        installedVersion: version, executable: "/synthetic/plugin/runtime/bin/omamail", error: error || "",
+        installedVersion: version, executable: "/synthetic/plugin/runtime/bin/maitri-mail", error: error || "",
         cliInstalled: cliInstalled === true }))
       process.exited(error ? 1 : 0)
     }
@@ -81,7 +81,7 @@ Item {
       compare(processOf(runtime).command[2], "status")
       compare(runtime.executable, "")
       reply(runtime, "ready", "0.8.2")
-      compare(runtime.executable, "/synthetic/plugin/runtime/bin/omamail")
+      compare(runtime.executable, "/synthetic/plugin/runtime/bin/maitri-mail")
     }
     function test_failed_install_is_retryable_and_never_exposes_binary() {
       var runtime = make()
@@ -94,7 +94,7 @@ Item {
     }
     function test_development_disables_mutations() {
       var runtime = make()
-      runtime.developmentExecutable = "/tmp/dev/omamail"
+      runtime.developmentExecutable = "/tmp/dev/maitri-mail"
       reply(runtime, "mismatch", "0.8.1")
       runtime.install()
       runtime.enableCli()
@@ -145,7 +145,7 @@ Item {
       process.started()
       var handshake = JSON.parse(process.written.trim())
       backend.receive(JSON.stringify({ jsonrpc: "2.0", id: handshake.id,
-        result: { name: "omamail", apiVersion: 1, protocol: 1, version: "0.8.2",
+        result: { name: "maitri-mail", apiVersion: 1, protocol: 1, version: "0.8.2",
           methods: ["system.info", "system.quit"] } }))
       verify(backend.ready)
       return backend
@@ -253,7 +253,7 @@ Item {
       processOf(backend).started()
       var request = JSON.parse(processOf(backend).written.trim().split("\n").pop())
       backend.receive(JSON.stringify({ jsonrpc: "2.0", id: request.id,
-        result: { name: "omamail", apiVersion: 1, protocol: 1, version: "0.8.2",
+        result: { name: "maitri-mail", apiVersion: 1, protocol: 1, version: "0.8.2",
           methods: ["system.info", "system.quit"] } }))
       verify(!backend.ready)
       verify(!processOf(backend).running)

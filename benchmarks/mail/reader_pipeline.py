@@ -172,8 +172,8 @@ def main():
     if args.binary and args.build_note == 'Built from current checkout':args.build_note='Supplied executable; checkout hashes are not binary source provenance'
     if not 3<=args.samples<=1000:p.error('samples must be 3..1000')
     cases=[c for c in corpus() if not args.cases or c['name'] in args.cases]
-    if args.binary is None:subprocess.run(['cargo','build','--locked','--release','--bin','omamail'],cwd=ROOT,check=True)
-    binary=(args.binary or ROOT/'target/release/omamail').resolve()
+    if args.binary is None:subprocess.run(['cargo','build','--locked','--release','--bin','maitri-mail'],cwd=ROOT,check=True)
+    binary=(args.binary or ROOT/'target/release/maitri-mail').resolve()
     version=tomllib.loads((ROOT/'Cargo.toml').read_text())['package']['version']
     env={k:v for k,v in os.environ.items() if not k.startswith(('QML','QS_'))}
     env.pop('WAYLAND_DISPLAY',None)
@@ -184,16 +184,16 @@ def main():
     hashes={str(f.relative_to(ROOT)):sha(f) for base in ['src','ui/backend','ui/message'] for f in sorted((ROOT/base).rglob('*')) if f.is_file()}
     harness_hashes={f.name:sha(f) for f in [Path(__file__),HERE/'corpus.py',HERE/'run.py']}
     start=time.perf_counter();load=os.getloadavg();rows=[]
-    with tempfile.TemporaryDirectory(prefix='omamail-reader-bench-') as folder:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-reader-bench-') as folder:
         temp=Path(folder)
-        frozen=temp/'omamail';shutil.copy2(binary,frozen);binary_hash=sha(frozen)
+        frozen=temp/'maitri-mail';shutil.copy2(binary,frozen);binary_hash=sha(frozen)
         for module in ['backend','message']:
             shutil.copytree(ROOT/'ui'/module,temp/module)
             for f in (temp/module).rglob('*'):
                 if f.is_file():hashes[str(Path('ui')/f.relative_to(temp))]=sha(f)
         for key in ['HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','XDG_DATA_HOME','XDG_STATE_HOME','XDG_RUNTIME_DIR']:
             directory=temp/key.lower();directory.mkdir(mode=0o700);env[key]=str(directory)
-        config=Path(env['XDG_CONFIG_HOME'])/'omamail';config.mkdir(mode=0o700)
+        config=Path(env['XDG_CONFIG_HOME'])/'maitri-mail';config.mkdir(mode=0o700)
         registry=config/'accounts.json';registry.write_text(json.dumps({'version':1,'accounts':[{'provider':'gmail','email':'reader-benchmark@example.test'}],'activeId':'reader-benchmark@example.test'}));registry.chmod(0o600)
         for engine in ENGINES:
             text=QML.replace('PAYLOAD',json.dumps(cases)).replace('SAMPLES',str(args.samples)).replace('ENGINE',json.dumps(engine)).replace('BINARY',json.dumps(str(frozen))).replace('VERSION',json.dumps(version))

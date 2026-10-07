@@ -91,7 +91,7 @@ async fn wire_and_unterminated_event_are_bounded() {
 async fn cancellation_and_deadline_kill_process_group() {
     for cancel in [false, true] {
         let folder = std::env::temp_dir().join(format!(
-            "omamail-worker-{}",
+            "maitri-mail-worker-{}",
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
@@ -154,7 +154,7 @@ async fn cancellation_and_deadline_kill_process_group() {
 #[tokio::test]
 async fn successful_leader_stays_reserved_until_descendant_cleanup() {
     let folder = std::env::temp_dir().join(format!(
-        "omamail-worker-cleanup-{}-{}",
+        "maitri-mail-worker-cleanup-{}-{}",
         std::process::id(),
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -195,7 +195,7 @@ print(json.dumps({{'type':'result','subtype':'success','result':'Done'}}))
 #[tokio::test]
 async fn oversized_prompt_refuses_before_process_start() {
     let path = std::env::temp_dir().join(format!(
-        "omamail-worker-forbidden-{}-{}",
+        "maitri-mail-worker-forbidden-{}-{}",
         std::process::id(),
         SystemTime::now()
             .duration_since(UNIX_EPOCH)

@@ -172,9 +172,9 @@ work=""
 if [ "$verb" != "stream" ]; then
   umask 077
   base=${TMPDIR:-${XDG_RUNTIME_DIR:-/tmp}}
-  find "$base" -maxdepth 1 -type d -name 'omamail-jmap.*' -user "$(id -un)" \
+  find "$base" -maxdepth 1 -type d -name 'maitri-mail-jmap.*' -user "$(id -un)" \
     -mmin +60 -exec rm -rf {} + 2>/dev/null || true
-  work=$(mktemp -d "$base/omamail-jmap.XXXXXX") \
+  work=$(mktemp -d "$base/maitri-mail-jmap.XXXXXX") \
     || fail 'jmap-transport.sh: no temporary directory'
   trap 'rm -rf "$work"' EXIT INT TERM HUP
 fi
@@ -197,7 +197,7 @@ fi
 # without it ever being written down.
 build_config() {
   printf 'url = "%s"\n' "$escaped_url"
-  # Desktop HTTP/SOCKS proxy settings are for web traffic, and Omarchy's local
+  # Desktop HTTP/SOCKS proxy settings are for web traffic, and maitri's local
   # SOCKS proxy drops a TLS handshake it accepted. Direct transport also keeps
   # an account credential from being offered through an unrelated proxy.
   printf 'noproxy = "*"\n'

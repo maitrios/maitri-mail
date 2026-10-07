@@ -12,7 +12,7 @@ import "../compose/Senders.js" as Senders
 import "../agent/Agent.js" as Agent
 
 // Composing takes over the whole content area of the one window rather than
-// opening a second one: Omarchy's panel mechanism would give an extra window
+// opening a second one: maitri's panel mechanism would give an extra window
 // its own region, which is not what a reply is. Two mail accounts would
 // justify two windows; a reply does not.
 //

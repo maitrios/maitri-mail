@@ -20,7 +20,7 @@ Item {
   Account.MailAccount {
     id: account
     backend: backend
-    pluginDir: "/tmp/omamail-render-cache-test"
+    pluginDir: "/tmp/maitri-mail-render-cache-test"
     active: false
     windowOpen: false
     bodyMode: "original"

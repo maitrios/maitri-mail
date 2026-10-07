@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build fixed plugin backends and validate the complete Omamail release set."""
+"""Build fixed plugin backends and validate the complete Mail release set."""
 import argparse
 import hashlib
 import gzip
@@ -12,11 +12,11 @@ import tarfile
 import tomllib
 
 ARCHES = ('x86_64', 'aarch64')
-PLUGIN_ASSETS = tuple(f'omamail-linux-{arch}.tar.gz' for arch in ARCHES)
+PLUGIN_ASSETS = tuple(f'maitri-mail-linux-{arch}.tar.gz' for arch in ARCHES)
 APP_ASSETS = (
-    'omamail-app-macos-aarch64.tar.gz',
-    'omamail-app-linux-x86_64.tar.gz',
-    'omamail-app-windows-x86_64.zip',
+    'maitri-mail-app-macos-aarch64.tar.gz',
+    'maitri-mail-app-linux-x86_64.tar.gz',
+    'maitri-mail-app-windows-x86_64.zip',
 )
 INSTALLER_ASSETS = ('install.sh', 'install.ps1')
 HASHED_RELEASE_ASSETS = tuple(sorted(PLUGIN_ASSETS + APP_ASSETS + INSTALLER_ASSETS))
@@ -29,17 +29,17 @@ def check(root, tag=None, require_pin=False):
         raise ValueError('expected canonical MAJOR.MINOR.PATCH')
     versions = {}
     packages = tomllib.loads((root / 'Cargo.lock').read_text())['package']
-    versions['lock'] = next(p['version'] for p in packages if p['name'] == 'omamail')
+    versions['lock'] = next(p['version'] for p in packages if p['name'] == 'maitri-mail')
     manifest = json.loads((root / 'manifest.json').read_bytes())
     if not isinstance(manifest, dict) or not isinstance(manifest.get('version'), str):
         raise ValueError('manifest.json requires a string version')
     versions['manifest'] = manifest['version']
     cmake = (root / 'app/CMakeLists.txt').read_text()
     app_versions = re.findall(
-        r'^\s*project\s*\(\s*omamail-app\s+VERSION\s+([^\s\)]+)', cmake,
+        r'^\s*project\s*\(\s*maitri-mail-app\s+VERSION\s+([^\s\)]+)', cmake,
         flags=re.MULTILINE | re.IGNORECASE)
     if len(app_versions) != 1:
-        raise ValueError('app/CMakeLists.txt requires one omamail-app project version')
+        raise ValueError('app/CMakeLists.txt requires one maitri-mail-app project version')
     versions['app'] = app_versions[0]
     if require_pin:
         versions['backend-version'] = (root / 'backend-version').read_text().removesuffix('\n')
@@ -353,9 +353,9 @@ def package(binary, arch, output):
     if binary.is_symlink() or not binary.is_file() or binary.stat().st_size == 0:
         raise ValueError('binary must be a nonempty regular file')
     output.mkdir(parents=True, exist_ok=True)
-    archive = output / f'omamail-linux-{arch}.tar.gz'
+    archive = output / f'maitri-mail-linux-{arch}.tar.gz'
     with tarfile.open(archive, 'w:gz') as tar:
-        info = tarfile.TarInfo('omamail')
+        info = tarfile.TarInfo('maitri-mail')
         info.size = binary.stat().st_size
         info.mode = 0o755
         with binary.open('rb') as source:
@@ -389,7 +389,7 @@ def read_checksums(directory):
 
 def verify(directory, arches):
     hashes = read_checksums(directory)
-    expected = {f'omamail-linux-{arch}.tar.gz' for arch in arches}
+    expected = {f'maitri-mail-linux-{arch}.tar.gz' for arch in arches}
     if not expected <= set(hashes):
         raise ValueError('checksum asset set does not match requested architectures')
     for name in expected:
@@ -406,9 +406,9 @@ def verify(directory, arches):
         if not 512 <= len(unpacked) <= binary_limit + 65536:
             raise ValueError('archive decompression exceeded size limit')
         member = tarfile.TarInfo.frombuf(unpacked[:512], 'utf-8', 'strict')
-        if (member.name != 'omamail' or member.type not in (tarfile.REGTYPE, tarfile.AREGTYPE)
+        if (member.name != 'maitri-mail' or member.type not in (tarfile.REGTYPE, tarfile.AREGTYPE)
                 or member.linkname or member.mode != 0o755 or not 0 < member.size <= binary_limit):
-            raise ValueError('archive must contain only the regular omamail executable')
+            raise ValueError('archive must contain only the regular maitri-mail executable')
         end = 512 + member.size
         padded_end = 512 + ((member.size + 511) // 512) * 512
         if len(unpacked) < padded_end + 1024 or len(unpacked) % 512 or any(unpacked[end:]):
@@ -491,7 +491,7 @@ def pin(root, branch, expected):
     if not git('diff', '--', 'backend-version', 'backend-api.json'):
         return
     git('add', 'backend-version', 'backend-api.json')
-    git('-c', 'user.name=Omamail Release', '-c',
+    git('-c', 'user.name=Mail Release', '-c',
         'user.email=41898282+github-actions[bot]@users.noreply.github.com',
         'commit', '-m', 'chore: pin published backend ' + version, '--only', 'backend-version', 'backend-api.json')
     git('push', 'origin', 'HEAD:refs/heads/' + branch)

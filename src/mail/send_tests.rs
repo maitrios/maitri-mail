@@ -418,7 +418,7 @@ if sys.argv[1:] == ['accounts', 'list', '--json']:
 elif sys.argv[1] == 'compose':
     files = [sys.argv[i+1] for i, value in enumerate(sys.argv) if value == '--attach']
     report = {'argv':sys.argv[1:], 'body':sys.stdin.read(), 'files': [open(p).read() for p in files], 'paths':files}
-    with open(os.environ['OMAMAIL_SEND_TEST_REPORT'], 'w') as f: json.dump(report,f)
+    with open(os.environ['MAITRI_MAIL_SEND_TEST_REPORT'], 'w') as f: json.dump(report,f)
     print(json.dumps({'ok':True}))
 else:
     sys.exit(9)
@@ -427,7 +427,7 @@ else:
     let report = fixture.root.join("report.json");
     unsafe {
         std::env::set_var("PATH", &fixture.root);
-        std::env::set_var("OMAMAIL_SEND_TEST_REPORT", &report);
+        std::env::set_var("MAITRI_MAIL_SEND_TEST_REPORT", &report);
     }
     let path = fixture.root.join("original.txt");
     std::fs::write(&path, "validated attachment").unwrap();

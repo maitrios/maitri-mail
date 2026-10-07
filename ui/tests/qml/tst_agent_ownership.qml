@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../account/Accounts.js" as Accounts
 import "BackendFixture.js" as BackendFixture
 import "NativeIntentFixture.js" as NativeIntentFixture
@@ -20,10 +20,10 @@ Item {
     function hide(_id) {}
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: mailService
     shell: shellStore
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-test" })
   }
 
   QtObject {
@@ -123,7 +123,7 @@ Item {
 
     function test_public_manifest_resolves_local_helper_directory() {
       var saved = mailService.manifest
-      mailService.manifest = {id:"omamail",name:"Omamail"}
+      mailService.manifest = {id:"maitri.mail",name:"Mail"}
       verify(mailService.pluginDir !== "", "Modern shell removes internal source metadata")
       verify(mailService.pluginDir.indexOf("file:") !== 0)
       var pluginRoot = decodeURIComponent(String(Qt.resolvedUrl("../../.."))

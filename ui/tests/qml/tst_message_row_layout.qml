@@ -1,11 +1,11 @@
 import QtQuick
 import QtTest
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 Item {
   width: 640
   height: 160
-  Omamail.MessageRow {
+  MaitriMail.MessageRow {
     id: row
     width: 600
     textColor: Qt.rgba(1, 1, 1, 1)

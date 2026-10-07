@@ -1,11 +1,11 @@
 import QtQuick
 import QtTest
-import "../.." as Omamail
+import "../.." as MaitriMail
 
 Item {
   Component {
     id: factory
-    Omamail.Service {}
+    MaitriMail.Service {}
   }
   TestCase {
     name: "ServiceBackendPath"
@@ -81,8 +81,8 @@ Item {
       var service = createTemporaryObject(factory, parent)
       verify(service !== null)
       var runtime = service.backendRuntime
-      var resolved = "/synthetic/real-checkout/runtime/bin/omamail"
-      verify(resolved !== service.pluginDir + "/runtime/bin/omamail")
+      var resolved = "/synthetic/real-checkout/runtime/bin/maitri-mail"
+      verify(resolved !== service.pluginDir + "/runtime/bin/maitri-mail")
       runtime.applyResult({ state: "ready", requiredVersion: "0.8.2", requiredApiVersion: 1,
         installedVersion: "0.8.2", executable: resolved, error: "" }, 0)
       tryCompare(service.backend, "launchEnabled", true)
@@ -97,7 +97,7 @@ Item {
       process.started()
       var request = JSON.parse(process.written.trim())
       process.stdout.read(JSON.stringify({jsonrpc: "2.0", id: request.id,
-        result: {name: "omamail", version: "0.8.2", apiVersion: 1, protocol: 1,
+        result: {name: "maitri-mail", version: "0.8.2", apiVersion: 1, protocol: 1,
                  methods: ["system.info", "system.quit"]}}))
       tryCompare(service.backend, "ready", true)
     }

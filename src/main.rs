@@ -1,3 +1,3 @@
 fn main() {
-    omamail::cli::run();
+    maitri_mail::cli::run();
 }

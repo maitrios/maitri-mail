@@ -46,7 +46,7 @@ QtObject {
         output.cases.push({name:item.name,phase:phase,coldUs:coldUs,samplesUs:samples,batch:batch,result:result})
       }
     }
-    console.log("OMAMAIL_BENCH_RESULT "+JSON.stringify(output))
+    console.log("MAITRI_MAIL_BENCH_RESULT "+JSON.stringify(output))
     Qt.exit(0)
   }
 }

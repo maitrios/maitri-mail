@@ -457,7 +457,7 @@ const created = feed.createEvent({
   description: "Weekly plan"
 }, 1234)
 assert.strictEqual(created.ok, true)
-assert.strictEqual(created.uid, "omamail-1234")
+assert.strictEqual(created.uid, "maitri-mail-1234")
 assert.ok(created.ics.indexOf("SUMMARY:Planning") > 0)
 assert.ok(created.ics.indexOf("DTSTART:20260824T080000Z") > 0)
 assert.ok(created.ics.indexOf("LOCATION:https://meet.example/room") > 0)
@@ -497,10 +497,10 @@ assert.strictEqual(feed.createEvent({ title: "x", startMs: 2, endMs: 1 }, 1).err
 const updated = feed.updateEvent({
   title: "Planning, moved", startMs: Date.UTC(2026, 7, 24, 10, 0),
   endMs: Date.UTC(2026, 7, 24, 11, 0), location: "", description: "Weekly plan"
-}, { uid: "omamail-1234", sequence: 0 }, 5678)
+}, { uid: "maitri-mail-1234", sequence: 0 }, 5678)
 assert.strictEqual(updated.ok, true)
-assert.strictEqual(updated.uid, "omamail-1234")
-assert.ok(updated.ics.indexOf("UID:omamail-1234") > 0)
+assert.strictEqual(updated.uid, "maitri-mail-1234")
+assert.ok(updated.ics.indexOf("UID:maitri-mail-1234") > 0)
 assert.ok(updated.ics.indexOf("SEQUENCE:1") > 0,
   "a rewrite bumps the sequence so older copies yield")
 assert.ok(updated.ics.indexOf("DTSTART:20260824T100000Z") > 0)
@@ -642,7 +642,7 @@ assert.strictEqual(feed.caldavEventUrl("https://dav.example/cal/me/",
 assert.strictEqual(feed.caldavEventUrl("https://dav.example/cal/me/",
   { href: "a.ics" }), "https://dav.example/cal/me/a.ics")
 assert.strictEqual(feed.caldavEventUrl("https://dav.example/cal/me",
-  { href: "", uid: "omamail-1" }), "https://dav.example/cal/me/omamail-1.ics")
+  { href: "", uid: "maitri-mail-1" }), "https://dav.example/cal/me/maitri-mail-1.ics")
 assert.strictEqual(feed.caldavEventUrl("http://dav.example/cal/me/",
   { href: "/cal/me/a.ics" }), "", "CalDAV writes stay on HTTPS")
 assert.strictEqual(feed.caldavEventUrl("", { href: "", uid: "" }), "")

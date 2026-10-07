@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "BackendFixture.js" as BackendFixture
 import "../../account/Accounts.js" as Accounts
 
@@ -27,13 +27,13 @@ Item {
     function hide(id) {}
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: mailService
     shell: shellStore
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-test" })
   }
 
-  Omamail.App { id: app; service: mailService }
+  MaitriMail.App { id: app; service: mailService }
 
   TestCase {
     name: "AccountRemoval"

@@ -180,7 +180,7 @@ impl Store {
         {
             return Err("agent_state_home_invalid");
         }
-        let root = crate::cache::directories(base, &["omamail", "assistant"], true)?
+        let root = crate::cache::directories(base, &["maitri-mail", "assistant"], true)?
             .ok_or("agent_storage_unavailable")?;
         let lock = crate::platform::private_fs::open_lock(&root, ".lock")
             .map_err(|_| "agent_unsafe_storage")?;
@@ -189,7 +189,7 @@ impl Store {
         Ok(Self {
             root,
             lock,
-            path: base.join("omamail/assistant"),
+            path: base.join("maitri-mail/assistant"),
             #[cfg(test)]
             reads: std::cell::Cell::new(0),
         })
@@ -384,7 +384,7 @@ mod tests {
             // macOS temp_dir() can start with the system /var symlink. Resolve
             // only the fixture parent; storage must still reject fixture links.
             let p = std::env::temp_dir().canonicalize().unwrap().join(format!(
-                "omamail-agent-store-{}-{}",
+                "maitri-mail-agent-store-{}-{}",
                 std::process::id(),
                 SERIAL.fetch_add(1, Ordering::Relaxed)
             ));
@@ -491,10 +491,10 @@ mod tests {
     fn parent_and_job_symlinks_never_open_or_delete_their_target() {
         let temp = Temp::new();
         let outside = Temp::new();
-        std::os::unix::fs::symlink(&outside.0, temp.0.join("omamail")).unwrap();
+        std::os::unix::fs::symlink(&outside.0, temp.0.join("maitri-mail")).unwrap();
         assert!(Store::open_at(&temp.0).is_err());
         assert!(!outside.0.join("assistant").exists());
-        std::fs::remove_file(temp.0.join("omamail")).unwrap();
+        std::fs::remove_file(temp.0.join("maitri-mail")).unwrap();
         let store = Store::open_at(&temp.0).unwrap();
         std::os::unix::fs::symlink(&outside.0, store.path().join(ID)).unwrap();
         assert!(store.ids().is_err());

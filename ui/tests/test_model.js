@@ -1010,7 +1010,7 @@ assert.strictEqual(model.detailSummary(grouped, {
 // ------------------------------------------------------ a CLI-shaped sign-in
 //
 // A provider whose sign-in is a program of its own says which program: the
-// generic sentence sends somebody looking through Omarchy for a package this
+// generic sentence sends somebody looking through maitri for a package this
 // plugin never named.
 
 assert.strictEqual(model.setupHeadline("tools_missing", "HEY", "cli"),

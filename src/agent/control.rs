@@ -7,10 +7,10 @@ pub fn path(id: &str) -> Result<PathBuf, &'static str> {
         .map(PathBuf::from)
         .or_else(|| std::env::var_os("HOME").map(|v| PathBuf::from(v).join(".local/state")))
         .ok_or("agent_state_home_invalid")?;
-    crate::cache::directories(&base, &["omamail", "agent-runtime"], true)?
+    crate::cache::directories(&base, &["maitri-mail", "agent-runtime"], true)?
         .ok_or("agent_storage_unavailable")?;
     Ok(base
-        .join("omamail/agent-runtime")
+        .join("maitri-mail/agent-runtime")
         .join(format!("{id}.sock")))
 }
 pub struct Control {

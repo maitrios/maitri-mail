@@ -1,26 +1,26 @@
 #!/bin/sh
-# Makes Omamail the desktop's mail client, or hands the job back.
+# Makes Mail the desktop's mail client, or hands the job back.
 #
 #   default-mail.sh on <plugin-dir>   claim mailto: and SUPER+SHIFT+E
-#   default-mail.sh off               restore Omarchy's own email bindings
+#   default-mail.sh off               restore maitri's own email bindings
 #   default-mail.sh status            print `default` or `not-default`
 #
-# Two things decide "which mail client" on Omarchy, and a switch that moved
+# Two things decide "which mail client" on maitri, and a switch that moved
 # only one would leave the other opening HEY:
 #
 #   - the x-scheme-handler/mailto default, which register-mailto.sh owns
 #   - SUPER+SHIFT+E and SUPER+SHIFT+ALT+E, overridden by a managed block in
 #     ~/.config/hypr/bindings.lua (hl.unbind + o.bind, the documented pattern)
 #
-# Omarchy's own files are never touched. `off` removes the block and leaves the
+# maitri's own files are never touched. `off` removes the block and leaves the
 # file byte-identical to what it was before `on`; the mailto default stays with
-# Omamail because Omarchy ships no handler to give it back to.
+# Mail because maitri ships no handler to give it back to.
 set -eu
 
 CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME:?}/.config}
 BINDINGS_FILE="$CONFIG_HOME/hypr/bindings.lua"
-BLOCK_BEGIN="-- >>> omamail default mail client, do not edit by hand"
-BLOCK_END="-- <<< omamail default mail client"
+BLOCK_BEGIN="-- >>> maitri-mail default mail client, do not edit by hand"
+BLOCK_END="-- <<< maitri-mail default mail client"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -36,8 +36,8 @@ bindings_block() {
 $BLOCK_BEGIN
 hl.unbind("SUPER + SHIFT + E")
 hl.unbind("SUPER + SHIFT + ALT + E")
-o.bind("SUPER + SHIFT + E", "Email", "omarchy-shell shell summon omamail '{}'")
-o.bind("SUPER + SHIFT + ALT + E", "New email", "omarchy-shell shell summon omamail '{\"compose\":true}'")
+o.bind("SUPER + SHIFT + E", "Email", "maitri-shell shell summon maitri.mail '{}'")
+o.bind("SUPER + SHIFT + ALT + E", "New email", "maitri-shell shell summon maitri.mail '{\"compose\":true}'")
 $BLOCK_END
 EOF
 }
@@ -85,18 +85,18 @@ case "${1:-}" in
     sh "$plugin_dir/scripts/register-mailto.sh" "$plugin_dir" --claim-default
     add_block
     reload_hyprland
-    printf '%s\n' 'Omamail is now the default mail client.'
-    printf '%s\n' 'SUPER+SHIFT+E opens Omamail; SUPER+SHIFT+ALT+E starts a new message.'
+    printf '%s\n' 'Mail is now the default mail client.'
+    printf '%s\n' 'SUPER+SHIFT+E opens Mail; SUPER+SHIFT+ALT+E starts a new message.'
     ;;
   off)
     [ "$#" -eq 1 ] || usage
     remove_block
     reload_hyprland
-    printf '%s\n' "SUPER+SHIFT+E is Omarchy's own email binding again."
+    printf '%s\n' "SUPER+SHIFT+E is maitri's own email binding again."
     ;;
   status)
     [ "$#" -eq 1 ] || usage
-    if has_block && [ "$(mailto_default)" = omamail.desktop ]; then
+    if has_block && [ "$(mailto_default)" = maitri-mail.desktop ]; then
       printf '%s\n' default
     else
       printf '%s\n' not-default

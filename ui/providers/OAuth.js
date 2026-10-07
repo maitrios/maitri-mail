@@ -233,7 +233,7 @@ function missingScopeMessage(missing) {
     + " permission. Sign in again and leave every checkbox ticked"
 }
 
-// Content-Length is a BYTE count. The old page said "Returning to Omarchy
+// Content-Length is a BYTE count. The old page said "Returning to maitri
 // Gmail\u2026", whose ellipsis is one JS character and three UTF-8 bytes, so
 // the browser was told to expect a shorter response than it got and rendered
 // a truncated page. Measuring properly means the copy is free to use any
@@ -264,7 +264,7 @@ function defaultTheme() {
 }
 
 // The page the browser lands on after Google redirects. It is the only part of
-// this app that renders outside Quickshell, so it takes the active Omarchy
+// this app that renders outside Quickshell, so it takes the active maitri
 // theme with it rather than inventing a look of its own: same monospace, same
 // square corners, same hairline border at 40% foreground.
 
@@ -286,7 +286,7 @@ function escapeHtml(text) {
 // The palette crosses into a stylesheet rather than into text, where escaping
 // does nothing: a value carrying "}" or "</style>" would close the rule or the
 // element and everything after it would be markup. It comes from the active
-// Omarchy theme, which is a file the user installed rather than something a
+// maitri theme, which is a file the user installed rather than something a
 // stranger sent — but this page is the one thing here a browser renders, and a
 // colour that is not a colour has no business reaching it either way.
 function cssColor(value, fallback) {
@@ -347,10 +347,10 @@ function httpResponse(statusLine, body) {
 
 function successResponse(theme) {
   return httpResponse("200 OK", themedPage(theme, {
-    title: "Omamail",
+    title: "Mail",
     heading: "Mailbox connected",
     failed: false,
-    body: "<p>Omamail can read this mailbox now. "
+    body: "<p>Mail can read this mailbox now. "
       + "Switch back to the window \u2014 your mail is already loading.</p>"
       + "<p>This tab closes itself. If it stays open, it is safe to close.</p>"
       + "<script>setTimeout(function(){window.close()},600)<\/script>"
@@ -364,6 +364,6 @@ function failureResponse(theme, reason) {
     heading: "Sign-in did not finish",
     failed: true,
     body: "<p>" + (detail ? escapeHtml(detail) : "Google did not complete the authorization.") + "</p>"
-      + "<p>Close this tab and try again from the Omamail window.</p>"
+      + "<p>Close this tab and try again from the Mail window.</p>"
   }))
 }

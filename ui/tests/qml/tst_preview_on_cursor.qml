@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 
 // Keyboard movement opens the reader immediately through explicit selection.
 // No preview preference, settling delay, or dwell can delay that selection.
@@ -149,7 +149,7 @@ Item {
     signal replySent()
   }
 
-  Omamail.App {
+  MaitriMail.App {
     id: app
     service: mailService
     shell: fakeShell
@@ -162,7 +162,7 @@ Item {
     // The FloatingWindow, found by its title the way the other App tests find
     // it: `children[0]` is not reliably the window.
     function window() {
-      return having(app, function(it) { return it.title === "Omamail" })
+      return having(app, function(it) { return it.title === "Mail" })
     }
 
     // The reader panel, found by the one property only it has. It draws no

@@ -336,7 +336,7 @@ fn credentials_native_linux_denial_and_unavailability_are_not_missing() {
         Err(Error::Missing)
     ));
     let failed = async {
-        zbus::connection::Builder::address("unix:path=/omamail-no-such-synthetic-bus/socket")
+        zbus::connection::Builder::address("unix:path=/maitri-mail-no-such-synthetic-bus/socket")
             .unwrap()
             .build()
             .await
@@ -439,7 +439,7 @@ fn credentials_native_linux_keeps_the_session_when_an_item_is_missing() {
 /// retracted, so a `CreateItem` the daemon committed before the connection
 /// failed would be made a second time, leaving two items with the same
 /// attributes; `find` answers `Ambiguous` for both from then on, and the
-/// credential can no longer be read or deleted by Omamail at all. The daemon
+/// credential can no longer be read or deleted by Mail at all. The daemon
 /// counts the calls that reached it, so this asserts the forbidden effect did
 /// not happen rather than only that an error came back.
 #[test]

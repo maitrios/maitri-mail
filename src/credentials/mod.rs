@@ -110,8 +110,8 @@ impl CredentialStore for NativeStore {
 
 #[cfg(feature = "integration-test-credentials")]
 fn fixture_secret() -> Option<Result<Secret, Error>> {
-    let path = std::env::var_os("OMAMAIL_INTEGRATION_CREDENTIAL_FILE")?;
-    if let Some(trace) = std::env::var_os("OMAMAIL_INTEGRATION_CREDENTIAL_TRACE") {
+    let path = std::env::var_os("MAITRI_MAIL_INTEGRATION_CREDENTIAL_FILE")?;
+    if let Some(trace) = std::env::var_os("MAITRI_MAIL_INTEGRATION_CREDENTIAL_TRACE") {
         if std::fs::write(trace, b"get\n").is_err() {
             return Some(Err(Error::Unavailable));
         }

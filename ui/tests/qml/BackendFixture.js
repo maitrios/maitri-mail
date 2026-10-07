@@ -65,7 +65,7 @@ function markReady(service, apiVersion) {
   service.backendRuntime.requiredApiVersion = revision
   service.backendRuntime.latestApiVersion = revision
   service.backendRuntime.unreleasedMethods = []
-  service.backendRuntime.executable = "/synthetic/runtime/bin/omamail"
+  service.backendRuntime.executable = "/synthetic/runtime/bin/maitri-mail"
   service.backendRuntime.state = "ready"
   service.backend.connected = true
   service.backend.protocolInfo = { apiVersion: revision, protocol: 1, version: "0.0.0" }

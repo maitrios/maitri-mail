@@ -38,7 +38,7 @@ def main() -> int:
         print("That attachment is not something this can open", file=sys.stderr)
         return 1
 
-    directory = tempfile.mkdtemp(prefix="omamail-attachment-", dir=runtime_directory())
+    directory = tempfile.mkdtemp(prefix="maitri-mail-attachment-", dir=runtime_directory())
     os.chmod(directory, 0o700)
     target = Path(directory, filename)
     descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

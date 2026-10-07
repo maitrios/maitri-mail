@@ -1,12 +1,12 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "BackendFixture.js" as BackendFixture
 
 Item {
-  Omamail.Service {
+  MaitriMail.Service {
     id: service
-    manifest: ({ id: "omamail", __sourceDir: "" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "" })
   }
   TestCase {
     name: "NativeAccountProjections"

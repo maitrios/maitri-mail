@@ -1,16 +1,16 @@
-# Omamail Architecture
+# maitri mail Architecture
 
-This document describes how Omamail is divided, where state belongs, and how components communicate. It is an engineering guide rather than a product specification. `SPEC.md` says what the product promises; `DESIGN.md` says how the interface behaves and is laid out; this document says which part of the program owns each decision.
+This document describes how maitri mail is divided, where state belongs, and how components communicate. It is an engineering guide rather than a product specification. `SPEC.md` says what the product promises; `DESIGN.md` says how the interface behaves and is laid out; this document says which part of the program owns each decision.
 
-Except for visual styling, GPUI and GPUI Component provide the default architectural model for Omamail. Their principles of stable identity, explicit state ownership, contextual actions, controlled values, semantic events, composable parts, behavior/presentation separation, lifecycle safety, precise vocabulary, and testable decisions apply here unless a Qt or shell constraint proves otherwise. Omamail translates those principles into QML properties, signals, JavaScript libraries, and Qt lifecycle rather than reproducing Rust APIs.
+Except for visual styling, GPUI and GPUI Component provide the default architectural model for maitri mail. Their principles of stable identity, explicit state ownership, contextual actions, controlled values, semantic events, composable parts, behavior/presentation separation, lifecycle safety, precise vocabulary, and testable decisions apply here unless a Qt or shell constraint proves otherwise. maitri mail translates those principles into QML properties, signals, JavaScript libraries, and Qt lifecycle rather than reproducing Rust APIs.
 
-Use the [GPUI Component Coding Guides](http://longbridge.github.io/gpui-component/docs/coding-guides) for the full architecture, state, lifecycle, naming, API, and testing guidance. This document keeps the Omamail module mapping and the places where QML, Qt, the shell, or the mail domain changes its application.
+Use the [GPUI Component Coding Guides](http://longbridge.github.io/gpui-component/docs/coding-guides) for the full architecture, state, lifecycle, naming, API, and testing guidance. This document keeps the maitri mail module mapping and the places where QML, Qt, the shell, or the mail domain changes its application.
 
 ## Architectural position
 
-Omamail is one stateful mail and calendar application with two desktop hosts: an Omarchy shell plugin and a standalone Qt executable. Its architecture has five layers:
+maitri mail is one stateful mail and calendar application with two desktop hosts: a maitri shell plugin and a standalone Qt executable. Its architecture has five layers:
 
-1. Host entry points connect Omarchy or the native Qt process to the application.
+1. Host entry points connect maitri or the native Qt process to the application.
 2. The window composition owns window state, navigation, action dispatch, and top-level layout.
 3. Domain modules own mail, provider, cache, message, and account decisions.
 4. Interaction and layout primitives implement reusable UI behavior.
@@ -18,11 +18,11 @@ Omamail is one stateful mail and calendar application with two desktop hosts: an
 
 Dependencies point down this list. A view may ask the application to perform an action, but it does not acquire provider knowledge or mutate storage on its own. A provider may normalize mail into the shared message resource, but it does not know which row, popup, or page is visible.
 
-The visual system is separate from all five layers. In the plugin, colors come from the active Omarchy theme; in the standalone app, the compatibility imports derive the same semantic roles from Qt's active system palette. `App.qml` passes those semantic values to components in either host. GPUI Component supplies the architectural and interaction baseline, not the visual language.
+The visual system is separate from all five layers. In the plugin, colors come from the active maitri theme; in the standalone app, the compatibility imports derive the same semantic roles from Qt's active system palette. `App.qml` passes those semantic values to components in either host. GPUI Component supplies the architectural and interaction baseline, not the visual language.
 
 ## Entry points and window composition
 
-The Omarchy shell loads the QML entry points under `ui/`, as named by the root manifest:
+The maitri shell loads the QML entry points under `ui/`, as named by the root manifest:
 
 - `Service.qml` is the long-lived application and account host. The shell constructs it, so it declares no required properties beyond what the shell supplies. It owns state that must survive the window.
 - `BarWidget.qml` is the shell-facing trigger and settings bridge.
@@ -31,9 +31,9 @@ The Omarchy shell loads the QML entry points under `ui/`, as named by the root m
 The standalone executable under `app/` is a host rather than a second implementation:
 
 - `app/src/main.cpp` resolves packaged resources, validates them, and loads `app/qml/Main.qml`.
-- `app/qml/Main.qml` constructs the same `Service.qml` and `App.qml`, then supplies `StandaloneShell` and `StandaloneManifest` in place of the Omarchy objects.
+- `app/qml/Main.qml` constructs the same `Service.qml` and `App.qml`, then supplies `StandaloneShell` and `StandaloneManifest` in place of the maitri objects.
 - `app/qml/imports/` implements only the Quickshell and `qs.*` contracts used by the shared UI. It does not copy mail, calendar, provider, or navigation behavior.
-- `app/src/` owns native process containment, bounded line transport, private settings writes, file watching, external URL dispatch, clipboard access, and notifications. These capabilities are exposed through `Omamail.Native`; QML does not branch by operating system.
+- `app/src/` owns native process containment, bounded line transport, private settings writes, file watching, external URL dispatch, clipboard access, and notifications. These capabilities are exposed through `MaitriMail.Native`; QML does not branch by operating system.
 
 The standalone capability object is the product boundary: mail, calendar, and native notifications are enabled, as is native AI on Linux and macOS. Windows AI, the system tray, and operating-system `mailto:` registration remain disabled. Shared views hide or avoid unsupported operations by capability rather than by host identity.
 
@@ -50,9 +50,9 @@ This composition boundary is shaped by the shell entry-point contract and Qt's f
 
 ## Native and backend boundaries
 
-Both hosts keep one persistent `omamail serve` process and communicate with newline-delimited JSON-RPC over stdin/stdout. `ui/backend/Backend.qml` owns correlation, protocol/API compatibility, cancellation, and frame assembly. The plugin resolves its exact private backend pin; a packaged standalone host resolves the exact backend beside its own executable. Only the explicit development mode used by `make app-run` accepts a source build through `OMAMAIL_BIN`.
+Both hosts keep one persistent `maitri-mail serve` process and communicate with newline-delimited JSON-RPC over stdin/stdout. `ui/backend/Backend.qml` owns correlation, protocol/API compatibility, cancellation, and frame assembly. The plugin resolves its exact private backend pin; a packaged standalone host resolves the exact backend beside its own executable. Only the explicit development mode used by `make app-run` accepts a source build through `MAITRI_MAIL_BIN`.
 
-The Cargo `agent` feature is on by default for the Omarchy build. The standalone Make and release builds use `--no-default-features --features standalone`; agent worker commands and RPC methods are absent rather than hidden only in QML.
+The Cargo `agent` feature is on by default for the maitri build. The standalone Make and release builds use `--no-default-features --features standalone`; agent worker commands and RPC methods are absent rather than hidden only in QML.
 
 Credentials cross the UI/backend boundary through typed `credential.get`, `credential.put`, and `credential.delete` RPC methods. Rust validates the provider-specific key and secret bytes before calling Keychain, Secret Service, or Credential Manager. Secrets travel in the RPC body or subprocess stdin and must never be placed in argv, logs, settings, or notification routes.
 
@@ -80,11 +80,11 @@ Stable identity matters wherever state outlives a render. A mailbox, message, me
 
 ### Controlled state and feedback
 
-Follow the Coding Guides' controlled-state and feedback-loop rules. In Omamail, QML property bindings carry the owner value and signals report user intent; synchronizing search text, selection, open state, or filters must not echo the owner value as a second user change. Treat a signal handler as re-entrant because it may switch the account, replace the model, close the popup, or destroy its sender.
+Follow the Coding Guides' controlled-state and feedback-loop rules. In maitri mail, QML property bindings carry the owner value and signals report user intent; synchronizing search text, selection, open state, or filters must not echo the owner value as a second user change. Treat a signal handler as re-entrant because it may switch the account, replace the model, close the popup, or destroy its sender.
 
 ## Actions and contexts
 
-The existing keyboard architecture is the clearest GPUI-derived part of Omamail and is the model for other interactions.
+The existing keyboard architecture is the clearest GPUI-derived part of maitri mail and is the model for other interactions.
 
 - `ui/keys/Keymap.js` declares actions, bindings, and the contexts in which they mean something.
 - `ui/components/KeyRouter.qml` turns that declaration into window shortcuts.
@@ -119,14 +119,14 @@ tests beside their modules, and cross-boundary integration tests in `tests/`.
 Reusable behavior and presentation remain separate. Rust owns migrated business
 decisions; JavaScript owns UI decisions and remaining legacy business logic;
 QML components own Qt lifecycle and input mechanics. Feature views supply
-Omamail composition; semantic properties supplied from `App.qml` carry the
-Omarchy presentation.
+maitri mail composition; semantic properties supplied from `App.qml` carry the
+maitri presentation.
 
 Provider differences end at the provider boundary. Code above that boundary asks about capabilities and consumes the common message resource. It does not branch on provider IDs.
 
 ## Vocabulary is an interface contract
 
-Follow the Coding Guides' vocabulary and API naming rules. Omamail keeps one canonical name for each mail object, command, and state across QML properties, signals, actions, sidebar rows, settings, menus, tooltips, notices, shortcuts, errors, and documentation. The project-specific distinction between `cursorId` and `selectedId` is load-bearing: the former is the keyboard position and the latter is the message shown by the reader.
+Follow the Coding Guides' vocabulary and API naming rules. maitri mail keeps one canonical name for each mail object, command, and state across QML properties, signals, actions, sidebar rows, settings, menus, tooltips, notices, shortcuts, errors, and documentation. The project-specific distinction between `cursorId` and `selectedId` is load-bearing: the former is the keyboard position and the latter is the message shown by the reader.
 
 Review terminology in the rendered surface beside neighboring labels, not as an isolated string. When a canonical term changes, search every interface surface and document that may use it.
 
@@ -199,11 +199,11 @@ Resizable panes use the same conceptual split as GPUI Component:
 - double activation may restore the computed default;
 - persistence records a user-selected size, not a transient clamped size from a smaller window.
 
-Omamail currently has one hand-built list/reader splitter. It is a valid specialization, but future split layouts should share the state and constraint rules rather than copy the drag handler.
+maitri mail currently has one hand-built list/reader splitter. It is a valid specialization, but future split layouts should share the state and constraint rules rather than copy the drag handler.
 
 Layout state describes semantic regions and their allocation independently of the QML objects that render them. When a region is hidden, the remaining visible regions consume the released space; an invisible pane must not leave behind a slot. Restoring it reapplies its preferred allocation subject to the current bounds.
 
-This does not justify a general dock tree. Omamail has one known navigation/collection/content arrangement and three responsive modes. A tree with tab groups, arbitrary nesting, drag-to-dock, registries, or layout normalization would model operations the product does not offer. Extract the invariant—visible panes fill the available layout—not the machinery built for an IDE workspace.
+This does not justify a general dock tree. maitri mail has one known navigation/collection/content arrangement and three responsive modes. A tree with tab groups, arbitrary nesting, drag-to-dock, registries, or layout normalization would model operations the product does not offer. Extract the invariant—visible panes fill the available layout—not the machinery built for an IDE workspace.
 
 ## Measurement and scrolling
 
@@ -254,17 +254,17 @@ These are directions, not a requirement for an immediate rewrite.
 
 ## Translation boundary
 
-Architecture and interaction principles transfer by default; runtime machinery transfers only through an equivalent Omamail need. Translate `Entity` ownership into the appropriate service, feature view, or component property owner; translate semantic events into signals; translate controlled values into property input plus requested-change output; translate keyed identity into stable domain IDs; translate render-phase measurement into the Qt lifecycle point where resolved geometry actually exists.
+Architecture and interaction principles transfer by default; runtime machinery transfers only through an equivalent maitri mail need. Translate `Entity` ownership into the appropriate service, feature view, or component property owner; translate semantic events into signals; translate controlled values into property input plus requested-change output; translate keyed identity into stable domain IDs; translate render-phase measurement into the Qt lifecycle point where resolved geometry actually exists.
 
 Do not create Rust-shaped QML APIs or shadow facilities already owned by Qt. GPUI-specific contexts, handles, and render/prepaint/paint phases explain the lifecycle problem but are not types this project needs to imitate. Qt popup key capture, focus scope behavior, object lifetime, and QML binding semantics remain authoritative for the implementation.
 
-The same distinction applies to large feature systems. Dock's pure-data layout, canonical state, stable identity, and fill-after-removal invariants apply; a Dock tree, panel registry, arbitrary tab groups, tiles, and drag-to-dock editing do not exist until Omamail offers those product operations. Virtualization's separation of model coordinates, visible range, measurement, and row rendering applies; virtual-list machinery is introduced only when the loaded-message model needs it.
+The same distinction applies to large feature systems. Dock's pure-data layout, canonical state, stable identity, and fill-after-removal invariants apply; a Dock tree, panel registry, arbitrary tab groups, tiles, and drag-to-dock editing do not exist until maitri mail offers those product operations. Virtualization's separation of model coordinates, visible range, measurement, and row rendering applies; virtual-list machinery is introduced only when the loaded-message model needs it.
 
-The visual exception is explicit. GPUI Component theme tokens, dimensions, cursor styling, animation curves, shadows, radii, and surface appearance do not transfer. Omarchy remains the visual authority.
+The visual exception is explicit. GPUI Component theme tokens, dimensions, cursor styling, animation curves, shadows, radii, and surface appearance do not transfer. maitri remains the visual authority.
 
 ## Commit design
 
-Commits should preserve the reasoning that makes an architectural choice safe to change later. The best history in both Omamail and GPUI Component follows a consistent structure.
+Commits should preserve the reasoning that makes an architectural choice safe to change later. The best history in both maitri mail and GPUI Component follows a consistent structure.
 
 ### Subject
 

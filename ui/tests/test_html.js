@@ -779,7 +779,7 @@ assert.ok(bare.indexOf("x</body>") > 0)
 
   var plainDoc = html.plainTextDocument("Hi\n[image 1]  spaced\n<b>not bold</b>",
     { foreground: "#DEDEDE", background: "#131313", link: "#077CFD" }, true)
-  assert.ok(plainDoc.indexOf('<a href="omarchy-image:1">[image 1]</a>') > 0, "markers become links")
+  assert.ok(plainDoc.indexOf('<a href="maitri-image:1">[image 1]</a>') > 0, "markers become links")
   assert.ok(plainDoc.indexOf("&lt;b&gt;not bold&lt;/b&gt;") > 0, "text is escaped, never interpreted")
   assert.ok(plainDoc.indexOf("&nbsp;&nbsp;spaced") > 0, "hand-made alignment survives")
   assert.ok(plainDoc.indexOf("Hi<br>") > 0, "line breaks survive")
@@ -807,9 +807,9 @@ assert.ok(bare.indexOf("x</body>") > 0)
   assert.ok(html.plainTextDocument("[image 1]", {}, false).indexOf("<a ") < 0,
     "markers are left alone when the text is the sender's own")
 
-  assert.strictEqual(html.imageLinkIndex("omarchy-image:3"), 3)
+  assert.strictEqual(html.imageLinkIndex("maitri-image:3"), 3)
   assert.strictEqual(html.imageLinkIndex("https://example.com"), 0, "ordinary links are untouched")
-  assert.strictEqual(html.imageLinkIndex("omarchy-image:0"), 0)
+  assert.strictEqual(html.imageLinkIndex("maitri-image:0"), 0)
   assert.strictEqual(html.imageLinkIndex(""), 0)
 }
 

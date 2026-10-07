@@ -5,7 +5,7 @@ import "Icons.js" as Icons
 // One of the app's icons, by name.
 //
 // Every functional icon is a Nerd Font glyph from the Material Design Icons
-// range, the range the Omarchy shell draws its own bar and panel icons from,
+// range, the range the maitri shell draws its own bar and panel icons from,
 // so the window's verbs look like the desktop's. `Icons.js` is the map from
 // a name to a glyph; this only draws the one it is given, the way the
 // shell's `OpticalGlyph` does — centred on the ink rather than on the cell.
@@ -17,14 +17,14 @@ Item {
 
   property string name: ""
   property color color: Color.foreground
-  // Omamail keeps the envelope in the foreground and gives its M the active
+  // Mail keeps the envelope in the foreground and gives its M the active
   // theme accent. Provider artwork uses ProviderLogo instead of this mark.
   property color markColor: color
   property bool brand: false
   property bool filled: false
   property real iconSize: Style.font.icon
   // Bound to the shell's family rather than fixed, so the icons follow
-  // `omarchy font set` with everything else; the tests pass a Nerd Font in.
+  // `maitri font set` with everything else; the tests pass a Nerd Font in.
   // The shell uses one configured Nerd Font for text and icons. Standalone
   // keeps native text metrics, but supplies the same Nerd Font symbol range
   // through Style.font.iconFamily so these private-use codepoints never fall

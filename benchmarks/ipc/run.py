@@ -24,10 +24,10 @@ def main():
               'qtCore':command_version(['pkg-config','--modversion','Qt6Core']),
               'serdeJson':serde_version}
     cpu=next((line.split(':',1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines() if line.startswith('model name')),platform.processor())
-    with tempfile.TemporaryDirectory(prefix='omamail-ipc-bench-') as temp:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-ipc-bench-') as temp:
         temp=Path(temp)
         (temp/'src').mkdir()
-        (temp/'Cargo.toml').write_text('[package]\nname="omamail-ipc-bench"\nversion="0.0.0"\nedition="2024"\n[dependencies]\nserde_json="=' + serde_version + '"\n')
+        (temp/'Cargo.toml').write_text('[package]\nname="maitri-mail-ipc-bench"\nversion="0.0.0"\nedition="2024"\n[dependencies]\nserde_json="=' + serde_version + '"\n')
         main_rs=r'''
 use std::io::{self,BufRead,Write};
 use serde_json::{Value,json};
@@ -49,7 +49,7 @@ fn main(){
   let request:Value=serde_json::from_str(&line.unwrap()).unwrap();
   let method=request["method"].as_str().unwrap();
   let result=match method{
-   "system.info"=>json!({"name":"omamail","protocol":1,"apiVersion":1,"version":"VERSION","methods":["bench.response"]}),
+   "system.info"=>json!({"name":"maitri-mail","protocol":1,"apiVersion":1,"version":"VERSION","methods":["bench.response"]}),
    "system.quit"=>json!({"quitReady":true}),
    "bench.response"=>{
      let index=request["params"]["index"].as_u64().unwrap() as usize;
@@ -66,7 +66,7 @@ fn main(){
         (temp/'src/main.rs').write_text(main_rs)
         shutil.copyfile(ROOT/'Cargo.lock',temp/'Cargo.lock')
         subprocess.run(['cargo','build','--offline','--release','--manifest-path',str(temp/'Cargo.toml'),'--target-dir',str(ROOT/'target/ipc-bench')],check=True)
-        binary=ROOT/'target/ipc-bench/release/omamail-ipc-bench'
+        binary=ROOT/'target/ipc-bench/release/maitri-mail-ipc-bench'
         shutil.copytree(ROOT/'ui/backend',temp/'backend')
         shutil.copytree(ROOT/'ui/message',temp/'message')
         qml=r'''

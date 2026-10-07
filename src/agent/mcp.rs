@@ -104,7 +104,7 @@ fn serve(
                     initialized = true;
                     Ok(
                         json!({"protocolVersion":"2024-11-05","capabilities":{"tools":{}},
-                        "serverInfo":{"name":"omamail","version":env!("CARGO_PKG_VERSION")}}),
+                        "serverInfo":{"name":"maitri-mail","version":env!("CARGO_PKG_VERSION")}}),
                     )
                 }
                 "ping" => Ok(json!({})),

@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 // The menu a right-click opens on text: what it offers a reader, what more
 // it offers an editor, and the two rows a link adds to either.
@@ -14,7 +14,7 @@ Item {
     text: "hello world"
   }
 
-  Omamail.TextMenu {
+  MaitriMail.TextMenu {
     id: menu
     anchors.fill: parent
     textColor: Qt.rgba(0.1, 0.1, 0.1, 1)

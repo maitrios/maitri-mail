@@ -2,7 +2,7 @@
 
 Required when touching HEY authentication, fetching, actions or presentation.
 
-- Use the official HEY CLI (`hey`), never private `app.hey.com` endpoints. It owns OAuth, keyring storage and refresh; Omamail holds authentication status and the executable path, not credentials.
+- Use the official HEY CLI (`hey`), never private `app.hey.com` endpoints. It owns OAuth, keyring storage and refresh; maitri mail holds authentication status and the executable path, not credentials.
 - `hey auth logout` signs the machine's CLI out for every consumer. Explain this beside sign-out; local forgetting alone would be undone by the next status read.
 - `HeyCli.js` owns argument vectors and JSON interpretation, not processes or message formatting. Request `--json` and check the envelope's `ok`; a refusal can still exit 0.
 - Message IDs are `<posting>:<topic>`. `seen`, `move`, `trash` and `spam` take the posting ID; `threads` and `reply` take the topic ID.

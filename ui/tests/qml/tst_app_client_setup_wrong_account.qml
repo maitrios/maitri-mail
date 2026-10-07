@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "BackendFixture.js" as BackendFixture
 
 // The shared Gmail OAuth client section in Settings ("Shared by every
@@ -22,13 +22,13 @@ Item {
     function hide(_id) {}
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: mailService
     shell: fakeShell
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-test" })
   }
 
-  Omamail.App {
+  MaitriMail.App {
     id: app
     service: mailService
     shell: fakeShell

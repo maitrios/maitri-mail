@@ -41,9 +41,9 @@ class Bridge(unittest.TestCase):
         self.bin = self.root / 'bin'
         self.bin.mkdir()
         self.env = dict(os.environ, XDG_STATE_HOME=str(self.root/'state'), PATH=str(self.bin)+':'+os.environ['PATH'])
-        self.store = self.root/'state/omamail/assistant'
-        self.tool('omarchy-default-agent','print("claude")')
-        for name in ('omarchy-launch-tui','omarchy-agent','xdg-terminal-exec'):
+        self.store = self.root/'state/maitri-mail/assistant'
+        self.tool('maitri-default-agent','print("claude")')
+        for name in ('maitri-launch-tui','maitri-agent','xdg-terminal-exec'):
             self.tool(name,f"from pathlib import Path\nPath({str(self.root/'TERMINAL')!r}).touch()\nraise SystemExit(9)")
         self.agent(SUCCESS)
         self.ids=[]
@@ -97,7 +97,7 @@ class Bridge(unittest.TestCase):
         self.assertEqual(folder.stat().st_mode&0o777,0o700)
         self.assertEqual((folder/'context.json').stat().st_mode&0o777,0o600)
         self.assertFalse((folder/'forbidden').exists())
-        self.tool('omarchy-default-agent','print("unsupported")')
+        self.tool('maitri-default-agent','print("unsupported")')
         child=self.call('new',value={'parent':ident,'prompt':'Shorter'})['id'];self.ids.append(child)
         result=self.wait(child)
         self.assertEqual(result['job']['draftKey'],'ada-draft')
@@ -214,7 +214,7 @@ emit({'type':'result','subtype':'success','result':'Final answer'})
 
     def test_unsupported_and_missing_provider(self):
         for selected in ('','codex','other'):
-            self.tool('omarchy-default-agent',f'print({selected!r})')
+            self.tool('maitri-default-agent',f'print({selected!r})')
             error=self.call('new',value={'messageId':'1','prompt':'p'},ok=False)
             self.assertIn('Claude',error)
         self.assertFalse(list(self.store.glob('*/job.json')))

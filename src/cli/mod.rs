@@ -6,10 +6,10 @@ mod output;
 
 #[derive(Parser)]
 #[command(
-    name = "omamail",
+    name = "maitri-mail",
     version,
     about = "Mail backend and command-line client",
-    after_help = "Examples:\n  omamail list --account me@example.org --json\n  omamail read MESSAGE_ID --json\n  omamail mark star MESSAGE_ID\n  omamail archive MESSAGE_ID\n  omamail archive MESSAGE_ID --execute\n  printf 'Hello\\n' | omamail send --to you@example.org --subject Hello --json\n\nMutations preview by default. Add --execute to apply them.\nOmitted --account uses the active account; message IDs and page tokens are opaque."
+    after_help = "Examples:\n  maitri-mail list --account me@example.org --json\n  maitri-mail read MESSAGE_ID --json\n  maitri-mail mark star MESSAGE_ID\n  maitri-mail archive MESSAGE_ID\n  maitri-mail archive MESSAGE_ID --execute\n  printf 'Hello\\n' | maitri-mail send --to you@example.org --subject Hello --json\n\nMutations preview by default. Add --execute to apply them.\nOmitted --account uses the active account; message IDs and page tokens are opaque."
 )]
 struct Cli {
     /// Print machine-readable JSON instead of human-readable tables
@@ -110,7 +110,7 @@ pub fn run() {
                 .exit();
         }
         if crate::backend::stdio::serve().is_err() {
-            eprintln!("omamail: backend I/O failed");
+            eprintln!("maitri-mail: backend I/O failed");
             std::process::exit(1);
         }
         return;
@@ -138,14 +138,14 @@ pub fn run() {
             .map_err(|_| "agent_runtime_failed")
             .and_then(|runtime| runtime.block_on(crate::agent::opencode::serve()));
         if let Err(error) = result {
-            eprintln!("omamail: {error}");
+            eprintln!("maitri-mail: {error}");
             std::process::exit(1);
         }
         return;
     }
     let session = crate::backend::Session::default();
     let runtime = crate::backend::runtime().unwrap_or_else(|_| {
-        eprintln!("omamail: could not start async runtime");
+        eprintln!("maitri-mail: could not start async runtime");
         std::process::exit(1);
     });
     let empty = serde_json::json!({});
@@ -180,7 +180,7 @@ pub fn run() {
         Command::Message { .. } => parse_message(),
         Command::Version => {
             if !cli.json {
-                println!("omamail {}", env!("CARGO_PKG_VERSION"));
+                println!("maitri-mail {}", env!("CARGO_PKG_VERSION"));
                 return;
             }
             Ok(serde_json::json!({"version":env!("CARGO_PKG_VERSION")}))

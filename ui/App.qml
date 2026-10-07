@@ -25,7 +25,7 @@ Item {
   property var shell: null
   property var manifest: null
   property var service: null
-  // The standalone host supplies its own client-side title bar. The Omarchy
+  // The standalone host supplies its own client-side title bar. The maitri
   // shell keeps ownership of plugin window chrome and leaves this disabled.
   property bool standaloneWindowChrome: false
   property bool opened: false
@@ -42,7 +42,7 @@ Item {
     && (service.backendRuntime.state !== "ready" || !service.backend.ready)
 
   readonly property string pluginId: manifest && manifest.id
-    ? String(manifest.id) : "omamail"
+    ? String(manifest.id) : "maitri.mail"
   property var composeRecovery: Recovery.empty()
   property bool composeRecoveryLoaded: false
   property bool composeRecoveryRestoring: false
@@ -275,7 +275,7 @@ Item {
   // reach for it. The service holds it because that is what writes it to disk.
   readonly property string bodyMode: service ? service.bodyMode : "reader"
   // Reading zoom for the message body only. The window's own chrome follows
-  // the theme's font scale, which is Omarchy's to set, not this app's. The
+  // the theme's font scale, which is maitri's to set, not this app's. The
   // service holds it because it is written to disk: a size somebody reached for
   // is theirs until they change it, not until they close the window.
   readonly property real bodyZoom: service ? service.bodyZoom : 1.0
@@ -1456,7 +1456,7 @@ Item {
 
   FloatingWindow {
     id: window
-    title: "Omamail"
+    title: "Mail"
     color: root.background
     implicitWidth: Style.space(980)
     implicitHeight: Style.space(720)
@@ -1610,7 +1610,7 @@ Item {
           Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: !root.compact
-            text: "Omamail"
+            text: "Mail"
             color: root.foreground
             font.family: root.fontFamily
             font.pixelSize: Style.font.title
@@ -2102,7 +2102,7 @@ Item {
           }
         }
 
-        // Composing takes the whole body. Omarchy's panel mechanism would give
+        // Composing takes the whole body. maitri's panel mechanism would give
         // a second window its own region, which is not what a reply is.
         ComposeView {
           id: compose

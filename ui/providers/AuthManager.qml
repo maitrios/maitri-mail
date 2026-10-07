@@ -61,7 +61,7 @@ Item {
   readonly property bool sessionBusy: refreshBusy || lookupRunning
   property string lastError: ""
 
-  // Everything the sign-in needs that Omarchy does not guarantee is present.
+  // Everything the sign-in needs that maitri does not guarantee is present.
   readonly property var requiredTools: []
   property var missingTools: []
   property bool toolsChecked: true

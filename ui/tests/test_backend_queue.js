@@ -284,7 +284,7 @@ if(!process.argv[2]) {
 if(process.argv[2]) {
   assert.notStrictEqual(process.platform,'win32','Native queue fixture requires Unix storage isolation')
   const {spawn}=require('child_process'), os=require('os')
-  const home=fs.mkdtempSync(path.join(os.tmpdir(),'omamail-queue-process-'))
+  const home=fs.mkdtempSync(path.join(os.tmpdir(),'maitri-mail-queue-process-'))
   const env={...process.env,HOME:home,XDG_CONFIG_HOME:path.join(home,'config'),
     XDG_DATA_HOME:path.join(home,'data'),XDG_STATE_HOME:path.join(home,'state'),
     XDG_CACHE_HOME:path.join(home,'cache'),XDG_RUNTIME_DIR:home,TMPDIR:home}
@@ -315,7 +315,7 @@ if(process.argv[2]) {
   }
   async function testNative() {
     const info=await call('system.info',{})
-    assert.strictEqual(info.name,'omamail')
+    assert.strictEqual(info.name,'maitri-mail')
     const work=[]
     for(let i=0;i<225;i++) work.push(call('providers.list',{}))
     const text='body \u00ff\r\n'.repeat(30000)

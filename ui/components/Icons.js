@@ -2,7 +2,7 @@
 
 // The app's icons, by name. Each is a Nerd Font glyph from the Material
 // Design Icons range the font bundles (`nf-md-*`, U+F0001–U+F1AF0) — the
-// same range the Omarchy shell draws its own bar and panel icons from, so
+// same range the maitri shell draws its own bar and panel icons from, so
 // the window's verbs look like the desktop's. The desktop font is
 // JetBrainsMono Nerd Font, which is what makes a character an icon.
 //

@@ -1867,7 +1867,7 @@ function documentFor(bodyHtml, colors) {
 // security argument for reading mode: structural, with a narrow numeric
 // exception rather than a list of removals.
 //
-// The type, the spacing, the measure and the colours are then Omamail's, and
+// The type, the spacing, the measure and the colours are then Mail's, and
 // are applied by `readerDocumentFor` from the theme.
 
 // Elements whose subtree holds nothing a reader wants. <style> and <script>
@@ -2927,7 +2927,7 @@ function readingColumnOffset(available, width) {
 // it stays trivially cheap to lay out even for the messages that were too heavy
 // in the first place.
 
-var IMAGE_LINK_PREFIX = "omarchy-image:"
+var IMAGE_LINK_PREFIX = "maitri-image:"
 
 // Closing one of these ends a line. Everything else is inline as far as a
 // plain-text reading is concerned.

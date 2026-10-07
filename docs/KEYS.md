@@ -1,4 +1,4 @@
-# Omamail — Keybindings
+# maitri mail — Keybindings
 
 How the keyboard works in this application, and why it is built this way.
 
@@ -179,7 +179,7 @@ In Drafts, `Enter`, `o` and `c` open the selected draft in the composer, with wh
 
 `n` and `p` walk the conversation rail beside the message on a provider whose listing collapses to conversations, opening the next and previous member in the same reader and stopping at the ends. The rail runs newest at the top, so `n` opens the stop below the open message, which is the older one, and `p` the stop above it, the newer — the keys follow the rail as it is drawn, the way `j` and `k` follow the list. They move the reader and nothing else. `j` and `k` move the list cursor and immediately open the representative of that row, leaving the conversation member selected with `n` or `p`. A message whose conversation has one member draws no rail, and both keys then do nothing. A right-click on a stop opens the same menu a row has — reply, archive, trash, spam, read, star — for that one message: the action reaches the member alone, where the same verb on the row reaches every counted member, and if the open message is the one taken out of the view the reader moves to the stop beside it, the newer one above or else the older below.
 
-The delayed-send toast does not create a keyboard context. The current screen keeps its normal keys while the toast is visible. A new draft, reply, or forward can open during the delay. The send button waits for the queued message, but every draft field remains editable. The toast button restores the queued message. `Alt+Z` does the same from every context. `Ctrl+Z` remains text undo while composing or searching. If another compose is open, Omamail saves it to the provider's Drafts storage before dropping its in-memory fallback. A failed save keeps that fallback.
+The delayed-send toast does not create a keyboard context. The current screen keeps its normal keys while the toast is visible. A new draft, reply, or forward can open during the delay. The send button waits for the queued message, but every draft field remains editable. The toast button restores the queued message. `Alt+Z` does the same from every context. `Ctrl+Z` remains text undo while composing or searching. If another compose is open, maitri mail saves it to the provider's Drafts storage before dropping its in-memory fallback. A failed save keeps that fallback.
 
 Back and `Escape` close an untouched composition immediately without saving, including a prefilled reply, forward, or existing provider draft. After a user edit, they open a modal with Cancel, Discard, and Save draft. Save draft initially has focus; Tab and Shift+Tab cycle through the buttons, and Enter activates the focused choice. Escape inside the popup cancels and returns to composing. A failed save restores the changed draft. The composer's bottom Discard button exits immediately.
 

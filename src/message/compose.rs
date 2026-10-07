@@ -139,7 +139,7 @@ fn boundary(value: &str) -> Result<String> {
     std::fs::File::open("/dev/urandom")
         .and_then(|mut f| f.read_exact(&mut random))
         .map_err(|_| "random_unavailable")?;
-    Ok(format!("=_Omamail_{}", URL_SAFE_NO_PAD.encode(random)))
+    Ok(format!("=_Mail_{}", URL_SAFE_NO_PAD.encode(random)))
 }
 fn nested(value: &str) -> String {
     let candidate: String = format!("alt_{value}").chars().take(60).collect();
@@ -207,10 +207,10 @@ fn message_id(v: &Value) -> Result<String> {
         host = domain(field(v, "accountAddress"));
     }
     if host.is_empty() {
-        host = "omamail.invalid".into();
+        host = "maitri-mail.invalid".into();
     }
     let random = boundary("")?.replace('=', "");
-    Ok(format!("<{}.omamail@{host}>", random))
+    Ok(format!("<{}.maitri-mail@{host}>", random))
 }
 fn date(v: &Value) -> String {
     let raw = header(field(v, "date")).unwrap_or_default();

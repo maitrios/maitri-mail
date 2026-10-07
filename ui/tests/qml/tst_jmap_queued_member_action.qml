@@ -16,7 +16,7 @@ Item {
     Account.MailAccount {
       id: mailbox
 
-      pluginDir: "/tmp/omamail-test"
+      pluginDir: "/tmp/maitri-mail-test"
       accountId: "jmap:ada@example.org"
       configuredEmail: "ada@example.org"
       providerId: "jmap"

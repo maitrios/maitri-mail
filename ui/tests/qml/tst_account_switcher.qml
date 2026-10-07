@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 // The mailbox list, and the row above it that stands for all of them.
 //
@@ -28,7 +28,7 @@ Item {
       unread: 2, active: true, signedIn: true, busy: false, error: "" }
   ]
 
-  Omamail.AccountSwitcher {
+  MaitriMail.AccountSwitcher {
     id: switcher
     anchors.fill: parent
     textColor: Qt.rgba(1, 1, 1, 1)

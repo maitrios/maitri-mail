@@ -73,7 +73,7 @@ fn credentials_preserve_linux_scope_and_native_key_is_unambiguous() {
 #[ignore = "requires an unlocked native credential store; run explicitly on each native runner"]
 fn credentials_native_contract() {
     let id = format!(
-        "omamail-native-{}-{}@example.invalid",
+        "maitri-mail-native-{}-{}@example.invalid",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -190,7 +190,7 @@ impl Drop for StoreOverride {
 }
 pub(crate) fn isolated_store(store: impl CredentialStore + 'static) -> StoreOverride {
     assert!(
-        std::env::var_os("OMAMAIL_ACTION_TEST_CHILD").is_some(),
+        std::env::var_os("MAITRI_MAIL_ACTION_TEST_CHILD").is_some(),
         "fixture requires process isolation"
     );
     let mut slot = STORE.lock().unwrap();
@@ -239,7 +239,7 @@ fn credentials_native_linux_retains_legacy_attribute_scopes() {
     use ::secret_service::{EncryptionType, blocking::SecretService};
     use std::collections::HashMap;
     let account = format!(
-        "omamail-legacy-{}-{}@example.invalid",
+        "maitri-mail-legacy-{}-{}@example.invalid",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -250,7 +250,7 @@ fn credentials_native_linux_retains_legacy_attribute_scopes() {
     let collection = service.get_default_collection().unwrap();
     let old = collection
         .create_item(
-            "Omamail synthetic legacy fixture",
+            "Mail synthetic legacy fixture",
             HashMap::from([
                 ("service", "omamail"),
                 ("kind", "refresh-token"),

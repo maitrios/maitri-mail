@@ -28,7 +28,7 @@ def main():
     parser.add_argument('--runner', default=shutil.which('qmltestrunner6') or '/usr/lib/qt6/bin/qmltestrunner')
     args = parser.parse_args()
     binary = str(args.binary.resolve())
-    with tempfile.TemporaryDirectory(prefix='omamail-published-agent-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-published-agent-') as temporary:
         root = Path(temporary).resolve()
         env = dict(os.environ, HOME=str(root), XDG_CONFIG_HOME=str(root/'config'),
                    XDG_CACHE_HOME=str(root/'cache'), XDG_STATE_HOME=str(root/'state'),
@@ -42,7 +42,7 @@ def main():
             path = root/'bin'/name
             path.write_text('#!'+sys.executable+'\n'+source+'\n')
             path.chmod(0o700)
-        tool('omarchy-default-agent', 'print("claude")')
+        tool('maitri-default-agent', 'print("claude")')
         tool('claude', '''import json, sys
 from pathlib import Path
 sys.stdin.read()
@@ -93,7 +93,7 @@ print(json.dumps({'type':'result','subtype':'success','result':'Synthetic Claude
         mock = imports/'Quickshell/Quickshell.qml'
         endpoint = f'http://127.0.0.1:{server.server_port}/{secret}'
         mock.write_text(mock.read_text().replace('function env(name) { return "" }',
-            'function env(name) { return name === "OMAMAIL_TEST_AGENT_URL" ? '+json.dumps(endpoint)+' : "" }'))
+            'function env(name) { return name === "MAITRI_MAIL_TEST_AGENT_URL" ? '+json.dumps(endpoint)+' : "" }'))
         try:
             result = subprocess.run([args.runner, '-input', str(ROOT/'ui/tests/compatibility/tst_published_agent.qml'),
                                      '-import', str(imports)], env=env, timeout=75)

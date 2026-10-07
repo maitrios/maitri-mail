@@ -21,7 +21,7 @@ Item {
       return
     }
     if (Number(backend.apiVersion) < 6) {
-      // The published backend still supports Claude through Omarchy's default.
+      // The published backend still supports Claude through maitri's default.
       // It validates that default at jobStart; providerStatus is API-6 only.
       resolvedProvider = ""
       providerAvailable = selectedAgent === "System default" && selectedModel === ""
@@ -230,8 +230,8 @@ Item {
           var code = String(error && error.message ? error.message : "")
           root.lastError = code === "agent_choose_claude"
             ? (Number(root.backend.apiVersion) >= 6
-              ? "Choose OpenCode, Codex or Claude in Settings → AI, or select one as Omarchy's default."
-              : "This backend supports Claude only. Select Claude as Omarchy's default AI agent.")
+              ? "Choose OpenCode, Codex or Claude in Settings → AI, or select one as maitri's default."
+              : "This backend supports Claude only. Select Claude as maitri's default AI agent.")
             : "Could not confirm AI started. Check the conversation before retrying."
           root.failed(root.lastError)
         }

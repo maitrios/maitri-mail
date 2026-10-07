@@ -158,7 +158,7 @@ async fn session(
             return Err("imap_idle_unsupported");
         }
         if advertises(&capabilities, "ID") {
-            command(&mut wire, "ID (\"name\" \"Omamail\")").await?;
+            command(&mut wire, "ID (\"name\" \"Mail\")").await?;
         }
         // EXAMINE rather than SELECT: watching must not clear \Recent.
         command(&mut wire, "EXAMINE \"INBOX\"").await?;

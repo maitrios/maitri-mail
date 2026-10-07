@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtTest 1.3
 import qs.Commons
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 Item {
   width: 600
@@ -69,7 +69,7 @@ Item {
     }
   }
 
-  Omamail.SettingsPage {
+  MaitriMail.SettingsPage {
     id: settings
     width: parent.width
     service: mailService

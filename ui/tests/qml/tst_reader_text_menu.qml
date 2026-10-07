@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtTest 1.3
 import qs.Commons
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 import "../../message/Html.js" as Html
 
 // A right-click on the message body: Copy for what is selected, and Open and
@@ -59,7 +59,7 @@ Item {
     function openExternal(url) { opened = opened.concat([String(url)]); return true }
   }
 
-  Omamail.MessageReader {
+  MaitriMail.MessageReader {
     id: reader
     width: 900
     height: 600

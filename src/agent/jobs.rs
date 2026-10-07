@@ -535,7 +535,7 @@ fn scan_heads(store: &Store) -> Result<Vec<Value>> {
 }
 async fn default_provider() -> Result<Provider> {
     let out = crate::process::async_run::run(
-        "omarchy-default-agent",
+        "maitri-default-agent",
         &[],
         &[],
         Duration::from_secs(5),
@@ -1224,7 +1224,7 @@ mod tests {
             }
         }
         let temp = Temp(std::env::temp_dir().canonicalize().unwrap().join(format!(
-                "omamail-head-index-{}-{}",
+                "maitri-mail-head-index-{}-{}",
                 std::process::id(),
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)

@@ -1,4 +1,4 @@
-# Contributing to Omamail
+# Contributing to maitri mail
 
 There is no issue tracker here. Issues are turned off on purpose: a bug report
 asks somebody else to reproduce a problem, decide what it means, and find the
@@ -41,17 +41,17 @@ it, described in terms of what it protects rather than what it opens.
 
 ## Project boundary
 
-Omamail has two hosts over one shared mail and calendar implementation: a [Quickshell plugin hosted by `omarchy-shell`][omarchy-shell], and the Qt host under `app/`. A shared behavior belongs under `ui/` or in the Rust backend; `ui/Service.qml`, `ui/BarWidget.qml`, and `ui/App.qml` remain the Omarchy entry points, while `app/qml/Main.qml` supplies the standalone composition and adapters.
+maitri mail has two hosts over one shared mail and calendar implementation: a [Quickshell plugin hosted by `maitri-shell`][maitri-shell], and the Qt host under `app/`. A shared behavior belongs under `ui/` or in the Rust backend; `ui/Service.qml`, `ui/BarWidget.qml`, and `ui/App.qml` remain the maitri entry points, while `app/qml/Main.qml` supplies the standalone composition and adapters.
 
-Helper scripts and the plugin's private Rust backend belong here. The same executable exposes CLI commands over its shared business modules, and both hosts use its persistent stdio RPC service. The standalone release bundles the exact backend beside its host. Separate daemons, SDKs, and automatic system-wide integrations remain outside this boundary. The plugin must not install commands or integrations into global user paths when it loads. Omarchy's plugin installer deliberately [clones and validates plugins, and can enable them, without running installation hooks][plugin-installation].
+Helper scripts and the plugin's private Rust backend belong here. The same executable exposes CLI commands over its shared business modules, and both hosts use its persistent stdio RPC service. The standalone release bundles the exact backend beside its host. Separate daemons, SDKs, and automatic system-wide integrations remain outside this boundary. The plugin must not install commands or integrations into global user paths when it loads. maitri's plugin installer deliberately [clones and validates plugins, and can enable them, without running installation hooks][plugin-installation].
 
 The first standalone scope includes mail, calendar, and native notifications. It deliberately exposes no tray, AI, or operating-system `mailto:` registration. Keep platform integration behind the native interfaces in `app/src/`; do not branch the shared UI by operating system.
 
-Programmatic access to mail may be useful, but it needs an integration boundary designed independently from the Quickshell plugin. Omarchy defines [IPC as the standard boundary for commands that communicate with the running shell][shell-ipc]; proposals that need a different lifecycle or ownership model should begin with a design discussion.
+Programmatic access to mail may be useful, but it needs an integration boundary designed independently from the Quickshell plugin. maitri defines [IPC as the standard boundary for commands that communicate with the running shell][shell-ipc]; proposals that need a different lifecycle or ownership model should begin with a design discussion.
 
-[omarchy-shell]: https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md
-[plugin-installation]: https://github.com/omacom/omarchy/blob/quattro/manual/32-shell-plugins.md#adding-a-plugin-from-git
-[shell-ipc]: https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md#ipc
+[maitri-shell]: https://github.com/maitrios/maitri/blob/main/docs/maitri-shell.md
+[plugin-installation]: https://github.com/maitrios/maitri/blob/main/docs/maitri-shell.md#installing-a-third-party-plugin
+[shell-ipc]: https://github.com/maitrios/maitri/blob/main/docs/maitri-shell.md#ipc
 
 ```bash
 ./dev backend    # build the private backend for development
@@ -63,7 +63,7 @@ make validate    # node tests, source regressions, QML tests, qmllint, manifest
 
 `make app-build` needs Rust, CMake 3.21 or newer, and Qt 6.5 or newer. On Linux, the Qt DBus development component is also required. It builds the backend with `--no-default-features --features standalone`, so the resulting process has no AI worker surface. `make app-run` sets only the development resource and bundled-backend overrides needed to run that build.
 
-`make validate` needs `node`, `python3`, Qt 6 QML test tooling (`qt6-declarative` on Arch, `qt6-declarative-dev-tools` and `qml6-module-qttest` on Debian and Ubuntu) and the `omarchy` CLI. It has to be green before you open the pull request, and green on your machine — nothing in CI runs it for you. Standalone changes must also pass `make test-app-qml` and the native platform gates described in [Backend runtime](docs/BACKEND-RUNTIME.md).
+`make validate` needs `node`, `python3`, Qt 6 QML test tooling (`qt6-declarative` on Arch, `qt6-declarative-dev-tools` and `qml6-module-qttest` on Debian and Ubuntu) and the `maitri` CLI. It has to be green before you open the pull request, and green on your machine — nothing in CI runs it for you. Standalone changes must also pass `make test-app-qml` and the native platform gates described in [Backend runtime](docs/BACKEND-RUNTIME.md).
 
 ## How the change gets made
 
@@ -102,14 +102,14 @@ code once and watch it fail, and say so in the pull request.
 
 ## If you touched the interface
 
-- Follow the **omarchy-style** skill's guidance — Omamail is an Omarchy
+- Follow the **maitri-style** skill's guidance — maitri mail is a maitri
   application before it is a mail client, and its look is not a matter of taste
   per pull request. If your agent does not carry that skill, take the existing
   components as the specification and change nothing about the visual language
   that the change did not require. `AGENTS.md`'s *Colors*, *UI labels* and
   *Popups* sections are the same rules where they are specific to this
   codebase, and `tests/test_source.sh` enforces the part of them that grep can.
-- **Test it on a screen, by hand. This is required and nothing substitutes for it.** For the plugin, register your development checkout with the Omarchy shell and follow [the development runtime instructions](docs/BACKEND-RUNTIME.md); click the envelope in the bar and drive the change with the mouse and keyboard in a light theme and a dark one, at both window sizes. For the standalone host, run `make app-run` on each affected platform and repeat the applicable mail, calendar, notification, and window checks. The offscreen QML tests prove focus and routing; they cannot see that a control hangs four pixels out of its row.
+- **Test it on a screen, by hand. This is required and nothing substitutes for it.** For the plugin, register your development checkout with the maitri shell and follow [the development runtime instructions](docs/BACKEND-RUNTIME.md); click the envelope in the bar and drive the change with the mouse and keyboard in a light theme and a dark one, at both window sizes. For the standalone host, run `make app-run` on each affected platform and repeat the applicable mail, calendar, notification, and window checks. The offscreen QML tests prove focus and routing; they cannot see that a control hangs four pixels out of its row.
 - Put a screenshot in the pull request, and say which themes and sizes you
   drove it in.
 

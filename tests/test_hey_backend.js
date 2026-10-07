@@ -19,7 +19,7 @@ vm.createContext(context)
 for (const name of ["newHandle", "abortRequest", "usesBackend", "backendRead", "rememberResource", "listMessages", "getMessages", "getMessage", "forget"])
   vm.runInContext(method(name), context)
 let pending, request
-context.backend = { executable: "/bin/omamail", call(method, params, callback) {
+context.backend = { executable: "/bin/maitri-mail", call(method, params, callback) {
   request = { method, params }; pending = callback
 } }
 const resource = { id: "1:2", payload: { headers: [{ name: "Subject", value: "Known" }] }, labelIds: ["UNREAD"], snippet: "Preview", internalDate: "1" }

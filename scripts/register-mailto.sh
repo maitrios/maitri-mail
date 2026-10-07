@@ -1,5 +1,5 @@
 #!/bin/sh
-# Registers Omamail as the desktop handler for mailto: links.
+# Registers Mail as the desktop handler for mailto: links.
 #
 # The plugin is not an installed application until this file exists: XDG only
 # offers handlers that ship a .desktop claiming the scheme. The Exec path is
@@ -24,12 +24,12 @@ while [ "$#" -gt 0 ]; do
 done
 plugin_dir=$(cd "$plugin_dir" && pwd)
 [ -x "$plugin_dir/scripts/mailto.sh" ] || fail 'register-mailto.sh: mailto.sh is missing'
-[ -f "$plugin_dir/ui/assets/omamail.svg" ] || fail 'register-mailto.sh: omamail.svg is missing'
+[ -f "$plugin_dir/ui/assets/maitri-mail.svg" ] || fail 'register-mailto.sh: maitri-mail.svg is missing'
 
 data_home=${XDG_DATA_HOME:-${HOME:?}/.local/share}
 apps="$data_home/applications"
 mkdir -p "$apps"
-desktop="$apps/omamail.desktop"
+desktop="$apps/maitri-mail.desktop"
 # First appearance on the machine claims mailto. Later starts refresh the
 # Exec path and leave a default the user has since changed alone.
 if [ ! -f "$desktop" ]; then
@@ -39,10 +39,10 @@ fi
 cat > "$desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=Omamail
-Comment=Email client for Omarchy
+Name=Mail
+Comment=Email client for maitri
 Exec=$plugin_dir/scripts/mailto.sh %u
-Icon=$plugin_dir/ui/assets/omamail.svg
+Icon=$plugin_dir/ui/assets/maitri-mail.svg
 Terminal=false
 StartupNotify=false
 MimeType=x-scheme-handler/mailto;
@@ -55,9 +55,9 @@ fi
 
 if [ "$claim_default" = true ]; then
   if command -v xdg-mime >/dev/null 2>&1; then
-    xdg-mime default omamail.desktop x-scheme-handler/mailto >/dev/null 2>&1 || true
+    xdg-mime default maitri-mail.desktop x-scheme-handler/mailto >/dev/null 2>&1 || true
   fi
   if command -v xdg-settings >/dev/null 2>&1; then
-    xdg-settings set default-url-scheme-handler mailto omamail.desktop >/dev/null 2>&1 || true
+    xdg-settings set default-url-scheme-handler mailto maitri-mail.desktop >/dev/null 2>&1 || true
   fi
 fi

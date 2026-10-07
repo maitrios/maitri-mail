@@ -74,7 +74,7 @@ Column {
     width: parent.width
     textFormat: Text.PlainText
     text: !root.available ? "Update the mail backend to choose an AI agent or model (API 6 required)."
-      : root.error || (root.service.agentAvailable === false ? root.service.agentUnavailableReason + "\n" : "") + "System default follows Omarchy. Leave the model blank to use the agent's default. "
+      : root.error || (root.service.agentAvailable === false ? root.service.agentUnavailableReason + "\n" : "") + "System default follows maitri. Leave the model blank to use the agent's default. "
         + "OpenCode takes provider/model or provider/model#variant; Codex and Claude take model names. "
         + "Changing the agent or model starts fresh chats. Previous chats remain read-only in History."
     color: !root.available || root.error !== "" ? root.accentColor : root.dimColor

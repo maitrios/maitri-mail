@@ -45,7 +45,7 @@ async fn acquire(p: &Value) -> Result<(Wire, String)> {
     // sent once on this connection before any mailbox can be selected.
     let capabilities = command(&mut wire, "CAPABILITY").await?;
     if advertises(&capabilities, "ID") {
-        command(&mut wire, "ID (\"name\" \"Omamail\")").await?;
+        command(&mut wire, "ID (\"name\" \"Mail\")").await?;
     }
     Ok((wire, key))
 }
@@ -329,7 +329,7 @@ async fn handshake(
     }
     if transport == Transport::StartTls {
         if smtp {
-            smtp_cmd(&mut w, "EHLO omamail", 250).await?;
+            smtp_cmd(&mut w, "EHLO maitri-mail", 250).await?;
             smtp_cmd(&mut w, "STARTTLS", 220).await?;
         } else {
             command(&mut w, "STARTTLS").await?;
@@ -803,7 +803,7 @@ async fn send(p: &Value) -> Result<Value> {
     let encoded = smtp_data(&body)?;
     let (user, secret) = credentials(p)?;
     let mut w = connect(&p["settings"], true).await?;
-    smtp_cmd(&mut w, "EHLO omamail", 250).await?;
+    smtp_cmd(&mut w, "EHLO maitri-mail", 250).await?;
     let auth = if p["oauth"] == true {
         format!(
             "AUTH XOAUTH2 {}",

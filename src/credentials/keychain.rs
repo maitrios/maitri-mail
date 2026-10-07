@@ -47,7 +47,7 @@ mod tests {
         use security_framework::passwords::{PasswordOptions, generic_password};
         let mut options = PasswordOptions::new_generic_password(SERVICE, "synthetic-denied-query");
         options.use_protected_keychain();
-        options.set_access_group("org.omamail.synthetic.unentitled");
+        options.set_access_group("org.maitri-mail.synthetic.unentitled");
         let failure =
             generic_password(options).expect_err("an unentitled access group must be refused");
         assert_eq!(

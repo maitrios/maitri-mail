@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../account/Unified.js" as Unified
 import "ModelFixture.js" as NativeModel
 
@@ -30,15 +30,15 @@ Item {
     function hide(_id) {}
   }
 
-  Omamail.Service {
+  MaitriMail.Service {
     id: service
     shell: fakeShell
-    manifest: ({ id: "omamail", __sourceDir: "/tmp/omamail-unified-test" })
+    manifest: ({ id: "maitri.mail", __sourceDir: "/tmp/maitri-mail-unified-test" })
   }
 
   Component {
     id: keyboardApp
-    Omamail.App {}
+    MaitriMail.App {}
   }
 
   TestCase {

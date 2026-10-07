@@ -24,11 +24,11 @@ class Diagnostics(unittest.TestCase):
         self.bin.mkdir()
         self.env = dict(os.environ, XDG_STATE_HOME=str(self.root / 'state'),
                         PATH=str(self.bin) + ':' + os.environ['PATH'])
-        launcher = self.bin / 'omarchy-agent'
+        launcher = self.bin / 'maitri-agent'
         launcher.write_text('#!/usr/bin/env python3\nimport os,sys,json\nfrom pathlib import Path\n'
                             'Path(os.environ["XDG_STATE_HOME"]).joinpath("launched").write_text(json.dumps(sys.argv[1:]))\n')
         launcher.chmod(0o700)
-        self.folder = self.root / 'state/omamail/diagnostics'
+        self.folder = self.root / 'state/maitri-mail/diagnostics'
 
     def call(self, mode, events=None, ok=True):
         result = subprocess.run(['python3', str(SCRIPT), mode],
@@ -179,10 +179,10 @@ class Diagnostics(unittest.TestCase):
         self.assertEqual((self.folder / 'report.txt').stat().st_mode & 0o777, 0o600)
 
     def test_open_does_not_kill_a_running_agent_window(self):
-        # omarchy-agent execs a terminal that stays in the foreground. A wait
+        # maitri-agent execs a terminal that stays in the foreground. A wait
         # with timeout=15 used to SIGKILL that window. The fake launcher here
         # sleeps like that TUI; open must return without reaping it.
-        launcher = self.bin / 'omarchy-agent'
+        launcher = self.bin / 'maitri-agent'
         launcher.write_text(
             '#!/usr/bin/env python3\n'
             'import json, os, sys, time\n'
@@ -250,7 +250,7 @@ class Diagnostics(unittest.TestCase):
         state.mkdir()
         outside = self.root / 'outside'
         outside.mkdir()
-        (state / 'omamail').symlink_to(outside, target_is_directory=True)
+        (state / 'maitri-mail').symlink_to(outside, target_is_directory=True)
         self.call('record', [self.event()], ok=False)
         self.assertEqual(list(outside.iterdir()), [])
 

@@ -11,7 +11,7 @@ import qs.Ui
 //
 // The file comes from `Registry.logo`, and the directory from here: the source
 // is resolved against this component's own URL, so it is right whether the
-// plugin was cloned into the Omarchy plugins directory or symlinked from a
+// plugin was cloned into the maitri plugins directory or symlinked from a
 // checkout. Nothing has to be told where it was installed.
 Item {
   id: root

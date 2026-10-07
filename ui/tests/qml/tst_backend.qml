@@ -6,7 +6,7 @@ Item {
   Component {
     id: backendFactory
     BackendModule.Backend {
-      executable: "/tmp/omamail-synthetic-backend"
+      executable: "/tmp/maitri-mail-synthetic-backend"
       expectedVersion: "0.8.2"
       expectedApiVersion: 1
     }
@@ -282,7 +282,7 @@ Item {
     function makeReady(backend) {
       var process = start(backend)
       reply(process, requests(process)[0], {
-        name: "omamail",
+        name: "maitri-mail",
         apiVersion: 1, protocol: 1,
         version: "0.8.2",
         methods: ["system.info", "system.quit"]
@@ -317,7 +317,7 @@ Item {
       process.exited(1)
       backend.executable = ""
       wait(0)
-      backend.executable = "/tmp/omamail-synthetic-backend"
+      backend.executable = "/tmp/maitri-mail-synthetic-backend"
       wait(0)
       compare(process.running, true)
       compare(backend.ready, false)
@@ -360,7 +360,7 @@ Item {
       var backend = makeBackend()
       var process = start(backend)
       reply(process, requests(process)[0], {
-        name: "omamail",
+        name: "maitri-mail",
         apiVersion: 1, protocol: 1,
         version: "0.8.1",
         methods: ["system.info", "system.quit"]
@@ -379,7 +379,7 @@ Item {
       backend.shutdown(function(error) { calls++; stoppedWith = error })
 
       reply(process, requests(process)[0], {
-        name: "omamail",
+        name: "maitri-mail",
         apiVersion: 1, protocol: 1,
         version: "0.8.1",
         methods: ["system.info", "system.quit"]

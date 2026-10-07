@@ -245,7 +245,7 @@ Rectangle {
     reminderField.text = "10"
     availability = "opaque"
     eventVisibility = "default"
-    conferenceRequestId = "omamail-" + Date.now().toString(36) + "-" + Math.random().toString(36).substring(2)
+    conferenceRequestId = "maitri-mail-" + Date.now().toString(36) + "-" + Math.random().toString(36).substring(2)
     editingSourceId = ""
     writePending = false
     titleField.text = ""
@@ -313,7 +313,7 @@ Rectangle {
     availability = event.transparency || "opaque"
     eventVisibility = event.visibility || "default"
     timeZoneField.text = String(event.timeZone || "")
-    conferenceRequestId = "omamail-" + Date.now().toString(36) + "-" + Math.random().toString(36).substring(2)
+    conferenceRequestId = "maitri-mail-" + Date.now().toString(36) + "-" + Math.random().toString(36).substring(2)
     editingSourceId = String(sourceId || "")
     writePending = false
     titleField.text = String(event.summary || "")

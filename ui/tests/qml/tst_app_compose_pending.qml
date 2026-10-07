@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../.." as Omamail
+import "../.." as MaitriMail
 
 Item {
   width: 900
@@ -191,7 +191,7 @@ Item {
     signal replyFailed()
   }
 
-  Omamail.App {
+  MaitriMail.App {
     id: app
     service: mailService
   }

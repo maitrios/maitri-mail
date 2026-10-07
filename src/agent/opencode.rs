@@ -30,9 +30,9 @@ use tokio::{
 type Result<T> = std::result::Result<T, &'static str>;
 fn agent(proposals: bool) -> &'static str {
     if proposals {
-        "omamail"
+        "maitri-mail"
     } else {
-        "omamail-events"
+        "maitri-mail-events"
     }
 }
 
@@ -40,11 +40,11 @@ fn configuration() -> Result<String> {
     let exe = std::env::current_exe().map_err(|_| "agent_worker_unavailable")?;
     let mut configuration = super::config::opencode()?;
     let restricted = json!({"agents":{
-        "omamail":{"mode":"primary","system":super::worker::MAIL_ROLE,
-            "permissions":[{"action":"*","resource":"*","effect":"deny"},{"action":"omamail_propose_draft","resource":"*","effect":"allow"}]},
-        "omamail-events":{"mode":"primary","system":super::worker::MAIL_ROLE,
+        "maitri-mail":{"mode":"primary","system":super::worker::MAIL_ROLE,
+            "permissions":[{"action":"*","resource":"*","effect":"deny"},{"action":"maitri-mail_propose_draft","resource":"*","effect":"allow"}]},
+        "maitri-mail-events":{"mode":"primary","system":super::worker::MAIL_ROLE,
             "permissions":[{"action":"*","resource":"*","effect":"deny"}]}},
-        "snapshots":false,"warming":false,"mcp":{"servers":{"omamail":{"type":"local","command":[exe,"agent-mcp","workspace"],"codemode":false}}}});
+        "snapshots":false,"warming":false,"mcp":{"servers":{"maitri-mail":{"type":"local","command":[exe,"agent-mcp","workspace"],"codemode":false}}}});
     for (key, value) in restricted.as_object().unwrap() {
         configuration[key] = value.clone();
     }
@@ -70,9 +70,9 @@ fn directory() -> Result<PathBuf> {
         .parent()
         .and_then(|p| p.parent())
         .ok_or("agent_storage_unavailable")?;
-    crate::cache::directories(base, &["omamail", "agent-runtime"], true)?
+    crate::cache::directories(base, &["maitri-mail", "agent-runtime"], true)?
         .ok_or("agent_storage_unavailable")?;
-    Ok(base.join("omamail/agent-runtime"))
+    Ok(base.join("maitri-mail/agent-runtime"))
 }
 fn secret() -> Result<String> {
     let mut bytes = [0u8; 32];
@@ -194,7 +194,7 @@ impl Lease {
                 let value = self.request(reqwest::Method::GET, &endpoint, None).await?;
                 if value["data"].as_array().is_some_and(|rows| {
                     rows.iter()
-                        .any(|r| r["name"] == "omamail" && r["status"]["status"] == "connected")
+                        .any(|r| r["name"] == "maitri-mail" && r["status"]["status"] == "connected")
                 }) {
                     return Ok(());
                 }

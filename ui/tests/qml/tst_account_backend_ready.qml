@@ -7,7 +7,7 @@ Item {
   Component {
     id: backendFactory
     BackendModule.Backend {
-      executable: "/synthetic/runtime/bin/omamail"
+      executable: "/synthetic/runtime/bin/maitri-mail"
       expectedVersion: "0.8.2"
       expectedApiVersion: 1
       launchEnabled: false

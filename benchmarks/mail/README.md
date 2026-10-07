@@ -30,7 +30,7 @@ display projection checked. This is separate from the projection optimization
 above, which was measured before changing the bridge.
 
 ```sh
-python3 benchmarks/mail/reader_concurrency.py --binary target/release/omamail
+python3 benchmarks/mail/reader_concurrency.py --binary target/release/maitri-mail
 ```
 
 Each level uses the same eight message IDs and 16 operations per round, for

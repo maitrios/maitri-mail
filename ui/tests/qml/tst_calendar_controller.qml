@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../calendar" as Omamail
+import "../../calendar" as MaitriMail
 
 Item {
   width: 400
@@ -50,10 +50,10 @@ Item {
     }
   }
 
-  Omamail.CalendarController {
+  MaitriMail.CalendarController {
     id: controller
     service: mailService
-    pluginDir: "/tmp/omamail-test"
+    pluginDir: "/tmp/maitri-mail-test"
     accountId: "imap:work@example.com"
     sourceList: ({
       version: 1,

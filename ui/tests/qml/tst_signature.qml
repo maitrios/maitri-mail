@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 import "NativeDomainFixture.js" as Native
 
 // A signature is placed by the compose view and edited on the settings page,
@@ -107,7 +107,7 @@ Item {
     }
   }
 
-  Omamail.ComposeView {
+  MaitriMail.ComposeView {
     id: compose
     anchors.fill: parent
     service: mailService
@@ -121,7 +121,7 @@ Item {
     panelFontFamily: "monospace"
   }
 
-  Omamail.SettingsPage {
+  MaitriMail.SettingsPage {
     id: settings
     width: parent.width
     service: mailService

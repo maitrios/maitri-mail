@@ -17,7 +17,7 @@ def descendants(pid):
 
 
 def shutdown(root):
-    directory = root / 'state/omamail/agent-runtime'
+    directory = root / 'state/maitri-mail/agent-runtime'
     for path in directory.glob('server.sock'):
         with socket.socket(socket.AF_UNIX) as client:
             client.settimeout(5)

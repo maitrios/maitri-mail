@@ -1,6 +1,6 @@
 # Rust backend migration
 
-The CLI and the Omarchy plugin share a persistent Rust backend. The shell still
+The CLI and the maitri plugin share a persistent Rust backend. The shell still
 constructs `Service.qml`, which owns the backend process independently of any
 window. QML owns theme, focus, layout, rendering and interaction state. Network
 requests use native asynchronous Rust transports; HEY is the deliberate
@@ -18,7 +18,7 @@ implemented paths from live-provider compatibility evidence.
 
 `Service.qml` starts the plugin-private exact backend version, validates its
 exact version/protocol/API handshake and exposes correlated calls with pending-request
-limits and deadlines. `OMAMAIL_BIN` selects an explicit development executable.
+limits and deadlines. `MAITRI_MAIL_BIN` selects an explicit development executable.
 Migrated operations report an unavailable backend instead of silently falling
 back to QML networking. `info` lists implemented RPC methods; it is not a claim
 that every method has passed live-provider interoperability testing.
@@ -34,7 +34,7 @@ dispatch, pipes and uploads. Shared account and MIME logic live in
 tests stay with their modules; `tests/` holds integration tests.
 
 Run `make install` to compile the release binary, atomically install it into
-`${XDG_DATA_HOME:-~/.local/share}/omamail/bin/omamail`, and install/link the plugin locally. `make install-backend-local`
+`${XDG_DATA_HOME:-~/.local/share}/maitri-mail/bin/maitri-mail`, and install/link the plugin locally. `make install-backend-local`
 updates just the private binary. `make test-local` runs the local suite and the
 real offscreen backend process harness. For development, use `./dev backend` and
 `make test-rust`; `./dev run` builds and prints instructions
@@ -46,11 +46,11 @@ including when piped. The global `--json` flag may appear before or after a
 subcommand and selects indented JSON without changing the result's data shape:
 
 ```sh
-omamail info
-omamail accounts list
-omamail providers list --json
-printf '{}' | omamail call system.info --json
-omamail message parse --json < message.eml
+maitri-mail info
+maitri-mail accounts list
+maitri-mail providers list --json
+printf '{}' | maitri-mail call system.info --json
+maitri-mail message parse --json < message.eml
 ```
 
 Pretty-mode operation errors go to stderr and exit 1; JSON-mode operation errors
@@ -59,7 +59,7 @@ Invalid command syntax exits 2. `--version` retains the installer's plain versio
 probe; `version --json` returns a JSON version object. `serve` always speaks the
 line-framed JSON-RPC protocol and rejects `--json`.
 
-`omamail info` prints a human-readable table; add `--json` for JSON. `omamail serve` reads newline-terminated JSON
+`maitri-mail info` prints a human-readable table; add `--json` for JSON. `maitri-mail serve` reads newline-terminated JSON
 requests on persistent stdin/stdout pipes using JSON-RPC 2.0 envelopes. QML starts one backend and communicate directly through these pipes, without invoking CLI commands for data operations. Unix sockets are not used. CLI commands share the Rust domain implementation; they do not currently attach to the GUI process.
 
 Example request:
@@ -120,8 +120,8 @@ Disconnects discard partial transfers. This
 bounds pipe frames; it does not remove the cost of reconstructing and parsing a
 large result on the UI thread. Future attachment reads should use blob handles.
 
-`omamail accounts list` and `accounts.list` read the desktop's
-`$XDG_CONFIG_HOME/omamail/accounts.json` (default `$HOME/.config`). Empty params
+`maitri-mail accounts list` and `accounts.list` read the desktop's
+`$XDG_CONFIG_HOME/maitri-mail/accounts.json` (default `$HOME/.config`). Empty params
 are required. The result contains `accounts` and `activeId`; account summaries
 contain only `id`, `email`, `provider`, `label` and `pending`. Credentials and
 server settings are never returned. The reader refuses nonregular files, final
@@ -137,20 +137,20 @@ operations as the API 3 methods `mail.list`, `mail.read`, `mail.act`, and
 API 2. These commands require a build containing API 3 until a backend release
 ships them; see [backend versioning](BACKEND-RUNTIME.md).
 
-Use `omamail accounts list --json` to find an account ID. Omitting `--account`
+Use `maitri-mail accounts list --json` to find an account ID. Omitting `--account`
 uses the active account. An explicit unknown account fails with
 `mail_account_unknown`, without falling back to another account. IDs and page
 tokens are opaque: copy them exactly from returned results, including punctuation.
 
 ```sh
-omamail list --account me@example.org --json
-omamail list --mailbox unread --limit 10 --json
-omamail list --mailbox inbox --query 'meeting' --page-token 'RETURNED_TOKEN' --json
-omamail read 'MESSAGE_ID' --account me@example.org --json
-omamail mark star 'MESSAGE_ID' --json
-omamail mark star 'MESSAGE_ID' --execute --json
-omamail archive 'MESSAGE_ID' --json
-omamail archive 'MESSAGE_ID' --execute --json
+maitri-mail list --account me@example.org --json
+maitri-mail list --mailbox unread --limit 10 --json
+maitri-mail list --mailbox inbox --query 'meeting' --page-token 'RETURNED_TOKEN' --json
+maitri-mail read 'MESSAGE_ID' --account me@example.org --json
+maitri-mail mark star 'MESSAGE_ID' --json
+maitri-mail mark star 'MESSAGE_ID' --execute --json
+maitri-mail archive 'MESSAGE_ID' --json
+maitri-mail archive 'MESSAGE_ID' --execute --json
 ```
 
 `list` defaults to Inbox and 25 rows; `--limit` accepts 1–100. Mailboxes are
@@ -163,7 +163,7 @@ The `message.links` array contains `{text, url}` entries from HTML anchors in th
 
 Destinations are data only: extracting them does not resolve their DNS, open a browser, fetch links, send unsubscribe mail or submit an unsubscribe POST. Exported destinations are absolute HTTP(S) links passing the reader's public-host spelling policy, or nonempty `mailto:` links; controls, whitespace, backslashes and HTTP credentials are refused. This is not a DNS/public-address guarantee or sender authentication. `oneClick` reports a declaration, not authorization or proof of DKIM coverage. A caller executing a request must independently enforce its network and approval policy. Raw HTML, other headers, image/resource URLs and document attributes remain excluded.
 
-For example, `omamail read MESSAGE_ID --account ACCOUNT_ID --json` now includes:
+For example, `maitri-mail read MESSAGE_ID --account ACCOUNT_ID --json` now includes:
 
 ```json
 {
@@ -205,8 +205,8 @@ absolute regular-file paths. `--from` must identify a sender belonging to the
 selected account; otherwise its default identity is used.
 
 ```sh
-printf 'Hello,\nThe report is ready.\n' | omamail send --account me@example.org --to you@example.org --subject 'Report ready' --json
-printf 'Hello,\nThe report is ready.\n' | omamail send --account me@example.org --to you@example.org --subject 'Report ready' --execute --json
+printf 'Hello,\nThe report is ready.\n' | maitri-mail send --account me@example.org --to you@example.org --subject 'Report ready' --json
+printf 'Hello,\nThe report is ready.\n' | maitri-mail send --account me@example.org --to you@example.org --subject 'Report ready' --execute --json
 ```
 
 Executed actions report confirmed `succeededIds` and `failedIds`; partial
@@ -269,7 +269,7 @@ verbatim into user-facing errors. Synthetic executable fixtures establish comman
 and process behavior, not compatibility with every released HEY version.
 
 `message.parse` and `message.parseUpload` use the shared Rust MIME parser.
-`omamail message parse --json` reads up to 16 MiB of RFC 822 bytes from stdin;
+`maitri-mail message parse --json` reads up to 16 MiB of RFC 822 bytes from stdin;
 the direct RPC accepts `raw` as unpadded base64url within the frame limit. The
 parser preserves decoded octets, MIME hierarchy and attachment part IDs. HTML
 in that payload remains untrusted source markup until `message.render` applies

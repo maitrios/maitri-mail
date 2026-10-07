@@ -225,7 +225,7 @@ mod tests {
     impl Fixture {
         fn new() -> Self {
             let root = std::env::temp_dir().canonicalize().unwrap().join(format!(
-                "omamail-client-test-{}-{}",
+                "maitri-mail-client-test-{}-{}",
                 std::process::id(),
                 SERIAL.fetch_add(1, Ordering::Relaxed)
             ));
@@ -261,10 +261,10 @@ mod tests {
     #[test]
     fn reads_only_the_platform_config_root() {
         let name = std::thread::current().name().unwrap().to_owned();
-        if std::env::var("OMAMAIL_GMAIL_DIR_TEST_CHILD").as_deref() != Ok(name.as_str()) {
+        if std::env::var("MAITRI_MAIL_GMAIL_DIR_TEST_CHILD").as_deref() != Ok(name.as_str()) {
             let output = std::process::Command::new(std::env::current_exe().unwrap())
                 .args(["--exact", &name, "--test-threads=1", "--nocapture"])
-                .env("OMAMAIL_GMAIL_DIR_TEST_CHILD", &name)
+                .env("MAITRI_MAIL_GMAIL_DIR_TEST_CHILD", &name)
                 .output()
                 .unwrap();
             assert!(
@@ -285,7 +285,7 @@ mod tests {
             fixture.root.join("downloads"),
         )
         .unwrap();
-        assert_eq!(dirs.config_directory(), fixture.config.join("omamail"));
+        assert_eq!(dirs.config_directory(), fixture.config.join("maitri-mail"));
         let _override =
             crate::platform::dirs::install_test_override(dirs, fixture.root.join("different-home"))
                 .unwrap();

@@ -480,7 +480,7 @@ async fn capabilities(w: &mut Wire, id: bool) {
     .await
     .unwrap();
     if id {
-        assert_eq!(line(w).await.unwrap(), b"O1 ID (\"name\" \"Omamail\")\r\n");
+        assert_eq!(line(w).await.unwrap(), b"O1 ID (\"name\" \"Mail\")\r\n");
         write(w, b"O1 OK identified\r\n").await.unwrap();
     }
 }

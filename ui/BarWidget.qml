@@ -12,10 +12,10 @@ import "bar/Bridge.js" as BarBridge
 BarWidget {
   id: root
 
-  moduleName: "omamail"
+  moduleName: "maitri.mail"
 
   readonly property var directService: bar && bar.shell
-    ? bar.shell.serviceFor("omamail") : null
+    ? bar.shell.serviceFor("maitri.mail") : null
   readonly property var gmail: directService
     || (bridgeApi && bridgeState ? bridgedStatus : null)
   property var bridgeApi: null
@@ -42,7 +42,7 @@ BarWidget {
     readonly property bool windowOpen: !!root.bridgeState && root.bridgeState.windowOpen
     readonly property bool showBarIcon: !root.bridgeState || root.bridgeState.showBarIcon
     readonly property int unreadTotal: root.bridgeState ? root.bridgeState.unreadTotal : 0
-    readonly property string barTooltip: root.bridgeState ? root.bridgeState.barTooltip : "Omamail"
+    readonly property string barTooltip: root.bridgeState ? root.bridgeState.barTooltip : "Mail"
     readonly property string contentDirection: root.bridgeState ? root.bridgeState.contentDirection : ""
     readonly property var barMessages: root.bridgeState ? root.bridgeState.barMessages : []
     readonly property var barEvents: root.bridgeState ? root.bridgeState.barEvents : []
@@ -103,16 +103,16 @@ BarWidget {
   function openWindow() {
     close()
     if (!bar || !bar.shell) return
-    if (typeof bar.shell.toggle === "function") bar.shell.toggle("omamail", "{}")
-    else if (typeof bar.shell.summon === "function") bar.shell.summon("omamail", "{}")
+    if (typeof bar.shell.toggle === "function") bar.shell.toggle("maitri.mail", "{}")
+    else if (typeof bar.shell.summon === "function") bar.shell.summon("maitri.mail", "{}")
   }
 
   function openMessage(accountId, messageId) {
     close()
     if (!bar || !bar.shell) return
     var payload = JSON.stringify({ accountId: accountId, messageId: messageId })
-    if (typeof bar.shell.summon === "function") bar.shell.summon("omamail", payload)
-    else if (typeof bar.shell.toggle === "function") bar.shell.toggle("omamail", payload)
+    if (typeof bar.shell.summon === "function") bar.shell.summon("maitri.mail", payload)
+    else if (typeof bar.shell.toggle === "function") bar.shell.toggle("maitri.mail", payload)
   }
 
   function openEvent(eventData) {
@@ -123,8 +123,8 @@ BarWidget {
       view: "calendar", eventId: String(event.uid || ""),
       eventStart: event.start ? Number(event.start.ms) : 0
     })
-    if (typeof bar.shell.summon === "function") bar.shell.summon("omamail", payload)
-    else if (typeof bar.shell.toggle === "function") bar.shell.toggle("omamail", payload)
+    if (typeof bar.shell.summon === "function") bar.shell.summon("maitri.mail", payload)
+    else if (typeof bar.shell.toggle === "function") bar.shell.toggle("maitri.mail", payload)
   }
 
   // Whether this draws anything. The widget itself stays: it is the only thing
@@ -146,7 +146,7 @@ BarWidget {
     visible: root.drawsIcon
     anchors.fill: parent
     bar: root.bar
-    tooltipText: root.gmail ? root.gmail.barTooltip : "Omamail"
+    tooltipText: root.gmail ? root.gmail.barTooltip : "Mail"
 
     // Read from inside `iconComponent`. Both BarIconButton and GmailIcon name
     // their own root object `root`, so nothing inside a Component declared
@@ -182,7 +182,7 @@ BarWidget {
     }
 
     onPressed: function(buttonCode) {
-      // The primary action stays opening Omamail. The preview is an extra view,
+      // The primary action stays opening Mail. The preview is an extra view,
       // so it lives on the secondary button instead of replacing the only way
       // to reach the application window. Middle-click still checks for mail.
       if (buttonCode === Qt.LeftButton) {
@@ -197,7 +197,7 @@ BarWidget {
     }
   }
 
-  // The shell draws this same accent line for its own open popouts. Omamail's
+  // The shell draws this same accent line for its own open popouts. Mail's
   // application window is routed separately, so the widget mirrors that mark
   // at the bar's inner edge instead of inventing a different selected shape.
   Rectangle {

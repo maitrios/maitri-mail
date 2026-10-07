@@ -8,7 +8,7 @@ mod platform;
 #[path = "../src/cache/mod.rs"]
 mod cache;
 #[cfg(windows)]
-pub use omamail::message;
+pub use maitri_mail::message;
 
 #[cfg(windows)]
 #[path = "support/windows_process.rs"]
@@ -29,7 +29,7 @@ fn windows_process_command_line_query_reads_live_child_arguments() {
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_nanos();
-    let marker = format!("omamail-argv-probe-{}-{nonce}", std::process::id());
+    let marker = format!("maitri-mail-argv-probe-{}-{nonce}", std::process::id());
     let script = format!("Start-Sleep -Seconds 30 # {marker}");
     let child = Child(
         std::process::Command::new("powershell.exe")

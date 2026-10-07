@@ -1,11 +1,11 @@
 import QtQuick
 import QtTest
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 Item {
   width: 500
   height: 350
-  Omamail.ConfirmDeleteDialog {
+  MaitriMail.ConfirmDeleteDialog {
     id: dialog
     textColor: Qt.rgba(1,1,1,1)
     dimColor: textColor

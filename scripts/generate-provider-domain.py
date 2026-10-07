@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 root = pathlib.Path(__file__).resolve().parent.parent
-binary = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / "target/debug/omamail"
+binary = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / "target/debug/maitri-mail"
 reply = json.loads(subprocess.check_output([str(binary), "--json", "call", "providers.snapshot"], input=b"{}"))
 if not reply.get("ok"):
     raise SystemExit("Native provider snapshot failed")

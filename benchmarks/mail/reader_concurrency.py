@@ -137,7 +137,7 @@ def render(report):
         'Date.now has 1 ms resolution, limiting sub-millisecond comparisons; a reported 0 ms means below that resolution, not zero latency. The small number of rounds characterizes this run, not a confidence interval or a guarantee under another workload. Throughput flattening and increased callback latency can expose a shared processing/serialization bottleneck; these numbers alone do not identify a particular mutex or prove mail-network concurrency.', '',
         f"CPU: {report['cpu']}; load before/after: {report['loadBefore']} / {report['loadAfter']}. Versions: {report['versions']}.", '',
         'The executable and QML modules are copied and hashed before running. Source hashes describe the checkout snapshot, not attestation that an externally supplied binary was built from it. Raw round durations, every callback latency, peak concurrency and parity counts are in the adjacent JSON.', '',
-        'Reproduce: `python3 benchmarks/mail/reader_concurrency.py --binary target/release/omamail`. Smoke: add `--rounds 3 --cases small_plain newsletter_html --output /tmp/reader-concurrency-smoke.json`.']
+        'Reproduce: `python3 benchmarks/mail/reader_concurrency.py --binary target/release/maitri-mail`. Smoke: add `--rounds 3 --cases small_plain newsletter_html --output /tmp/reader-concurrency-smoke.json`.']
     return '\n'.join(lines)+'\n'
 
 def main():
@@ -160,15 +160,15 @@ def main():
     version=tomllib.loads((ROOT/'Cargo.toml').read_text())['package']['version']
     hashes={str(f.relative_to(ROOT)):sha(f) for f in sorted((ROOT/'src').rglob('*')) if f.is_file()}
     harness={f.name:sha(f) for f in [Path(__file__),HERE/'reader_pipeline.py',HERE/'corpus.py']}
-    with tempfile.TemporaryDirectory(prefix='omamail-reader-concurrency-') as folder:
-        temp=Path(folder);binary=temp/'omamail';shutil.copy2(args.binary,binary);binary_hash=sha(binary)
+    with tempfile.TemporaryDirectory(prefix='maitri-mail-reader-concurrency-') as folder:
+        temp=Path(folder);binary=temp/'maitri-mail';shutil.copy2(args.binary,binary);binary_hash=sha(binary)
         for module in ['backend','message']:
             shutil.copytree(args.ui_root/module,temp/module)
             for f in (temp/module).rglob('*'):
                 if f.is_file():hashes[str(Path('ui')/f.relative_to(temp))]=sha(f)
         for key in ['HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','XDG_DATA_HOME','XDG_STATE_HOME','XDG_RUNTIME_DIR']:
             path=temp/key.lower();path.mkdir(mode=0o700);env[key]=str(path)
-        config=Path(env['XDG_CONFIG_HOME'])/'omamail';config.mkdir(mode=0o700)
+        config=Path(env['XDG_CONFIG_HOME'])/'maitri-mail';config.mkdir(mode=0o700)
         registry=config/'accounts.json';registry.write_text(json.dumps({'version':1,'accounts':[{'provider':'gmail','email':'concurrency-benchmark@example.test'}],'activeId':'concurrency-benchmark@example.test'}));registry.chmod(0o600)
         qml=QML.replace('PAYLOAD',json.dumps(cases)).replace('ROUNDS',str(args.rounds)).replace('OPERATIONS',str(args.operations)).replace('BINARY',json.dumps(str(binary))).replace('VERSION',json.dumps(version))
         (temp/'shell.qml').write_text(qml)

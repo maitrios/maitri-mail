@@ -18,17 +18,17 @@ import unittest
 import test_agent_bridge as legacy
 import agent_broker_fixture
 
-BINARY = Path(os.environ.get('OMAMAIL_TEST_BIN') or Path(__file__).resolve().parents[1] / 'target/debug/omamail').resolve()
+BINARY = Path(os.environ.get('MAITRI_MAIL_TEST_BIN') or Path(__file__).resolve().parents[1] / 'target/debug/maitri-mail').resolve()
 
 
 class NativeBridge(legacy.Bridge):
     continue_failed = True
     def setUp(self):
-        self.assertTrue(BINARY.is_file(), 'Build the native omamail binary before running bridge tests')
+        self.assertTrue(BINARY.is_file(), 'Build the native maitri-mail binary before running bridge tests')
         super().setUp()
         self.artifacts = self.root / 'observations'
         self.artifacts.mkdir()
-        self.env['OMAMAIL_TEST_ARTIFACTS'] = str(self.artifacts)
+        self.env['MAITRI_MAIL_TEST_ARTIFACTS'] = str(self.artifacts)
         self.env['HOME'] = str(self.root)
         self.env['CODEX_HOME'] = str(self.root/'codex')
 
@@ -41,7 +41,7 @@ if sys.argv[1] == 'serve':
         def log_message(self,*args): pass
         def do_GET(self):
             if self.path.startswith('/api/mcp'):
-                result=json.dumps({'data':[{'name':'omamail','status':{'status':'connected'}}]}).encode()
+                result=json.dumps({'data':[{'name':'maitri-mail','status':{'status':'connected'}}]}).encode()
             else:
                 result=subprocess.run([sys.executable,__file__,'api','--standalone','get',self.path],input=b'',capture_output=True).stdout
             self.send_response(200);self.end_headers();self.wfile.write(result)
@@ -58,7 +58,7 @@ if sys.argv[1] == 'serve':
     print(json.dumps({'url':'http://127.0.0.1:'+str(server.server_port)}),flush=True)
     sys.stdin.read();raise SystemExit(0)
 if sys.argv[1] == 'api' and sys.argv[-1] == '/api/mcp':
-    print(json.dumps({'data':[{'name':'omamail','status':{'status':'connected'}}]}));raise SystemExit(0)
+    print(json.dumps({'data':[{'name':'maitri-mail','status':{'status':'connected'}}]}));raise SystemExit(0)
 if sys.argv[1] == 'run' and '--session' in sys.argv:
     original_dumps=json.dumps
     def patched_dumps(value,*args,**kwargs):
@@ -72,7 +72,7 @@ if sys.argv[1] == 'run' and '--session' in sys.argv:
     def agent(self, body, session=True):
         prelude = legacy.PRELUDE.replace(
             "Path(ident,'cwd.txt').write_text(str(Path.cwd()))\nos.chdir(ident)",
-            "observed=Path(os.environ['OMAMAIL_TEST_ARTIFACTS'])/ident\nobserved.mkdir(exist_ok=True)\nobserved.joinpath('cwd.txt').write_text(str(Path.cwd()))\nos.chdir(observed)"
+            "observed=Path(os.environ['MAITRI_MAIL_TEST_ARTIFACTS'])/ident\nobserved.mkdir(exist_ok=True)\nobserved.joinpath('cwd.txt').write_text(str(Path.cwd()))\nos.chdir(observed)"
         )
         if not session:
             prelude = prelude.replace("emit({'type':'system','subtype':'init','session_id':'11111111-2222-3333-4444-555555555555'})", '')
@@ -145,7 +145,7 @@ if sys.argv[1] == 'run' and '--session' in sys.argv:
         self.assertFalse((observed/'forbidden').exists())
         self.assertFalse((folder/'forbidden').exists())
         self.assertEqual(set(os.listdir(folder)), {'context.json','job.json','display.json'})
-        self.tool('omarchy-default-agent', 'print("unsupported")')
+        self.tool('maitri-default-agent', 'print("unsupported")')
         child = self.call('new',value={'parent':ident,'prompt':'Shorter'})['id'];self.ids.append(child)
         result = self.wait(child)
         self.assertEqual(result['job']['draftKey'], 'ada-draft')
@@ -450,7 +450,7 @@ emit({'type':'result','subtype':'success','result':'','session_id':'11111111-222
     def test_crashed_worker_cannot_race_a_new_native_turn(self):
         for provider in ('claude','opencode','codex'):
             with self.subTest(provider=provider):
-                self.tool('omarchy-default-agent', 'print('+repr(provider)+')')
+                self.tool('maitri-default-agent', 'print('+repr(provider)+')')
                 if provider!='claude': self.provider_agent(provider)
                 ident=self.new();self.wait(ident)
                 path=self.store/ident/'job.json'
@@ -478,7 +478,7 @@ emit({'type':'result','subtype':'success','result':'','session_id':'11111111-222
 
     def test_unsupported_and_missing_provider(self):
         for selected in ('','other'):
-            self.tool('omarchy-default-agent', f'print({selected!r})')
+            self.tool('maitri-default-agent', f'print({selected!r})')
             error = self.call('new',value={'messageId':'1','prompt':'p'},ok=False)
             self.assertEqual(error, 'agent_choose_claude')
         self.assertFalse(list(self.store.glob('*/job.json')))
@@ -488,17 +488,17 @@ emit({'type':'result','subtype':'success','result':'','session_id':'11111111-222
         for provider in ('claude','codex','opencode'):
             self.tool(provider, 'from pathlib import Path\nPath('+repr(str(marker))+').touch()')
         for selected in ('', 'unsupported', 'codex', 'opencode', 'claude'):
-            self.tool('omarchy-default-agent', 'print('+repr(selected)+')')
+            self.tool('maitri-default-agent', 'print('+repr(selected)+')')
             supported = selected in ('claude','codex','opencode')
             self.assertEqual(self.call('status'), {'available':supported,'provider':selected if supported else ''})
             self.assertFalse(marker.exists())
             self.assertFalse(list(self.store.glob('*/job.json')))
-        self.tool('omarchy-default-agent', 'raise SystemExit("must not probe explicit choices")')
+        self.tool('maitri-default-agent', 'raise SystemExit("must not probe explicit choices")')
         self.assertEqual(self.call('status',options={'provider':'codex'}), {'available':True,'provider':'codex'})
         self.assertFalse(marker.exists())
 
     def test_opencode_missing_finish_requires_successful_exit_and_exact_durable_outcome(self):
-        self.tool('omarchy-default-agent', 'print("opencode")')
+        self.tool('maitri-default-agent', 'print("opencode")')
         for outcome, session, idle, exit_code, expected in [
             ('succeeded','ses_fixture',9999999999999,0,'done'),
             ('failed','ses_fixture',9999999999999,0,'failed'),
@@ -534,7 +534,7 @@ else:
     def provider_agent(self, provider, suffix=''):
         prelude = legacy.PRELUDE.replace(
             "Path(ident,'cwd.txt').write_text(str(Path.cwd()))\nos.chdir(ident)",
-            "observed=Path(os.environ['OMAMAIL_TEST_ARTIFACTS'])/ident\nobserved.mkdir(exist_ok=True)\nobserved.joinpath('cwd.txt').write_text(str(Path.cwd()))\nos.chdir(observed)"
+            "observed=Path(os.environ['MAITRI_MAIL_TEST_ARTIFACTS'])/ident\nobserved.mkdir(exist_ok=True)\nobserved.joinpath('cwd.txt').write_text(str(Path.cwd()))\nos.chdir(observed)"
         ).replace("emit({'type':'system','subtype':'init','session_id':'11111111-2222-3333-4444-555555555555'})", '')
         answer = 'Hello مرحبا'
         if provider == 'opencode':
@@ -557,7 +557,7 @@ else:
         for provider in ('opencode','codex'):
             with self.subTest(provider=provider):
                 self.provider_agent(provider)
-                self.tool('omarchy-default-agent', f'print({provider!r})')
+                self.tool('maitri-default-agent', f'print({provider!r})')
                 ident = self.new()
                 shown = self.wait(ident)
                 self.assertEqual(shown['job']['state'], 'done', shown)
@@ -571,7 +571,7 @@ else:
                 self.assertEqual(json.loads(projection.stdout)['result']['byMessage']['1:INBOX']['provider'],provider)
                 self.assertNotIn('HIDDEN', json.dumps(shown))
                 self.assertNotIn('--model', json.loads((self.artifacts/ident/'argv.json').read_text()))
-                self.tool('omarchy-default-agent', 'raise SystemExit("must not resolve default for an override or continuation")')
+                self.tool('maitri-default-agent', 'raise SystemExit("must not resolve default for an override or continuation")')
                 selected = self.call('new', value={'messageId':'synthetic','prompt':'SECRET-PROMPT'},
                                      options={'provider':provider,'model':'fixture/model#variant'})['id']
                 self.ids.append(selected)
@@ -604,7 +604,7 @@ else:
                 saved.write_text(json.dumps(original))
 
     def test_provider_and_model_rejections_have_no_worker_or_history_effect(self):
-        self.tool('omarchy-default-agent', 'raise SystemExit("must not probe")')
+        self.tool('maitri-default-agent', 'raise SystemExit("must not probe")')
         before = list(self.store.glob('*/job.json'))
         for options, error in [({'provider':'shell'},'agent_invalid_provider'),
                                ({'provider':['opencode']},'agent_invalid_provider'),
@@ -618,7 +618,7 @@ else:
         for provider in ('opencode','codex'):
             for suffix in ('raise SystemExit(3)', 'emit({"type":"error","message":"HIDDEN failure"})'):
                 self.provider_agent(provider, suffix)
-                self.tool('omarchy-default-agent', f'print({provider!r})')
+                self.tool('maitri-default-agent', f'print({provider!r})')
                 ident = self.new()
                 shown = self.wait(ident)
                 self.assertEqual(shown['job']['state'],'failed',shown)
@@ -629,7 +629,7 @@ else:
     def test_stopped_turns_continue_for_every_provider_without_applying_partial_output(self):
         for provider in ('claude','opencode','codex'):
             with self.subTest(provider=provider):
-                self.tool('omarchy-default-agent',f'print({provider!r})')
+                self.tool('maitri-default-agent',f'print({provider!r})')
                 if provider == 'claude': self.agent(legacy.SUCCESS+'\ntime.sleep(30)')
                 else: self.provider_agent(provider,'time.sleep(30)')
                 ident=self.new()
@@ -868,7 +868,7 @@ emit({'type':'result','subtype':'success','result':'Visible answer'})
     def test_oversized_provider_probe_starts_no_job(self):
         marker=self.root/'unexpected-claude'
         self.tool('claude',f"from pathlib import Path\nPath({str(marker)!r}).touch()")
-        self.tool('omarchy-default-agent',"print('x'*(9*1024*1024))")
+        self.tool('maitri-default-agent',"print('x'*(9*1024*1024))")
         self.call('new',value={'messageId':'1','prompt':'Synthetic'},ok=False)
         self.assertFalse(marker.exists())
         self.assertFalse(list(self.store.glob('*/job.json')))

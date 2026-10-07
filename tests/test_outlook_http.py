@@ -160,7 +160,7 @@ Item {
 
 def main():
     runner = sys.argv[1] if len(sys.argv) > 1 else "/usr/lib/qt6/bin/qmltestrunner"
-    with tempfile.TemporaryDirectory(prefix="omamail-outlook-rpc-") as directory:
+    with tempfile.TemporaryDirectory(prefix="maitri-mail-outlook-rpc-") as directory:
         source = QML.replace("@PROVIDERS@", json.dumps((ROOT / "ui/providers").as_uri()))
         source = source.replace("@MICROSOFT@", json.dumps((ROOT / "ui/providers/MicrosoftOAuth.js").as_uri()))
         fixture = Path(directory) / "tst_outlook_rpc.qml"

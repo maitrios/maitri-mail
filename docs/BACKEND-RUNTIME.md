@@ -1,13 +1,13 @@
 # Backend runtimes and releases
 
-## Omarchy plugin-owned backend
+## maitri plugin-owned backend
 
-Omarchy's Plugin Marketplace owns the checkout and its UI. Omamail keeps exactly
-one executable at `${XDG_DATA_HOME:-~/.local/share}/omamail/bin/omamail`. Keeping
+maitri's Plugin Marketplace owns the checkout and its UI. maitri mail keeps exactly
+one executable at `${XDG_DATA_HOME:-~/.local/share}/maitri-mail/bin/maitri-mail`. Keeping
 the mutable runtime outside the recursively watched plugin tree prevents an
 installation or CLI operation from reloading the interface. The root `backend-version`
 file requires an exact version, independent of PATH and system packages. Service
-starts one persistent `omamail serve` process over stdin/stdout and checks its
+starts one persistent `maitri-mail serve` process over stdin/stdout and checks its
 exact binary version, protocol and API revision before dispatching migrated calls.
 The plugin-local `backend-api.json` describes its required API; it is not fetched
 from main or from a latest-release endpoint.
@@ -23,17 +23,17 @@ old executable. A failed installation preserves the working runtime. Checksums
 protect integrity, not against a compromised publisher.
 
 `python3 scripts/backend-runtime.py enable-cli` explicitly creates
-`~/.local/bin/omamail` as a symlink to that same private executable; it refuses
-an unrelated file or link. An owned link into a previous Omamail plugin checkout's
+`~/.local/bin/maitri-mail` as a symlink to that same private executable; it refuses
+an unrelated file or link. An owned link into a previous maitri mail plugin checkout's
 runtime is repointed without modifying that watched directory. Nothing edits PATH. Run `disable-cli` before removing
-the plugin, since Omarchy has no verified uninstall hook for that external link.
+the plugin, since maitri has no verified uninstall hook for that external link.
 `scripts/uninstall-backend.sh` removes the runtime only. Neither operation deletes
 accounts, drafts, caches or keyring entries. Marketplace checkouts contain no
 symlinks; the optional CLI link is outside the checkout.
 
 For development, `./dev backend` builds the binary and `./dev run` builds then
 prints environment and launch instructions. It does not open or restart the
-shell. `OMAMAIL_BIN` is an explicit development
+shell. `MAITRI_MAIL_BIN` is an explicit development
 path; the installer must never replace that file. Environment changes in your
 terminal do not change an already running shell: follow the printed instructions
 to make the override available when the shell constructs the plugin, restarting
@@ -42,12 +42,12 @@ application. Rust mail migration remains incomplete; see [BACKEND.md](BACKEND.md
 
 ### Forcing a clean reconnect
 
-The running `omamail serve` process holds its Secret Service session, its
+The running `maitri-mail serve` process holds its Secret Service session, its
 account hosts and their sign-in state for the life of the Quickshell process
 that started it — a credential store that was locked at startup, an API a
 Cloud project only just enabled, or an OAuth grant that changed underneath it
-are not re-checked on their own. `omarchy plugin disable omamail` followed by
-`omarchy plugin enable omamail` reloads the plugin's QML context and opens a
+are not re-checked on their own. `maitri plugin disable maitri.mail` followed by
+`maitri plugin enable maitri.mail` reloads the plugin's QML context and opens a
 fresh backend connection without restarting the shell itself, which is enough
 to pick up a state change made outside the plugin's own knowledge. This is
 the fastest way to confirm whether a failure is a stale connection or a real
@@ -55,9 +55,9 @@ one: if disable/enable clears it, it was the former.
 
 ## Standalone bundled backend
 
-The standalone Qt host under `app/` uses the same `ui/` composition and Rust business modules through small Quickshell compatibility adapters. A production archive places one exact-version `omamail` backend beside `omamail-app`, together with the QML, manifest, Qt libraries, and platform plugin. Production resource lookup accepts that bundled backend only; it does not search PATH, resolve `latest`, or use `OMAMAIL_BIN`. The environment override and source-resource lookup are enabled only when `OMAMAIL_DEVELOPMENT_RESOURCES=1`, which is what `make app-run` sets for a checkout build.
+The standalone Qt host under `app/` uses the same `ui/` composition and Rust business modules through small Quickshell compatibility adapters. A production archive places one exact-version `maitri-mail` backend beside `maitri-mail-app`, together with the QML, manifest, Qt libraries, and platform plugin. Production resource lookup accepts that bundled backend only; it does not search PATH, resolve `latest`, or use `MAITRI_MAIL_BIN`. The environment override and source-resource lookup are enabled only when `MAITRI_MAIL_DEVELOPMENT_RESOURCES=1`, which is what `make app-run` sets for a checkout build.
 
-The host starts one persistent bundled `omamail serve` process and performs the protocol, version, and API handshake before mail or calendar calls. Normal shutdown asks the service to quit, drains bounded output, and then terminates the process tree on deadline. `omamail-app --check-resources` verifies the packaged entry points, platform plugin, manifest version, backend architecture, and backend version without opening the UI. `omamail-app --smoke-test READY_FILE` additionally starts the bundled backend, completes the handshake, requests shutdown, and writes readiness metadata only after a clean exit.
+The host starts one persistent bundled `maitri-mail serve` process and performs the protocol, version, and API handshake before mail or calendar calls. Normal shutdown asks the service to quit, drains bounded output, and then terminates the process tree on deadline. `maitri-mail-app --check-resources` verifies the packaged entry points, platform plugin, manifest version, backend architecture, and backend version without opening the UI. `maitri-mail-app --smoke-test READY_FILE` additionally starts the bundled backend, completes the handshake, requests shutdown, and writes readiness metadata only after a clean exit.
 
 Standalone credentials use the native store through typed backend RPC: Keychain on macOS, Secret Service on Linux, and Credential Manager on Windows. Account metadata, cache, state, runtime endpoints, and downloads use the platform directories selected by `src/platform/dirs.rs`; private files and outbox IPC are protected by the platform implementations under `src/platform/`. The host never places a secret in its process arguments. The standalone capability object disables AI, the tray, and operating-system `mailto:` registration while retaining native notifications.
 
@@ -90,11 +90,11 @@ revision information from any other version is refused.
 
 ## Native AI conversations (API 6)
 
-Settings → AI follows the Omarchy system default or selects Claude, Codex or OpenCode V2, with an optional model override. `agent.providerStatus` resolves the supported provider without starting an agent or creating a job. An unsupported default leaves the AI action visible but disabled; Settings explains the supported choices. Availability checks require API 6 and are repeated while following the system default. Explicit choices bypass the system-default lookup. CLI installation and authentication are still checked when a request starts. Standalone Linux/macOS builds default to OpenCode; Windows does not advertise AI.
+Settings → AI follows the maitri system default or selects Claude, Codex or OpenCode V2, with an optional model override. `agent.providerStatus` resolves the supported provider without starting an agent or creating a job. An unsupported default leaves the AI action visible but disabled; Settings explains the supported choices. Availability checks require API 6 and are repeated while following the system default. Explicit choices bypass the system-default lookup. CLI installation and authentication are still checked when a request starts. Standalone Linux/macOS builds default to OpenCode; Windows does not advertise AI.
 
-Until the published pin advances from API 5, the plugin retains its existing Claude chat with System default and no model override. The old backend checks Omarchy's default when a job starts; it cannot preflight availability. Reader and composer requests, plain-text insertion and follow-ups remain available. Legacy follow-ups use their original context snapshot; start a new chat to include draft edits. Agent/model selection, current-context updates, proposal cards and paged history remain gated on API 6. The release workflow publishes the new backend before advancing the exact pin.
+Until the published pin advances from API 5, the plugin retains its existing Claude chat with System default and no model override. The old backend checks maitri's default when a job starts; it cannot preflight availability. Reader and composer requests, plain-text insertion and follow-ups remain available. Legacy follow-ups use their original context snapshot; start a new chat to include draft edits. Agent/model selection, current-context updates, proposal cards and paged history remain gated on API 6. The release workflow publishes the new backend before advancing the exact pin.
 
-`make test-agent-published PUBLISHED_BACKEND=/path/to/verified/omamail` exercises that API-5 user flow with production Service/App/AgentRunner components and the actual published binary: reader/composer entry, four jobs, two continuations and insertion. Only the Claude CLI and mail-context loading are synthetic; it asserts no send occurs. Use a checksum-verified download matching `backend-version`, not a source build.
+`make test-agent-published PUBLISHED_BACKEND=/path/to/verified/maitri-mail` exercises that API-5 user flow with production Service/App/AgentRunner components and the actual published binary: reader/composer entry, four jobs, two continuations and insertion. Only the Claude CLI and mail-context loading are synthetic; it asserts no send occurs. Use a checksum-verified download matching `backend-version`, not a source build.
 
 Each conversation retains one native provider session, serializes follow-ups and leaves compaction to that provider. Durable jobs retain per-turn public transcripts and proposal records; API-6 history pages and a rebuildable head index keep polling bounded. Interrupted turns preserve their session and mail context when safe to continue; crashed or unconfirmed workers require a fresh chat. Agent/model changes start new chats, preserve unsent input and retain prior chats as read-only history.
 
@@ -153,7 +153,7 @@ binary does not have yet. The contract names that difference and nothing more:
 
 ## Release before pin
 
-Run `make publish VERSION=MAJOR.MINOR.PATCH` on a clean main synchronized with origin. Without `VERSION`, it prepares the next patch version. The command creates `release/X.Y.Z`, prepares Cargo.toml, the omamail Cargo.lock record and manifest.json, and opens one PR targeting main. It pushes only that release branch, then follows its exact Release run. It never pushes main or a tag. `backend-version` and the released API contract stay unchanged during preparation.
+Run `make publish VERSION=MAJOR.MINOR.PATCH` on a clean main synchronized with origin. Without `VERSION`, it prepares the next patch version. The command creates `release/X.Y.Z`, prepares Cargo.toml, the maitri-mail Cargo.lock record and manifest.json, and opens one PR targeting main. It pushes only that release branch, then follows its exact Release run. It never pushes main or a tag. `backend-version` and the released API contract stay unchanged during preparation.
 
 A push to `release/**` starts the authoritative Release workflow. Only the exact `release/X.Y.Z` branch matching Cargo's version is accepted; dispatching on main, a feature branch or a tag is refused. The workflow builds both plugin backends and all three standalone archives, creates `vX.Y.Z`, publishes the complete asset set and installers, verifies the public downloads, then commits `backend-version` and the folded API contract on the same release branch. The pin commit changes only those two files, both excluded from the publication push trigger, so it starts PR checks without another publication.
 
@@ -163,8 +163,8 @@ The repository's active main ruleset requires a PR and the Published backend mer
 
 The workflow tests and builds locked native musl binaries on Linux x86_64 and
 aarch64, executes each version probe, rejects dynamic ELF dependencies, and
-packages `omamail-linux-x86_64.tar.gz` and `omamail-linux-aarch64.tar.gz`. Each
-contains exactly one regular executable named `omamail`. A combined SHA256SUMS
+packages `maitri-mail-linux-x86_64.tar.gz` and `maitri-mail-linux-aarch64.tar.gz`. Each
+contains exactly one regular executable named `maitri-mail`. A combined SHA256SUMS
 and `backend-build.json` plus `backend-api.json` are published with both assets only
 after both build jobs pass. The release checks the new contract against the pinned
 release: a changed contract requires a higher API revision. Each native binary
@@ -173,7 +173,7 @@ Both native build jobs produce identical source fingerprints before publication.
 release is completed, made public, downloaded again and verified before a
 follow-up commit updates backend-version and folds backend-api.json on the release branch.
 
-The same workflow builds `omamail-app-macos-aarch64.tar.gz` on macOS 15, `omamail-app-linux-x86_64.tar.gz` on Ubuntu 22.04 (the glibc 2.35 floor), and `omamail-app-windows-x86_64.zip` on Windows Server 2022. Each native job runs the standalone Rust suite, its platform credential contract, the Qt C++ tests, the standalone QML suite, the backend API contract, package validation, installer rollback tests, resource checks, and a live bundled-backend smoke test before uploading its archive. `publish-and-pin` depends on all five build jobs, creates one combined `SHA256SUMS`, publishes `install.sh` and `install.ps1` with the archives, downloads every public asset again, and only then advances the plugin backend pin.
+The same workflow builds `maitri-mail-app-macos-aarch64.tar.gz` on macOS 15, `maitri-mail-app-linux-x86_64.tar.gz` on Ubuntu 22.04 (the glibc 2.35 floor), and `maitri-mail-app-windows-x86_64.zip` on Windows Server 2022. Each native job runs the standalone Rust suite, its platform credential contract, the Qt C++ tests, the standalone QML suite, the backend API contract, package validation, installer rollback tests, resource checks, and a live bundled-backend smoke test before uploading its archive. `publish-and-pin` depends on all five build jobs, creates one combined `SHA256SUMS`, publishes `install.sh` and `install.ps1` with the archives, downloads every public asset again, and only then advances the plugin backend pin.
 
 The Linux standalone release is tar.gz only; no AppImage is built or published. Standalone archives are currently unsigned. The macOS app is not notarized, so `install.sh` clears `com.apple.quarantine` recursively from the exact verified staging bundle before the transactional replacement; an `xattr` failure aborts without replacing an existing install. The Windows binaries are not code signed, so its platform publisher warning remains a release limitation rather than a property the validation jobs can clear.
 
@@ -251,7 +251,7 @@ For the standalone host, run `make app-build` to build and `make app-run` to lau
 
 ```sh
 cargo test --locked --no-default-features --features standalone
-cmake -S app -B build/app -DOMAMAIL_BACKEND="$PWD/target/debug/omamail"
+cmake -S app -B build/app -DMAITRI_MAIL_BACKEND="$PWD/target/debug/maitri-mail"
 cmake --build build/app --parallel
 ctest --test-dir build/app --output-on-failure
 QT_QPA_PLATFORM=offscreen qmltestrunner -input app/tests/qml/tst_host_contract.qml -import app/qml/imports -import ui
@@ -267,18 +267,18 @@ Accounts, drafts and caches are preserved. Use it to test a fresh backend setup:
 make install-plugin
 ```
 
-Then open Omamail and choose Install backend. Any optional CLI symlink still points
+Then open maitri mail and choose Install backend. Any optional CLI symlink still points
 to the same private binary location and works again after installation. Ensure the
-shell has no `OMAMAIL_BIN` development override, which would otherwise select that
+shell has no `MAITRI_MAIL_BIN` development override, which would otherwise select that
 binary instead of testing the missing-runtime screen.
 
 To try the latest checkout in the desktop, run `make install`. It first builds
 with `cargo build --locked --release` into this checkout's `target/` directory,
 regardless of `CARGO_TARGET_DIR`, then stages and verifies that binary before
-atomically replacing `${XDG_DATA_HOME:-~/.local/share}/omamail/bin/omamail`. When its version is ahead of the
+atomically replacing `${XDG_DATA_HOME:-~/.local/share}/maitri-mail/bin/maitri-mail`. When its version is ahead of the
 release pin, it must match the Git checkout's Cargo package version. The explicit
 local installation records a private
-`${XDG_DATA_HOME:-~/.local/share}/omamail/local-build.json` marker binding
+`${XDG_DATA_HOME:-~/.local/share}/maitri-mail/local-build.json` marker binding
 that version, the current release pin and the installed binary's SHA-256.
 Status and CLI activation accept this local version only while the checkout,
 Cargo version, pin and binary bytes still match. No tracked pin is changed.
@@ -288,7 +288,7 @@ published backend assets. Failed builds or version checks preserve the old runti
 
 `make install-backend-local` performs only the build and local runtime replacement.
 Restart the shell afterwards to replace an already running backend process.
-Unset `OMAMAIL_BIN` in the shell's startup environment to use the private runtime.
+Unset `MAITRI_MAIL_BIN` in the shell's startup environment to use the private runtime.
 The separate `scripts/install-backend.sh` command remains the release downloader:
 it always uses `backend-version`, ignores the local override when selecting a
 release, and clears the marker after verification as part of installation.
@@ -307,7 +307,7 @@ It does not open the desktop plugin or contact mail providers.
 
 `make test-backend-process` can also be run on its own. These local checks do
 not verify live mailbox compatibility, graphical plugin installation, or release
-availability. `make qml-check` additionally needs the installed Omarchy shell's
+availability. `make qml-check` additionally needs the installed maitri shell's
 QML imports; inspect its diagnostics even when qmllint returns success.
 
 Local synthetic tests cover archive shape, checksum corruption, version drift,

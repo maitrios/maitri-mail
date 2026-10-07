@@ -159,7 +159,7 @@ rescheduling; it is not a before/after performance benchmark.
   confirmed shutdown. This caught and drove a fix for a dispatcher stack
   overflow: provider futures now use heap indirection.
 * `make install-backend-local`: compiled release installed at
-  `runtime/bin/omamail`; installer reported ready. After shell restart the live
+  `runtime/bin/maitri-mail`; installer reported ready. After shell restart the live
   process ran that exact executable with `serve`.
 * The final release binary's read-only Gmail and HEY unread checks each emitted
   two successful periodic notifications (initial 0.91s/1.14s, then

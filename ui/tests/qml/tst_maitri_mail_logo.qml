@@ -5,14 +5,14 @@ import "../../components" as Components
 Item {
   width: 180
   height: 140
-  Components.OmamailLogo {
+  Components.MaitriMailLogo {
     id: logo
     anchors.centerIn: parent
     foreground: Qt.rgba(0.6, 0.6, 0.6, 1)
     accent: Qt.rgba(0.9, 0.25, 0.25, 1)
   }
   TestCase {
-    name: "OmamailLogo"
+    name: "MaitriMailLogo"
     when: windowShown
     function test_enter_once_then_trace_and_pause() {
       logo.enter()

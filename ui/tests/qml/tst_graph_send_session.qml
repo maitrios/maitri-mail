@@ -13,7 +13,7 @@ Item {
   Component {
     id: authFactory
     QtObject {
-      property string pluginDir: "/tmp/omamail-test"
+      property string pluginDir: "/tmp/maitri-mail-test"
       property string authMode: "oauth2"
       property var settings: ({ username: "alice@example.test", send: "graph" })
       property int generation: 0

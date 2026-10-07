@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 // Which way a message runs, decided by the engine that draws it.
 //
@@ -28,7 +28,7 @@ Item {
     })
   }
 
-  Omamail.MessageRow {
+  MaitriMail.MessageRow {
     id: row
     width: 600
     summary: summaryFor("Hello there", "Alice")

@@ -417,8 +417,8 @@ Column {
 
       Text {
         width: parent.width
-        text: "o.bind(\"SUPER + SHIFT + G\", \"Omamail\", "
-          + "\"omarchy shell shell toggle omamail '\{}'\")"
+        text: "o.bind(\"SUPER + SHIFT + G\", \"Mail\", "
+          + "\"maitri-shell shell toggle maitri.mail '\{}'\")"
         color: root.dimColor
         font.family: root.panelFontFamily
         font.pixelSize: Style.font.caption
@@ -442,9 +442,9 @@ Column {
 
   // --------------------------------------------------- default mail client
   //
-  // Omarchy opens HEY's web app on SUPER+SHIFT+E, and mailto: links go to
+  // maitri opens HEY's web app on SUPER+SHIFT+E, and mailto: links go to
   // whatever claimed them. scripts/default-mail.sh moves both, and undoing it
-  // gives the key back to Omarchy.
+  // gives the key back to maitri.
 
   Text {
     id: mailClientHeading
@@ -481,8 +481,8 @@ Column {
       Text {
         width: parent.width
         text: mailClientRow.isDefault
-          ? "Omamail is the default mail client"
-          : "Set up Omamail as the default mail client"
+          ? "Mail is the default mail client"
+          : "Set up Mail as the default mail client"
         color: root.textColor
         font.family: root.panelFontFamily
         font.pixelSize: Style.font.bodySmall
@@ -522,8 +522,8 @@ Column {
         && root.service.defaultMailClient !== ""
       text: mailClientRow.isDefault ? "Undo" : "Set as default"
       tooltipText: mailClientRow.isDefault
-        ? "Give SUPER+SHIFT+E back to Omarchy's own email binding"
-        : "Make Omamail open mailto: links and SUPER+SHIFT+E"
+        ? "Give SUPER+SHIFT+E back to maitri's own email binding"
+        : "Make Mail open mailto: links and SUPER+SHIFT+E"
       foreground: root.textColor
       fontFamily: root.panelFontFamily
       onClicked: root.service.setDefaultMailClient(!mailClientRow.isDefault)
@@ -912,7 +912,7 @@ Column {
 
       Text {
         width: parent.width
-        text: "Omamail waits before delivery. Press alt+z or select Undo to cancel. Set 0 to send now."
+        text: "Mail waits before delivery. Press alt+z or select Undo to cancel. Set 0 to send now."
         color: root.dimColor
         font.family: root.panelFontFamily
         font.pixelSize: Style.font.caption
@@ -1198,7 +1198,7 @@ Column {
     Text {
       width: parent.width
       textFormat: Text.PlainText
-      text: "What this mailbox is called in Omamail — in the switcher, in this "
+      text: "What this mailbox is called in Mail — in the switcher, in this "
         + "list, and beside every message in a combined view. Leave it empty "
         + "to use the address. It is not sent to anyone."
       color: root.dimColor

@@ -1,11 +1,11 @@
 .pragma library
 
-// Which palette the standalone window draws with when no Omarchy theme is
+// Which palette the standalone window draws with when no maitri theme is
 // installed: the desktop's own light or dark choice, or one of the two named
 // outright. The stored value is the label the settings row shows, the way
 // `contentDirection` and `heavyMessageRendering` are stored.
 //
-// The Omarchy plugin never reads this. Its colours are the shell's, and the
+// The maitri plugin never reads this. Its colours are the shell's, and the
 // shell has already answered the question in colors.toml.
 var SYSTEM = "System"
 var LIGHT = "Light"

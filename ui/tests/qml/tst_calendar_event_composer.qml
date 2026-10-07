@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtTest 1.3
-import "../../components" as Omamail
+import "../../components" as MaitriMail
 
 Item {
   width: 900
@@ -64,7 +64,7 @@ Item {
     }
   }
 
-  Omamail.CalendarEventComposer {
+  MaitriMail.CalendarEventComposer {
     id: composer
     anchors.fill: parent
     controller: eventController
@@ -77,7 +77,7 @@ Item {
   }
 
   TestCase {
-    Omamail.KeyRouter {
+    MaitriMail.KeyRouter {
       context: composer.opened ? (composer.guestSuggestionsOpen ? "eventGuests" : "eventCompose") : ""
       onTriggered: function(id) {
         if (id === "saveEvent") composer.submit("all")

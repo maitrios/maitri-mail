@@ -1,6 +1,6 @@
 import QtQuick
 import QtTest
-import "../.." as Omamail
+import "../.." as MaitriMail
 import "../../account/Accounts.js" as Accounts
 import "BackendFixture.js" as BackendFixture
 
@@ -14,10 +14,10 @@ Item {
   }
   Component {
     id: serviceComponent
-    Omamail.Service {
+    MaitriMail.Service {
       shell: store
       manifest: ({
-          id: "omamail",
+          id: "maitri.mail",
           __sourceDir: "/tmp/synthetic"
         })
       property int passwordCalls: 0

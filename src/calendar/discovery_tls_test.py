@@ -9,7 +9,7 @@ import threading
 from pathlib import Path
 
 
-with tempfile.TemporaryDirectory(prefix="omamail-discovery-tls-") as directory:
+with tempfile.TemporaryDirectory(prefix="maitri-mail-discovery-tls-") as directory:
     cert, key = Path(directory) / "cert.pem", Path(directory) / "key.pem"
     request, extensions = Path(directory) / "request.pem", Path(directory) / "extensions.cnf"
     # The peer presents this certificate as an end entity, so it must say
