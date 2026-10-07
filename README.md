@@ -1,93 +1,75 @@
 # maitri mail
 
-maitri mail is a native email and calendar app with multiple accounts and keyboard navigation. It runs either as a maitri shell plugin or as a standalone Qt desktop application.
+Mail and calendar for [maitri](https://github.com/maitrios/maitri). It lives in the maitri shell: an envelope with the unread count on the bar, and the inbox opens as its own window. Multiple accounts, keyboard-first, and it follows your maitri theme.
 
-<img width="800" alt="maitri mail — reading mail with AI assistance" src="docs/images/full-mail.webp" />
+maitri mail is a fork of [omamail](https://github.com/huacnlee/omamail) by [Jason Lee](https://github.com/huacnlee), rebranded and packaged for maitri. All the mail and calendar work is his; maitri keeps the shell integration, packaging and a scripted sync that pulls in every omamail release. <!-- rebrand:keep -->
+
+<img width="800" alt="maitri mail reading mail" src="docs/images/full-mail.webp" />
 
 ## Install
 
-### maitri plugin
+maitri mail ships with maitri as the `maitri-mail` package and sits on the default bar. Click the envelope, then add your mailbox.
 
-The plugin requires **maitri** and follows the active maitri theme. It includes the bar widget, `mailto:` integration, and AI assistance through the configured maitri agent.
-
-```bash
-maitri plugin add https://github.com/huacnlee/omamail.git --enable
-```
-
-Update it with:
+If it is missing, install it with:
 
 ```bash
-maitri plugin update maitri.mail
+maitri pkg add maitri-mail
 ```
 
-Click the envelope in the bar, install the pinned backend when prompted, and add your mailbox. Prebuilt plugin backends are available for Linux x86_64 and aarch64.
+To open it from the keyboard and make it the `mailto:` handler, choose **Settings → Default mail client → Set as default**. That binds `SUPER+SHIFT+E` (and `SUPER+SHIFT+ALT+E` for a new message) in a marked block of `~/.config/hypr/bindings.lua`, and **Undo** removes the block. To bind the toggle yourself instead:
 
-### Standalone desktop app
-
-The standalone app includes mail, calendar, and native desktop notifications. It has no system tray, AI assistance, or operating-system `mailto:` registration in this release.
-
-macOS & Linux:
-
-```bash
-curl -fsSL https://huacnlee.github.io/omamail/install.sh | sh
+```lua
+o.bind("SUPER + SHIFT + E", "Mail", "maitri-shell shell toggle maitri.mail '{}'")
 ```
 
-Windows (PowerShell):
-
-```powershell
-irm https://huacnlee.github.io/omamail/install.ps1 | iex
-```
-
-Each installer verifies the release package before replacing an existing version. The macOS app and Windows executable are unsigned. The macOS installer removes quarantine only after verifying the downloaded archive. See [standalone runtime and release details](docs/BACKEND-RUNTIME.md#standalone-bundled-backend) for package layout, platform integration, installer behavior, and security checks.
-
-## Run from source
-
-Install Rust, CMake 3.21 or newer, and Qt 6.5 or newer, then use the repository Make targets:
-
-```bash
-make app-run
-```
-
-`make app-run` builds the standalone backend and Qt host, then launches from the source resources. Current source builds enable AI assistance on Linux and macOS with an installed Claude, Codex or OpenCode CLI; choose the agent in Settings. Windows AI support remains deferred. See [Contributing](CONTRIBUTING.md) for validation commands.
+Press `?` in the window for the shortcut sheet, or see the [keyboard guide](docs/KEYS.md).
 
 ## Features
 
 - **Multiple mailboxes:** Gmail, Outlook, HEY, JMAP and IMAP/SMTP, including Fastmail, iCloud and self-hosted servers.
-- **Mail and calendar:** read, search, compose, manage attachments and respond to meeting invitations. Available actions depend on your provider.
+- **Mail and calendar:** read, search, compose, manage attachments and answer meeting invitations. Available actions depend on your provider.
 - **Keyboard navigation:** `j`/`k` to move, `r` to reply, `c` to compose, `/` to search and `?` for all shortcuts.
-- **AI assistance in maitri:** ask about selected messages and review suggested drafts with Claude, OpenCode V2 or Codex. Follow your maitri default, or select an agent and optional model in Settings. An unsupported system default disables the AI action with a setup explanation. Conversations retain follow-ups and draft proposals; `/clear`, `/history` and `/diagnose` manage the chat.
-- **Desktop integration:** native notifications and a compact layout for smaller windows; the maitri plugin also provides the bar widget and `mailto:` integration.
-- **Privacy controls:** credentials stored in the system keyring and remote images blocked until you choose to load them.
-
-<img width="265" alt="maitri mail calendar" src="docs/images/full-calendar.webp" /> <img width="265" alt="Writing a message" src="docs/images/full-compose.webp" /> <img width="265" alt="Compact message list" src="docs/images/mini-list.webp" />
+- **AI assistance:** ask about selected messages and review suggested drafts with Claude, OpenCode or Codex. It follows your maitri default agent, or pick one in Settings.
+- **Desktop integration:** the bar widget, desktop notifications, and `mailto:` handling.
+- **Privacy controls:** credentials stay in the system keyring and remote images stay blocked until you load them.
 
 ## Add your mailbox
 
-Choose a provider in Settings. Gmail needs a Google OAuth client; Outlook needs a Microsoft app registration. HEY uses the official [HEY CLI](https://github.com/basecamp/hey-cli). JMAP and IMAP usually use an app password or API token.
+Choose a provider in Settings. Gmail needs a Google OAuth client and Outlook needs a Microsoft app registration, both created once in your own Google Cloud or Microsoft Entra account; maitri ships no shared OAuth secrets. HEY uses the official [HEY CLI](https://github.com/basecamp/hey-cli). JMAP and IMAP usually use an app password or API token.
 
 See [mailbox setup](docs/MAILBOXES.md) for provider instructions and limitations, including Microsoft 365 and Proton Mail Bridge.
 
-## Make maitri mail the default mail client
+## Where things live
 
-maitri opens HEY's web app on `SUPER+SHIFT+E`. Choose **Settings → Default mail client → Set as default** to make maitri mail open `mailto:` links, `SUPER+SHIFT+E`, and `SUPER+SHIFT+ALT+E` for a new message.
+| Path | What |
+| --- | --- |
+| `/usr/bin/maitri-mail` | The backend the plugin runs, which is also the `maitri-mail` CLI |
+| `/usr/share/maitri/shell/plugins/mail/` | The first-party shell plugin, id `maitri.mail` |
+| `~/.config/maitri-mail/` | Accounts and settings |
+| `~/.cache/maitri-mail/`, `~/.local/state/maitri-mail/` | Message cache, drafts, diagnostics and AI history |
 
-The key bindings go in a clearly marked block in `~/.config/hypr/bindings.lua`; maitri's own files are never changed. **Undo** removes the block and leaves the file as it was.
+The plugin never downloads or replaces its backend. It checks that `/usr/bin/maitri-mail` reports the exact version in `backend-version`, and `maitri update` keeps the two in step.
 
-## Open the maitri plugin from the keyboard
+### Coming from omamail <!-- rebrand:keep -->
 
-To use another key, add this to `~/.config/hypr/bindings.lua`:
+maitri mail reads `~/.config/maitri-mail`, not `~/.config/omamail`, and stores keyring entries under the `maitri-mail` service. Move the config directory across before the first start, or add your mailboxes again. <!-- rebrand:keep -->
 
-```lua
-o.bind("SUPER + SHIFT + G", "maitri mail", "maitri-shell shell toggle maitri.mail '{}'")
+## Develop
+
+Install Rust, Node, Python 3.11+ and Qt 6 (`qt6-declarative` on Arch), then:
+
+```bash
+make test                       # Rust, JS, shell and offscreen QML suites
+cargo build --release --locked  # target/release/maitri-mail
+make install DESTDIR=/tmp/pkg   # stage the packaged layout
 ```
 
-Press `?` in maitri mail for the shortcut sheet, or see the [keyboard guide](docs/KEYS.md).
+To run a checkout's backend in the shell, start `maitri-shell` with `MAITRI_MAIL_BIN` pointing at the binary (`./dev run` prints the steps). To load a checkout of the plugin itself, link it into a maitri development checkout as `shell/plugins/mail` and use `maitri dev link`.
 
-## Help and contributing
+Working agreements for code changes are in [AGENTS.md](AGENTS.md). How the fork tracks omamail, and what it changes, is in [MAITRI.md](MAITRI.md). <!-- rebrand:keep -->
 
-- [Backend installation, updates, release flow, and recovery](docs/BACKEND-RUNTIME.md)
-- [Contributing](CONTRIBUTING.md)
+## License
 
-maitri mail is an independent project and is not affiliated with Google, Microsoft or 37signals. Gmail, Outlook and HEY belong to their respective trademark owners.
+MIT, like omamail. See [LICENSE](LICENSE); copyright stays with Jason Lee for the upstream work. <!-- rebrand:keep -->
 
-Licensed under the [MIT License](LICENSE).
+maitri mail is not affiliated with Google, Microsoft or 37signals. Gmail, Outlook and HEY belong to their respective trademark owners.
