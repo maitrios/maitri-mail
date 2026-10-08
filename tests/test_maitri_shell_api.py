@@ -89,7 +89,7 @@ def main():
         for member in sorted(missing):
             problems.append(f"qs.Ui.{name}.{member} is used by the plugin but maitri's {name} lacks it")
 
-    access = re.compile(r"(?<![\w.])(Style|Color|Border)\.(\w+)(?:\.(\w+))?")
+    access = re.compile(r"(?<![\w.])(?:Commons\.)?(Style|Color|Border)\.(\w+)(?:\.(\w+))?")
     for source in plugin_sources():
         text = re.sub(r"(^|\s)//.*$", r"\1", source.read_text(), flags=re.M)
         for singleton, member, nested in set(access.findall(text)):

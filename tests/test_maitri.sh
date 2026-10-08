@@ -50,6 +50,13 @@ grep -q 'bezierCurveTo' ui/components/GmailIcon.qml && ! grep -q 'innerW \* 0.30
 grep -qF '[[10, 19], [32, 35], [54, 19]]' ui/components/MaitriMailLogo.qml \
   || fail "the animated logo must trace the V fold"
 
+# Qt 6.12's QtQuick Color type shadows the qs.Commons palette singleton, so a
+# bare Color.x reads undefined. A sync from an upstream release without the
+# qualification would bring the bare reads back.
+if grep -rnP '(?<![\w.$])Color\.(?!qml\b)(?=[A-Za-z_])|\btarget:\s*Color\b(?![.\w])' ui --include='*.qml' --include='*.js'; then
+  fail "read the palette as Commons.Color (import qs.Commons as Commons); a bare Color is undefined on Qt 6.12"
+fi
+
 for dropped in app install.sh install.ps1 docs/index.html scripts/link-plugin.sh scripts/publish.sh \
     scripts/install-backend.sh .github/workflows/pages.yml .github/workflows/native-credentials.yml; do
   [[ ! -e $dropped ]] || fail "$dropped is on maitri-mail's delete list but came back"
