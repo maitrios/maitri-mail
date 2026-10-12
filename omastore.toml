@@ -1,0 +1,23 @@
+kind = "app"
+name = "Mail"
+summary = "Native mail and calendar app for Gmail, Outlook, HEY, JMAP and IMAP, with multiple accounts and keyboard navigation."
+categories = ["Network", "Email", "Office"]
+icon = "app/resources/icons/maitri-mail.svg"
+screenshots = [
+  "docs/images/full-mail.webp",
+  "docs/images/full-calendar.webp",
+  "docs/images/full-compose.webp",
+  "docs/images/mini-list.webp",
+]
+
+# The release also ships the maitri plugin backend (maitri-mail-linux-*.tar.gz);
+# OmaStore installs the standalone desktop app and launches its Qt host.
+[linux.x86_64]
+asset = "maitri-mail-app-linux-x86_64.tar.gz"
+exec = "maitri-mail.app/bin/maitri-mail-app"
+
+# Not published yet: until it is, the app is not installable on ARM rather than
+# getting the plugin backend in its place.
+[linux.aarch64]
+asset = "maitri-mail-app-linux-aarch64.tar.gz"
+exec = "maitri-mail.app/bin/maitri-mail-app"
