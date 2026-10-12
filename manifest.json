@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "maitri.mail",
   "name": "Mail",
-  "version": "0.10.8",
+  "version": "0.11.0",
   "author": "huacnlee",
   "license": "MIT",
   "homepage": "https://github.com/maitrios/maitri-mail",
