@@ -459,6 +459,7 @@ for name in ("compose-button",):
         raise SystemExit("test_source.sh: " + name + " must not carry an icon")
 PY
 python3 - <<'PY'
+import re
 from pathlib import Path
 
 sidebar = Path("components/MailboxSidebar.qml").read_text()
@@ -499,8 +500,11 @@ if "readonly property color calendarTodayBackground: Qt.alpha(root.accent, 0.035
     raise SystemExit("test_source.sh: Today must use the quieter system accent fill token")
 if "calendarBorderWidth: root.calendarBorderWidth" not in app:
     raise SystemExit("test_source.sh: App must pass the system calendar border width")
-if "color: Qt.alpha(root.calendarBorderColor, 0.25)" not in calendar or "width: root.calendarBorderWidth" not in calendar or "height: root.calendarBorderWidth" not in calendar:
+if "color: root.calendarBorderColor" not in calendar or "width: root.calendarBorderWidth" not in calendar or "height: root.calendarBorderWidth" not in calendar:
     raise SystemExit("test_source.sh: month dividers must consume the themed calendar border")
+for source, name in ((calendar, "month"), (week, "week")):
+    if re.search(r"Qt\.(alpha|rgba|darker|lighter)\(\s*root\.calendarBorderColor", source):
+        raise SystemExit("test_source.sh: %s calendar must draw the themed border as is, since it carries its own alpha" % name)
 if "? root.calendarTodayBackgroundColor" not in calendar:
     raise SystemExit("test_source.sh: the Month Today cell must consume the themed background")
 if ("calendarBorderColor: root.calendarBorderColor" not in calendar

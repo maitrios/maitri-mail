@@ -141,7 +141,7 @@ Item {
     height: root.allDayHeight
     color: "transparent"
     border.width: root.calendarBorderWidth
-    border.color: Qt.alpha(root.calendarBorderColor, 0.2)
+    border.color: root.calendarBorderColor
     clip: true
 
     Text {
@@ -181,7 +181,7 @@ Item {
               : allDayColumn.modelData.isoDate === root.todayIso
               ? root.calendarTodayBackgroundColor : "transparent"
             border.width: root.calendarBorderWidth
-            border.color: Qt.alpha(root.calendarBorderColor, 0.2)
+            border.color: root.calendarBorderColor
           }
 
           MouseArea {
@@ -326,7 +326,7 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             height: root.calendarBorderWidth
-            color: Qt.alpha(root.calendarBorderColor, 0.18)
+            color: root.calendarBorderColor
           }
         }
       }
@@ -385,7 +385,7 @@ Item {
               color: dayColumn.modelData.isoDate === root.todayIso
                 ? root.calendarTodayBackgroundColor : "transparent"
               border.width: root.calendarBorderWidth
-              border.color: Qt.alpha(root.calendarBorderColor, 0.18)
+              border.color: root.calendarBorderColor
             }
             MouseArea {
               objectName: "calendar-time-slots-" + dayColumn.modelData.isoDate
