@@ -511,6 +511,7 @@ function discardDraftAt(list, index) {
 // Qt 6.12 hands an array passed through a `var` signal argument over as a
 // sequence that `Array.isArray` rejects, and a rename's migrated watch list
 // arrives that way, so anything list-shaped counts.
+// https://github.com/k7lab/maitrios/issues/66
 function idList(value) {
   var list = value && typeof value === "object" && typeof value.length === "number" ? value : []
   var out = []
