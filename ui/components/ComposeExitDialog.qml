@@ -14,6 +14,7 @@ Item {
   required property string currentDraftKey
   readonly property bool opened: dialog.opened
   property string requestedDraftKey: ""
+  property var returnFocus: null
 
   signal saveRequested(string draftKey)
   signal discardRequested(string draftKey)
@@ -30,6 +31,7 @@ Item {
   function open() {
     if (currentDraftKey === "") return
     requestedDraftKey = currentDraftKey
+    if (!dialog.opened) returnFocus = root.Window.activeFocusItem
     dialog.open()
   }
   function close() {
@@ -61,7 +63,16 @@ Item {
     focus: true
     closePolicy: QQC.Popup.CloseOnEscape
     onOpened: saveButton.forceActiveFocus()
-    onClosed: root.requestedDraftKey = ""
+    // Qt 6.8 hands focus to the window's root on close rather than back to
+    // the field that had it, so the draft has to ask for it again.
+    onClosed: {
+      root.requestedDraftKey = ""
+      var previous = root.returnFocus
+      root.returnFocus = null
+      Qt.callLater(function() {
+        if (previous && previous.visible) previous.forceActiveFocus()
+      })
+    }
     background: Rectangle {
       radius: Style.cornerRadius
       color: root.popupBackgroundColor
