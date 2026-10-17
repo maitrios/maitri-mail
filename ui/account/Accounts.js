@@ -510,10 +510,13 @@ function discardDraftAt(list, index) {
 // mailbox has nothing to be called.
 // Qt 6.12 hands an array passed through a `var` signal argument over as a
 // sequence that `Array.isArray` rejects, and a rename's migrated watch list
-// arrives that way, so anything list-shaped counts.
-// https://github.com/k7lab/maitrios/issues/66
+// arrives that way, so anything list-shaped counts. Upstream still checks
+// `Array.isArray`. Saved settings reach this too, so the length is bounded.
+var MAX_IDS = 10000
 function idList(value) {
-  var list = value && typeof value === "object" && typeof value.length === "number" ? value : []
+  var size = value && typeof value === "object" ? value.length : -1
+  var bounded = typeof size === "number" && size % 1 === 0 && size >= 0 && size <= MAX_IDS
+  var list = bounded ? value : []
   var out = []
   for (var i = 0; i < list.length; i++) {
     var item = trimmed(list[i])
