@@ -2646,17 +2646,11 @@ Item {
       platform: root
       required property int index
 
-      // Qt 6.8 sets a delegate's index to -1 before destroying it. Reading the
-      // list there signed the outgoing host out on its way out, which dropped
-      // `anyAccountReady` until its replacement signed back in and sent the
-      // window back to its root.
-      property var heldEntry: null
-      readonly property var entry: {
-        if (index < 0) return heldEntry
-        var accounts = root.accountList ? root.accountList.accounts : []
-        return index < accounts.length ? accounts[index] : null
-      }
-      onEntryChanged: heldEntry = entry
+      // Qt 6.8 sets index to -1 on a delegate it is destroying.
+      property var held: null
+      readonly property var entry: index < 0 ? held
+        : root.accountList && root.accountList.accounts[index] || null
+      onEntryChanged: held = entry
 
       notificationForeground: Commons.Color.foreground
       notificationAccent: Commons.Color.accent
