@@ -51,9 +51,9 @@ jobs:
           test -f "$RUNNER_TEMP/pkg/usr/share/maitri-plugins/mail/manifest.json"
 
   plugin:
-    name: Plugin (JS, shell, QML)
+    name: Plugin (JS, shell)
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Fetch maitri's shell for the API compatibility check
@@ -65,19 +65,32 @@ jobs:
         with:
           toolchain: "1.98.1"
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - uses: jurplel/install-qt-action/action@d325aaf2a8baeeda41ad0b5d39f84a6af9bcf005 # v4.3.0
-        with:
-          version: "6.8.3"
-          cache: true
-          aqtversion: "==3.3.0"
-          py7zrversion: "==1.0.0"
       - run: make test-js
       # test-shell-libcurl asserts the installed libcurl's own behaviour and
       # only means something on an Arch host; run it locally with `make test`.
       - run: make test-shell-portable
         env:
           MAITRI_SHELL_DIR: ${{ runner.temp }}/maitri/shell
+      - run: git diff --check
+
+  # The plugin only ever runs on Arch's Qt, and QML behaviour differs between
+  # Qt releases, so the suite runs against the same packages maitri ships.
+  qml:
+    name: Plugin QML (Arch Qt)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    container:
+      image: archlinux:latest
+      options: --init
+    steps:
+      - name: Install Qt, Rust and the test tooling
+        run: |
+          pacman -Syu --noconfirm --needed git make gcc pkgconf python rustup qt6-declarative ttf-dejavu
+          rustup toolchain install 1.98.1 --profile minimal
+          rustup default 1.98.1
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - run: pacman -Q qt6-declarative
       - run: make test-qml
         env:
           QT_QPA_PLATFORM: offscreen
-      - run: git diff --check
