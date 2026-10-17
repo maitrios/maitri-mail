@@ -851,6 +851,11 @@ assert.strictEqual(frozen(accounts.replaceAt(cidActive, -1, account("x@example.c
   deepEqual(accounts.toggleMonitored(two, "me@gmail.com", "  ").accounts[0].monitored, ["Label_7", "Label_9"])
   deepEqual(accounts.load(accounts.serialize(two)).accounts[0].monitored, ["Label_7", "Label_9"],
     "and it is written to disk and read back")
+  const sequence = { length: 2, 0: "Jobs/2026", 1: "Receipts" }
+  deepEqual(accounts.setMonitored(two, "me@gmail.com", sequence).accounts[0].monitored, ["Jobs/2026", "Receipts"],
+    "a migrated list that crossed a QML signal as a sequence keeps its ids")
+  deepEqual(accounts.setMonitored(two, "me@gmail.com", "Label_7").accounts[0].monitored, [],
+    "a string is not a list of ids")
 }
 
 
