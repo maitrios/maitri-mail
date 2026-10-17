@@ -2646,11 +2646,10 @@ Item {
       platform: root
       required property int index
 
-      // Qt 6.8 sets index to -1 on a delegate it is destroying.
-      property var held: null
-      readonly property var entry: index < 0 ? held
-        : root.accountList && root.accountList.accounts[index] || null
-      onEntryChanged: held = entry
+      readonly property var entry: {
+        var accounts = root.accountList ? root.accountList.accounts : []
+        return index < accounts.length ? accounts[index] : null
+      }
 
       notificationForeground: Commons.Color.foreground
       notificationAccent: Commons.Color.accent
