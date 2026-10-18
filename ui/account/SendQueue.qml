@@ -1,4 +1,5 @@
 import QtQuick
+import "../common/Lists.js" as Lists
 
 // Rendering and callback correlation only. The backend owns undo deadlines,
 // serial delivery, cancellation and durable recovery after a restart.
@@ -46,7 +47,7 @@ QtObject {
     if (!snapshot || String(snapshot.accountId || "") !== String(account.accountId || "")) return
     if (Number(snapshot.revision) < revision) return
     revision = Number(snapshot.revision)
-    var entries = Array.isArray(snapshot.entries) ? snapshot.entries : []
+    var entries = Lists.array(snapshot.entries)
     rememberDelivery(entries)
     if (partial) {
       var merged = serverEntries.slice()
