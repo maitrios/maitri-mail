@@ -913,9 +913,9 @@ function deleteRequest(event, source, canReadSeries) {
   var value = event || {}
   var google = !!source && source.kind === "google"
   var notifies = google && !!value.organizer && value.organizer.self === true
-    && (value.attendees || []).some(function(attendee) { return attendee.self !== true })
+    && Lists.array(value.attendees).some(function(attendee) { return attendee.self !== true })
   var occurrence = String(value.recurringEventId || "") !== ""
-  var series = Array.isArray(value.recurrence) && value.recurrence.length > 0
+  var series = Lists.array(value.recurrenceLines).length > 0 || String(value.recurrenceRule || "") !== ""
   var choices = []
   var message = "This event will be permanently deleted."
   if (occurrence) {

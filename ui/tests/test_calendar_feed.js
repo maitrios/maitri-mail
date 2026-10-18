@@ -380,8 +380,41 @@ assert.strictEqual(feed.monthEventLimit(10, 23, 2, 16, 5), 0)
   // A backend that cannot read the series offers only the occurrence.
   assert.deepStrictEqual(labels(feed.deleteRequest({ summary: "Standup", recurringEventId: "series" }, google, false)),
     ["all:Delete occurrence"])
-  assert.ok(feed.deleteRequest({ recurrence: ["RRULE:FREQ=WEEKLY"] }, google, true).message.indexOf("Every occurrence") === 0)
   assert.strictEqual(feed.deleteRequest(null, null, false).name, "Untitled event")
+}
+
+// Series or one-off, as each provider's parser hands the event over: Google
+// keeps the rule lines in `recurrenceLines` and CalDAV the RRULE in
+// `recurrenceRule`, while `recurrence` is a sentence for the card on both.
+{
+  const google = { kind: "google" }
+  const googleEvent = item => feed.eventsFromGoogle({ items: [Object.assign({
+    id: "planning", summary: "Planning", status: "confirmed",
+    start: { dateTime: "2026-10-19T09:00:00Z" }, end: { dateTime: "2026-10-19T09:30:00Z" }
+  }, item)] }, "google:me")[0]
+  const weekly = { recurrence: ["RRULE:FREQ=WEEKLY;BYDAY=MO", "EXDATE:20261026T090000Z"] }
+  const withGuests = { organizer: { email: "me@example.test", self: true },
+    attendees: [{ email: "me@example.test", self: true }, { email: "sam@example.test" }] }
+
+  const googleSeries = feed.deleteRequest(googleEvent(weekly), google, true)
+  assert.strictEqual(googleSeries.message, "Every occurrence of this series will be deleted.")
+  assert.deepStrictEqual(Array.from(googleSeries.choices, choice => choice.value), ["all"])
+  assert.strictEqual(feed.deleteRequest(googleEvent(Object.assign({}, weekly, withGuests)), google, true).message,
+    "Every occurrence of this series will be deleted. Guests get a cancellation email unless you delete without one.")
+  assert.strictEqual(feed.deleteRequest(googleEvent({}), google, true).message,
+    "This event will be permanently deleted.")
+  assert.strictEqual(feed.deleteRequest(googleEvent(withGuests), google, true).message,
+    "Guests get a cancellation email unless you delete without one.")
+  assert.strictEqual(feed.deleteRequest(googleEvent({ id: "planning_20261019T090000Z", recurringEventId: "planning" }),
+    google, true).message, "Delete this occurrence, or every occurrence in the series.")
+
+  const caldav = { kind: "caldav" }
+  const standup = feed.eventsFromCaldav(recurringXml, "work").filter(event => event.summary === "Standup")
+  assert.strictEqual(standup.length, 1)
+  assert.strictEqual(feed.deleteRequest(standup[0], caldav, true).message,
+    "Every occurrence of this series will be deleted.")
+  assert.strictEqual(feed.deleteRequest(feed.eventsFromCaldav(xml, "work")[0], caldav, true).message,
+    "This event will be permanently deleted.")
 }
 
 function spanFixture(id, start, end, allDay = false) {
