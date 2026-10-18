@@ -508,8 +508,15 @@ function discardDraftAt(list, index) {
 // Empty is not a name and clears it, which is what puts the address back:
 // `label()` falls through to the local part, so there is no state in which a
 // mailbox has nothing to be called.
+// Qt 6.12 hands an array passed through a `var` signal argument over as a
+// sequence that `Array.isArray` rejects, and a rename's migrated watch list
+// arrives that way, so anything list-shaped counts. Upstream still checks
+// `Array.isArray`. Saved settings reach this too, so the length is bounded.
+var MAX_IDS = 10000
 function idList(value) {
-  var list = Array.isArray(value) ? value : []
+  var size = value && typeof value === "object" ? value.length : -1
+  var bounded = typeof size === "number" && size % 1 === 0 && size >= 0 && size <= MAX_IDS
+  var list = bounded ? value : []
   var out = []
   for (var i = 0; i < list.length; i++) {
     var item = trimmed(list[i])
