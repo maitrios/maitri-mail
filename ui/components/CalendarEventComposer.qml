@@ -5,6 +5,7 @@ import qs.Commons
 import qs.Ui
 import "../calendar/Calendar.js" as Calendar
 import "../compose/Recipients.js" as Recipients
+import "../common/Lists.js" as Lists
 
 Rectangle {
   id: root
@@ -63,7 +64,7 @@ Rectangle {
     && !!controller && !!controller.service && controller.service.backendCanGoogleCalendars === true
   readonly property bool guestUpdate: editing && googleWrites
     && !!editingEvent.organizer && editingEvent.organizer.self === true
-    && ((Array.isArray(editingEvent.attendees) && editingEvent.attendees.some(function(attendee) { return attendee.self !== true }))
+    && (Lists.array(editingEvent.attendees).some(function(attendee) { return attendee.self !== true })
       || guestsField.text.trim() !== "")
   property string editingSourceId: ""
   readonly property bool editing: editingEvent !== null
