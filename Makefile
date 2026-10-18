@@ -150,6 +150,7 @@ test-js:
 	node tests/test_reader_pipeline.js
 	node ui/tests/test_keymap.js
 	node ui/tests/test_accounts.js
+	node ui/tests/test_lists.js
 	node ui/tests/test_unified.js
 	node ui/tests/test_aliases.js
 	node ui/tests/test_menu.js
