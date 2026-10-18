@@ -24,7 +24,8 @@ Item {
     id: fixture
     property var service: serviceFixture
     property var source: ({id:"google:me@example.test",kind:"google",accountId:"me@example.test",calendarId:"primary",readOnly:false,colorKey:"accent"})
-    property var availableSources: ({sources:[source]})
+    property var microsoft: ({id:"microsoft:outlook:me@contoso.com",kind:"microsoft",accountId:"outlook:me@contoso.com",calendarId:"",readOnly:false,colorKey:"accent"})
+    property var availableSources: ({sources:[source, microsoft]})
     property var writableSourceGroups: [{id:source.id,providerLabel:"Google",accountLabel:"me@example.test",
       calendars:[{id:source.id,name:"me@example.test",colorKey:"accent",kind:"google"}]}]
     property var events: []
@@ -45,7 +46,7 @@ Item {
     signal eventUpdated(bool ok, string error)
     signal composeRequested(var prefill)
     signal composeEnded()
-    function findSource(id) { return id === source.id ? source : null }
+    function findSource(id) { return id === source.id ? source : id === microsoft.id ? microsoft : null }
     function colorKeyFor(id) { return "accent" }
     function refresh(start, end) {}
     function nativeRequest(source, operation, fields, callback) {
@@ -198,6 +199,23 @@ Item {
       openFromTheWeek()
       var request = deleteFromTheDetail()
       compare(request.message, "Guests get a cancellation email unless you delete without one.")
+    }
+
+    function test_deleting_a_microsoft_occurrence_says_the_rest_of_the_series_stays() {
+      serviceFixture.backendCanGoogleCalendars = true
+      fixture.events = Calendar.eventsFromGraph({value:[{id:"AAMk7",iCalUId:"weekly-sync-1025",
+        subject:"Weekly sync",isAllDay:true,isCancelled:false,type:"occurrence",seriesMasterId:"AAMkSeries",
+        start:{dateTime:"2026-10-25T00:00:00.0000000",timeZone:"UTC"},
+        end:{dateTime:"2026-10-26T00:00:00.0000000",timeZone:"UTC"}}]}, fixture.microsoft.id)
+      var block = findChild(view, "calendar-all-day-event-weekly-sync-1025")
+      verify(block, "the week view draws the occurrence")
+      mouseClick(block, block.width / 2, block.height / 2)
+      compare(view.detailOpen, true)
+      compare(fixture.pending.length, 0, "a Microsoft event is shown as listed")
+      var request = deleteFromTheDetail()
+      compare(request.message, "This occurrence will be deleted. The rest of the series stays.")
+      compare(request.choices.length, 1)
+      compare(request.choices[0].label, "Delete occurrence")
     }
 
     function editAGoogleEvent() {
