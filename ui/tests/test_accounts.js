@@ -851,6 +851,29 @@ assert.strictEqual(frozen(accounts.replaceAt(cidActive, -1, account("x@example.c
   deepEqual(accounts.toggleMonitored(two, "me@gmail.com", "  ").accounts[0].monitored, ["Label_7", "Label_9"])
   deepEqual(accounts.load(accounts.serialize(two)).accounts[0].monitored, ["Label_7", "Label_9"],
     "and it is written to disk and read back")
+  const sequence = { length: 2, 0: "Jobs/2026", 1: "Receipts" }
+  deepEqual(accounts.setMonitored(two, "me@gmail.com", sequence).accounts[0].monitored, ["Jobs/2026", "Receipts"],
+    "a migrated list that crossed a QML signal as a sequence keeps its ids")
+  deepEqual(accounts.setMonitored(two, "me@gmail.com", "Label_7").accounts[0].monitored, [],
+    "a string is not a list of ids")
+
+  // A hand-edited or damaged accounts.json is read through the same check,
+  // and a length it cannot trust is no list at all rather than a loop.
+  const saved = JSON.parse(accounts.serialize(two))
+  const withMonitored = function(json) {
+    return accounts.serialize(two).replace(JSON.stringify(saved.accounts[0].monitored), json)
+  }
+  for (const [what, json] of [["infinite", '{"length": 1e309, "0": "a"}'],
+    ["negative", '{"length": -1}'], ["huge", '{"length": 30000000}'],
+    ["fractional", '{"length": 1.5, "0": "a"}'], ["a string", '"1"']]) {
+    deepEqual(accounts.load(withMonitored(json)).accounts[0].monitored, [], `a ${what} length is refused`)
+  }
+  deepEqual(accounts.load(withMonitored('{"length": 2}')).accounts[0].monitored, [],
+    "a length with no ids behind it gives nothing")
+  deepEqual(accounts.setMonitored(two, "me@gmail.com", { length: NaN, 0: "a" }).accounts[0].monitored, [],
+    "nor does a length that is not a number")
+  deepEqual(accounts.load(withMonitored('{"length": 1, "0": " Label_7 "}')).accounts[0].monitored, ["Label_7"],
+    "while a sound list-shaped value still counts")
 }
 
 
