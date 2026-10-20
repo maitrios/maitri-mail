@@ -1,6 +1,7 @@
 .pragma library
 
 .import "../message/Calendar.js" as Ics
+.import "../common/Lists.js" as Lists
 
 function googleResponseError(status, responseText) {
   var payload = null
@@ -727,7 +728,7 @@ function googleOptions(body, fields, source, existing) {
     var emails = String(fields.guestEmails).split(/[,;\n]/).map(function(email) { return email.trim() }).filter(function(email) { return email !== "" })
     if (emails.length > 200 || emails.some(function(email) { return !/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(email) }))
       return { ok: false, error: "Enter valid guest email addresses separated by commas" }
-    var seen = {}, previous = existing && Array.isArray(existing.attendees) ? existing.attendees : []
+    var seen = {}, previous = Lists.array(existing && existing.attendees)
     next.attendees = []
     for (var i = 0; i < emails.length; i++) {
       var email = emails[i].toLowerCase()
@@ -831,7 +832,7 @@ function timedLayout(events, day) {
 }
 
 function attendeeRows(event) {
-  return (event && Array.isArray(event.attendees) ? event.attendees : []).map(function(attendee) {
+  return Lists.array(event && event.attendees).map(function(attendee) {
     var status = String(attendee.responseStatus || attendee.partstat || attendee.status && attendee.status.response || "needsAction").toLowerCase()
     var label = status === "accepted" ? "Accepted" : status === "declined" ? "Declined"
       : status === "tentative" || status === "tentativelyaccepted" ? "Maybe" : "Awaiting reply"

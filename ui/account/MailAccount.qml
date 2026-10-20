@@ -16,6 +16,7 @@ import "Aliases.js" as Aliases
 import "../providers/Registry.js" as Provider
 import "../providers/ImapProtocol.js" as Imap
 import "../providers/OAuth.js" as OAuth
+import "../common/Lists.js" as Lists
 
 // One mailbox: its sign-in, its cache, its messages. Service.qml owns a set of
 // these and puts whichever is on screen in front of the views.
@@ -744,7 +745,7 @@ Item {
 
   function summarizeResources(payloads, callback) {
     var account = accountId
-    var list = Array.isArray(payloads) ? payloads : []
+    var list = Lists.array(payloads)
     if (list.length === 0) { callback([], ""); return }
     if (!backend) { callback([], "Mail backend is unavailable"); return }
     backend.call("message.summaries", {messages: list, now: Date.now()}, function(result, error) {
