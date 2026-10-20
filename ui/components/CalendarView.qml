@@ -729,26 +729,26 @@ Item {
           Rectangle {
             width: root.calendarBorderWidth
             height: parent.height
-            color: Qt.alpha(root.calendarBorderColor, 0.25)
+            color: root.calendarBorderColor
           }
           Rectangle {
             width: parent.width
             height: root.calendarBorderWidth
-            color: Qt.alpha(root.calendarBorderColor, 0.25)
+            color: root.calendarBorderColor
           }
           Rectangle {
             visible: dayCell.index % 7 === 6
             anchors.right: parent.right
             width: root.calendarBorderWidth
             height: parent.height
-            color: Qt.alpha(root.calendarBorderColor, 0.25)
+            color: root.calendarBorderColor
           }
           Rectangle {
             visible: dayCell.index >= root.days.length - 7
             anchors.bottom: parent.bottom
             width: parent.width
             height: root.calendarBorderWidth
-            color: Qt.alpha(root.calendarBorderColor, 0.25)
+            color: root.calendarBorderColor
           }
 
           MouseArea {

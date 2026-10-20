@@ -499,8 +499,34 @@ if "readonly property color calendarTodayBackground: Qt.alpha(root.accent, 0.035
     raise SystemExit("test_source.sh: Today must use the quieter system accent fill token")
 if "calendarBorderWidth: root.calendarBorderWidth" not in app:
     raise SystemExit("test_source.sh: App must pass the system calendar border width")
-if "color: Qt.alpha(root.calendarBorderColor, 0.25)" not in calendar or "width: root.calendarBorderWidth" not in calendar or "height: root.calendarBorderWidth" not in calendar:
+if "color: root.calendarBorderColor" not in calendar or "width: root.calendarBorderWidth" not in calendar or "height: root.calendarBorderWidth" not in calendar:
     raise SystemExit("test_source.sh: month dividers must consume the themed calendar border")
+for source, name, allowed in (
+        (calendar, "month", ("required property color calendarBorderColor", "calendarBorderColor: root.calendarBorderColor")),
+        (week, "week", ("required property color calendarBorderColor",))):
+    lines = source.splitlines()
+    draws = 0
+    for index, line in enumerate(lines):
+        if "calendarBorderColor" not in line:
+            continue
+        stripped = line.strip()
+        if stripped in allowed:
+            continue
+        if stripped not in ("color: root.calendarBorderColor", "border.color: root.calendarBorderColor"):
+            raise SystemExit("test_source.sh: %s calendar must draw the themed border as is, since it carries its own alpha: %s" % (name, stripped))
+        draws += 1
+        indent = len(line) - len(line.lstrip())
+        start = index
+        while start > 0 and not (lines[start - 1].rstrip().endswith("{") and len(lines[start - 1]) - len(lines[start - 1].lstrip()) < indent):
+            start -= 1
+        end = index
+        while end < len(lines) - 1 and not (lines[end + 1].strip().startswith("}") and len(lines[end + 1]) - len(lines[end + 1].lstrip()) < indent):
+            end += 1
+        for sibling in lines[start:end + 1]:
+            if len(sibling) - len(sibling.lstrip()) == indent and sibling.strip().startswith("opacity:"):
+                raise SystemExit("test_source.sh: %s calendar must not fade the themed border with opacity" % name)
+    if draws < 4:
+        raise SystemExit("test_source.sh: %s calendar must draw its grid in root.calendarBorderColor" % name)
 if "? root.calendarTodayBackgroundColor" not in calendar:
     raise SystemExit("test_source.sh: the Month Today cell must consume the themed background")
 if ("calendarBorderColor: root.calendarBorderColor" not in calendar
