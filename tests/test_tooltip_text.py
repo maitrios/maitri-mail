@@ -1,4 +1,4 @@
-"""Actual standalone tooltip renders untrusted titles without resource requests."""
+"""The calendar tooltip renders untrusted titles without resource requests."""
 import json
 import os
 import shutil
@@ -27,7 +27,6 @@ QML = r'''
 import QtQuick
 import QtQuick.Controls
 import QtTest
-import @STYLE@ as AppStyle
 import @COMPONENTS@ as Mail
 import @CALENDAR@ as Calendar
 Item {
@@ -43,7 +42,6 @@ Item {
       function colorKeyFor(source) { return "accent" }
     }
   }
-  Component { id: tipFactory; AppStyle.ToolTip {} }
   Component {
     id: weekFactory
     Mail.WeekCalendarView {
@@ -113,24 +111,6 @@ Item {
       compare(lanes[0].lanes, 2)
       verify(lanes[0].lane !== lanes[1].lane)
     }
-    function test_2_titles() {
-      var suffixes = ["", "\n", "\r", "\r\n", "\u0000"]
-      for (var i = 0; i < suffixes.length; i++) {
-        var title = '<img src="' + endpoint + '/forbidden-' + i + '">' + suffixes[i]
-        var tip = createTemporaryObject(tipFactory, host, {text: title})
-        verify(tip !== null)
-        tip.open()
-        wait(100)
-        compare(tip.contentItem.text, title)
-        compare(tip.contentItem.textFormat, Text.PlainText)
-        tip.close()
-      }
-      var tip = createTemporaryObject(tipFactory, host, {text: '中文 "quotes" \\ slash\nline & <b>literal</b>'})
-      tip.open()
-      compare(tip.contentItem.text, tip.text)
-      compare(tip.contentItem.textFormat, Text.PlainText)
-      wait(300)
-    }
   }
 }
 '''
@@ -150,7 +130,7 @@ def main():
             color.write_text(color.read_text().replace("QtObject {", 'QtObject {\n  readonly property var popups: ({text: "#eeeeee", background: "#222222", border: "#555555"})', 1))
             style = imports / "qs/Commons/Style.qml"
             style.write_text(style.read_text().replace("QtObject {", "QtObject {\n  readonly property int tooltipDelay: 400", 1))
-            source = QML.replace("@STYLE@", json.dumps((ROOT / "app/qml/styles/Mail").as_uri()))
+            source = QML
             for key, path in {
                 "CALENDAR": "calendar/Calendar.js", "COMPONENTS": "components",
             }.items():

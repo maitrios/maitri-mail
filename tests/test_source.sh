@@ -1114,13 +1114,19 @@ awk '
 #    has to be in the tree or the card falls back to a placeholder. It gets a
 #    ceiling of its own instead of none: a card image that grew to a megabyte
 #    would still be a megabyte every user clones.
+#
+#    ui/Service.qml is source that sits just under the ceiling upstream; the
+#    rebrand lengthens every plugin id it carries, which tips it over. It gets
+#    a ceiling of its own, 1 KiB above the rest, rather than a raised limit.
 limit=$((128 * 1024))
 preview_limit=$((384 * 1024))
+service_limit=$((129 * 1024))
 oversized=$(cd ..
   while IFS= read -r -d '' file; do
       [ -f "$file" ] || continue
       case "$file" in
         (preview.png) ceiling=$preview_limit ;;
+        (ui/Service.qml) ceiling=$service_limit ;;
         (*) ceiling=$limit ;;
       esac
       size=$(wc -c < "$file")
