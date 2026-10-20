@@ -64,6 +64,27 @@ done
 
 tmp=$(mktemp -d)
 trap 'rm -rf -- "$tmp"' EXIT
+
+# CodeQL's actions analysis fails on a sync pull request whose `upstream` head
+# has no workflow, so the sync carries main's placeholder there and the rebrand
+# deletes upstream's .github/ around it.
+placeholder=.github/workflows/upstream-placeholder.yml
+grep -qF "$placeholder)" tools/sync-upstream.sh || fail "tools/sync-upstream.sh must carry $placeholder onto upstream"
+(
+  repo="$tmp/rebrand"
+  mkdir -p "$repo/tools" "$repo/.github/workflows"
+  cp tools/rebrand.sh "$repo/tools/"
+  cp "$placeholder" "$repo/$placeholder"
+  printf 'name: ci\n' > "$repo/.github/workflows/ci.yml"
+  printf 'github: someone\n' > "$repo/.github/FUNDING.yml"
+  printf '[package]\nname = "x"\nversion = "1.2.3"\n' > "$repo/Cargo.toml"
+  printf '{"apiVersion": 1}\n' > "$repo/backend-api.json"
+  cd "$repo"
+  git init -q -b upstream
+  git add -A
+  tools/rebrand.sh --all
+  [[ $(git ls-files .github) == "$placeholder" ]] || fail "rebrand --all must delete upstream's .github/ but keep $placeholder"
+)
 mkdir -p "$tmp/bin"
 printf '#!/bin/sh\nprintf "maitri-mail 0.0.0\\n"\n' > "$tmp/bin/maitri-mail"
 chmod 755 "$tmp/bin/maitri-mail"

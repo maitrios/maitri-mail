@@ -90,6 +90,13 @@ DELETE_LIST=(
   'tests/test_plugin_workflow.py'
 )
 
+# maitri-mail files that tools/sync-upstream.sh carries onto `upstream`, which
+# DELETE_LIST must spare. CodeQL's actions analysis fails on a sync pull request
+# whose head has no workflow at all, so `upstream` keeps main's inert one.
+UPSTREAM_KEEP=(
+  '.github/workflows/upstream-placeholder.yml'
+)
+
 # Why: omamail tags a release before its pin commit, so the tag still pins the
 # previous backend. maitri builds plugin and backend from the same tag, so apply
 # that commit here (as scripts/package-backend.py pin does upstream).
@@ -209,9 +216,10 @@ rewrite_file() {
 }
 
 delete_upstream_only() {
-  local entry
+  local entry keep=() k
+  for k in "${UPSTREAM_KEEP[@]}"; do keep+=(":(exclude)$k"); done
   for entry in "${DELETE_LIST[@]}"; do
-    git rm -rqf --ignore-unmatch -- "$entry" "$(rename_path "$entry")" 2>/dev/null || true
+    git rm -rqf --ignore-unmatch -- "$entry" "$(rename_path "$entry")" "${keep[@]}" 2>/dev/null || true
   done
 }
 
