@@ -1177,6 +1177,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "maitri-mail"
+version = "0.11.1"
+dependencies = [
+ "base64",
+ "chrono",
+ "clap",
+ "encoding_rs",
+ "futures-util",
+ "hickory-resolver",
+ "json5",
+ "libc",
+ "mailparse",
+ "quick-xml",
+ "regex",
+ "reqwest",
+ "rusqlite",
+ "rustls",
+ "rustls-native-certs",
+ "secret-service",
+ "security-framework",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "tabled",
+ "tokio",
+ "tokio-rustls",
+ "toml_edit",
+ "unicode-normalization",
+ "webpki-roots",
+ "windows-sys 0.61.2",
+ "zbus",
+ "zeroize",
+]
+
+[[package]]
 name = "memchr"
 version = "2.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1316,41 +1351,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "maitri-mail"
-version = "0.11.1"
-dependencies = [
- "base64",
- "chrono",
- "clap",
- "encoding_rs",
- "futures-util",
- "hickory-resolver",
- "json5",
- "libc",
- "mailparse",
- "quick-xml",
- "regex",
- "reqwest",
- "rusqlite",
- "rustls",
- "rustls-native-certs",
- "secret-service",
- "security-framework",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "tabled",
- "tokio",
- "tokio-rustls",
- "toml_edit",
- "unicode-normalization",
- "webpki-roots",
- "windows-sys 0.61.2",
- "zbus",
- "zeroize",
 ]
 
 [[package]]
@@ -1819,9 +1819,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.44"
+version = "0.23.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6725596c3f2c3a0aef021139e145d4eafe314a6623e4680ca83852b2c67ab2ba"
+checksum = "0d41d731c7d2f962d1ccc364cec258de3c0e93b38c2fb3ba97ac74513048d634"
 dependencies = [
  "once_cell",
  "ring",
