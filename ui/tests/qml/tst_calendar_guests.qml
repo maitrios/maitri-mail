@@ -4,10 +4,11 @@ import "../../components" as Views
 import "../../calendar/Calendar.js" as Calendar
 
 // An event reaches the detail through the week view's `eventActivated(var
-// event)` or an agenda row's `modelData`, and the composer through the
-// detail's and the view's `editRequested(string, var event)`, wired the way
-// App.qml wires them. On Qt 6.12 each of those turns the event's `attendees`
-// into a sequence.
+// event)` or an agenda row's `modelData`, the composer through the detail's
+// and the view's `editRequested(string, var event)`, and the delete
+// confirmation through their `deleteRequested(string, var event)`, wired the
+// way App.qml wires them. On Qt 6.12 each of those turns the event's
+// `attendees`, and a series' `recurrenceLines`, into a sequence.
 Item {
   width: 1000
   height: 700
@@ -29,6 +30,7 @@ Item {
     property var events: []
     property var pending: []
     property var updates: []
+    property var deleteAsked: null
     property bool sourcesLoaded: false
     property bool loading: false
     property bool clockRunning: false
@@ -73,6 +75,11 @@ Item {
     calendarBorderWidth: 1
     panelFontFamily: "sans-serif"
     onEditRequested: function(sourceId, event) { composer.beginEdit(sourceId, event) }
+    // CalendarController.deleteRequest, which App.qml asks.
+    onDeleteRequested: function(sourceId, event) {
+      fixture.deleteAsked = Calendar.deleteRequest(event, fixture.findSource(sourceId),
+        serviceFixture.backendCanGoogleCalendars === true)
+    }
   }
   Views.CalendarEventComposer {
     id: composer
@@ -115,6 +122,7 @@ Item {
       serviceFixture.backendCanGoogleCalendars = false
       fixture.pending = []
       fixture.updates = []
+      fixture.deleteAsked = null
       fixture.events = [event()]
       view.visibleWeek = new Date(2026, 9, 25)
       fixture.nowMs = Date.UTC(2026, 9, 25, 12)
@@ -158,6 +166,38 @@ Item {
     function test_an_event_handed_over_directly_lists_every_guest() {
       view.activateEvent(event())
       compare(Calendar.attendeeRows(view.detailEvent).length, 3)
+    }
+
+    function deleteFromTheDetail() {
+      var remove = findChild(view, "event-delete")
+      verify(remove && remove.visible, "the detail offers Delete...")
+      wait(Qt.styleHints.mouseDoubleClickInterval + 50)
+      mouseClick(remove)
+      verify(fixture.deleteAsked, "the view hands the event on to be confirmed")
+      return fixture.deleteAsked
+    }
+
+    function test_deleting_a_series_opened_by_its_id_warns_every_occurrence_goes() {
+      serviceFixture.backendCanGoogleCalendars = true
+      var series = resource()
+      series.id = "weekly"
+      series.iCalUID = "weekly"
+      series.recurrence = ["RRULE:FREQ=WEEKLY;BYDAY=SU"]
+      view.showEvent(fixture.source.id + "\nweekly", 0)
+      compare(fixture.pending.length, 1)
+      compare(fixture.pending[0].operation, "get")
+      fixture.pending[0].callback({body: JSON.stringify(series)}, "")
+      compare(view.detailOpen, true)
+      var request = deleteFromTheDetail()
+      compare(request.message, "Every occurrence of this series will be deleted. "
+        + "Guests get a cancellation email unless you delete without one.")
+      compare(request.choices.length, 2)
+    }
+
+    function test_deleting_a_single_event_does_not_mention_a_series() {
+      openFromTheWeek()
+      var request = deleteFromTheDetail()
+      compare(request.message, "Guests get a cancellation email unless you delete without one.")
     }
 
     function editAGoogleEvent() {
