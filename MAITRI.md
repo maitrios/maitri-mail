@@ -55,6 +55,8 @@ Protected tokens survive untouched: `huacnlee/omamail`, `huacnlee.github.io/omam
 
 ## What maitri drops
 
+`upstream` keeps one maitri file under `.github/`: `.github/workflows/upstream-placeholder.yml`, an inert workflow (`workflow_dispatch` only, `permissions: {}`, one step that runs `true`). Without any workflow, CodeQL's actions analysis on a sync pull request finds nothing to read and fails, and the org's code security configuration enforces CodeQL default setup, so the language can't be skipped. `tools/sync-upstream.sh` copies the file from the branch being synced, as it does `tools/`, and `UPSTREAM_KEEP` in `tools/rebrand.sh` spares it from `DELETE_LIST`. main and `upstream` hold the same copy, so merging `upstream` leaves main's `.github/` alone. Change it on main; the next sync carries it over.
+
 `DELETE_LIST` in `tools/rebrand.sh` is applied on every sync, so these never come back:
 
 - upstream `.github/` (CI, Pages, funding), `.agents/` and `.codex/` maintainer prompts

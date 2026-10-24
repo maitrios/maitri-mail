@@ -1,0 +1,20 @@
+name: Upstream placeholder
+
+# The rebrand drops upstream's .github/, which would leave the `upstream` branch
+# with no workflows, and CodeQL's actions analysis fails on sync pull requests
+# that have none to read. tools/sync-upstream.sh carries this file onto
+# `upstream` so main and `upstream` hold the same copy. It only runs when
+# dispatched by hand, and then does nothing.
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  placeholder:
+    name: Placeholder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - run: "true"
