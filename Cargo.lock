@@ -1178,7 +1178,7 @@ dependencies = [
 
 [[package]]
 name = "maitri-mail"
-version = "0.11.0"
+version = "0.11.2"
 dependencies = [
  "base64",
  "chrono",
