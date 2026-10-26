@@ -482,7 +482,7 @@ async fn an_accepted_send_does_not_become_unknown_when_the_unused_body_stalls() 
         });
         let raw = URL_SAFE_NO_PAD.encode(super::plain_mime("Confirmed send"));
         let sent = world.call("m365.send", json!({"raw":raw})).await;
-        assert!(sent.is_ok(), "confirmed 202, stall={stall}: {sent:?}");
+        assert!(sent.is_ok(), "confirmed 202, stall={stall}");
         assert_eq!(sent.unwrap()["sent"], true);
     }
     assert_eq!(
