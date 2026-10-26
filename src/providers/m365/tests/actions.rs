@@ -708,7 +708,10 @@ async fn a_batch_that_runs_out_of_time_answers_for_what_was_done_and_begins_noth
     assert!(started.elapsed() < Duration::from_millis(2500));
     let list = |key: &str| -> Vec<String> { serde_json::from_value(answer[key].clone()).unwrap() };
     let (succeeded, failed) = (list("succeededIds"), list("failedIds"));
-    assert!(!succeeded.is_empty() && !failed.is_empty(), "{answer}");
+    assert!(
+        !succeeded.is_empty() && !failed.is_empty(),
+        "expected both succeededIds and failedIds to be non-empty"
+    );
     assert_eq!(answer["error"], "m365_timeout");
     // Every id once, in order: what was done first, what was never begun after it.
     assert_eq!([succeeded.clone(), failed.clone()].concat(), ids);
