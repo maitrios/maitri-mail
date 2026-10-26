@@ -25,7 +25,9 @@ RELEASE_TAG='^v[0-9]+\.[0-9]+\.[0-9]+$'
 # maitri-mail's own tooling exists on our branches but not in any upstream tag,
 # so the read-tree below removes it, including this script and the rebrander it
 # then runs. Restore those files from the branch being synced before rebranding.
-MAITRI_TOOLING=(tools/rebrand.sh tools/sync-upstream.sh)
+# The placeholder workflow gives CodeQL's actions analysis something to read on
+# sync pull requests; tools/rebrand.sh spares it from DELETE_LIST.
+MAITRI_TOOLING=(tools/rebrand.sh tools/sync-upstream.sh .github/workflows/upstream-placeholder.yml)
 
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$ROOT"
