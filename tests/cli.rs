@@ -727,7 +727,7 @@ fn an_address_registered_under_another_provider_is_not_an_m365_account() {
         assert_eq!(
             serde_json::from_slice::<Value>(&output.stdout).unwrap()["error"]["code"],
             "mail_account_unknown",
-            "{account}"
+            "unexpected error code for unknown account"
         );
     }
     assert!(
