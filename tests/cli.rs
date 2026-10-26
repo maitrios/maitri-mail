@@ -625,7 +625,7 @@ fn imap_outlook_and_m365_destination_previews_require_readonly_credentials() {
             );
             assert_eq!(output.status.code(), Some(1));
             let value: Value = serde_json::from_slice(&output.stdout).unwrap();
-            assert_eq!(value["error"]["code"], expected, "{account}: {operation}");
+            assert_eq!(value["error"]["code"], expected, "operation={operation}");
             assert_eq!(
                 (
                     metadata(&directory),
