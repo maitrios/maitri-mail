@@ -627,7 +627,7 @@ async fn a_burst_of_requests_makes_one_refresh_and_a_revoked_token_is_refreshed_
     let listed = world
         .call("m365.list", json!({"query": "role:inbox", "limit": 5}))
         .await;
-    assert!(listed.is_ok(), "{listed:?}");
+    assert!(listed.is_ok(), "m365.list should succeed after refresh");
     assert_eq!(world.fake.login().len(), 2);
 }
 
