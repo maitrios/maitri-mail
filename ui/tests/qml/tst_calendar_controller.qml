@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtTest 1.3
 import "../../calendar" as MaitriMail
+import "../../calendar/Calendar.js" as Calendar
 
 Item {
   width: 400
@@ -134,6 +135,27 @@ Item {
       compare(mailService.requests[0].params.eventId, "series")
       compare(mailService.requests[1].params.operation, "delete")
       compare(mailService.requests[1].params.eventId, "series")
+      controller.eventWriting = false
+    }
+
+    function test_confirmed_delete_of_a_microsoft_occurrence_leaves_the_series() {
+      mailService.backendCanGoogleCalendars = true
+      controller.accountId = "outlook:me@contoso.com"
+      controller.sourceList = {version:1,sources:[{id:"microsoft:outlook:me@contoso.com",kind:"microsoft",
+        accountId:"outlook:me@contoso.com",calendarId:"",enabled:true}]}
+      var event = Calendar.eventsFromGraph({value:[{id:"AAMk7",subject:"Weekly sync",
+        type:"occurrence",seriesMasterId:"AAMkSeries",
+        start:{dateTime:"2026-10-19T16:00:00.0000000"},end:{dateTime:"2026-10-19T16:30:00.0000000"}}]},
+        "microsoft:outlook:me@contoso.com")[0]
+      var request = controller.deleteRequest("microsoft:outlook:me@contoso.com", event)
+      compare(request.message, "This occurrence will be deleted. The rest of the series stays.")
+      compare(request.choices.length, 1)
+      request.choice = request.choices[0].value
+      verify(controller.confirmDelete(request))
+      var writes = mailService.requests.filter(function(sent) { return sent.params.operation !== "list" })
+      compare(writes.length, 1, "nothing reads or deletes the series master")
+      compare(writes[0].params.operation, "delete")
+      compare(writes[0].params.eventId, "AAMk7")
       controller.eventWriting = false
     }
 
