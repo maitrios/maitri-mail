@@ -285,7 +285,7 @@ async fn the_shared_pipeline_lists_plans_and_acts_through_this_provider() {
             &json!({"operation": "archive", "ids": [oid(1)], "execute": true}),
         )
         .await;
-    assert!(refused.is_err(), "{refused:?}");
+    assert!(refused.is_err(), "expected archive action to be refused");
     assert_eq!(world.fake.state().msg(1).folder, Role::Inbox);
     // Spam is not an action this provider declares.
     assert!(
