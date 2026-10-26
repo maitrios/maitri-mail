@@ -28,8 +28,8 @@ Press `?` in the window for the shortcut sheet, or see the [keyboard guide](docs
 
 ## Features
 
-- **Multiple mailboxes:** Gmail, Outlook, HEY, JMAP and IMAP/SMTP, including Fastmail, iCloud and self-hosted servers.
-- **Mail and calendar:** read, search, compose, manage attachments and answer meeting invitations. Available actions depend on your provider.
+- **Multiple mailboxes:** Gmail, Outlook, Microsoft 365, HEY, JMAP and IMAP/SMTP, including Fastmail, iCloud and self-hosted servers.
+- **Mail and calendar:** read, search, compose, manage attachments and respond to meeting invitations. Available actions depend on your provider.
 - **Keyboard navigation:** `j`/`k` to move, `r` to reply, `c` to compose, `/` to search and `?` for all shortcuts.
 - **AI assistance:** ask about selected messages and review suggested drafts with Claude, OpenCode or Codex. It follows your maitri default agent, or pick one in Settings.
 - **Desktop integration:** the bar widget, desktop notifications, and `mailto:` handling.
@@ -37,7 +37,7 @@ Press `?` in the window for the shortcut sheet, or see the [keyboard guide](docs
 
 ## Add your mailbox
 
-Choose a provider in Settings. Gmail needs a Google OAuth client and Outlook needs a Microsoft app registration, both created once in your own Google Cloud or Microsoft Entra account; maitri ships no shared OAuth secrets. HEY uses the official [HEY CLI](https://github.com/basecamp/hey-cli). JMAP and IMAP usually use an app password or API token.
+Choose a provider in Settings. Gmail needs a Google OAuth client, and Outlook and Microsoft 365 need a Microsoft app registration, each created once in your own Google Cloud or Microsoft Entra account; maitri ships no shared OAuth secrets. HEY uses the official [HEY CLI](https://github.com/basecamp/hey-cli). JMAP and IMAP usually use an app password or API token.
 
 See [mailbox setup](docs/MAILBOXES.md) for provider instructions and limitations, including Microsoft 365 and Proton Mail Bridge.
 
