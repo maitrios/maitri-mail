@@ -30,7 +30,7 @@ fn assert_no_secret(answer: &Value) {
     for secret in ["refresh-", "access-", "synthetic-device-code", "id_token"] {
         assert!(
             !text.contains(secret),
-            "secret marker present in response: {secret}"
+            "sensitive content marker present in response"
         );
     }
 }
