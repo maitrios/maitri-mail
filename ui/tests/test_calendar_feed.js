@@ -873,3 +873,34 @@ console.log("test_calendar_feed.js ok")
     else process.env.TZ = previousTZ
   }
 }
+
+// Graph's calendar view expands a series: each occurrence, and each
+// exception (an occurrence edited on its own), names its series master,
+// and deleting it by its own id removes that one occurrence.
+{
+  const microsoft = { kind: "microsoft" }
+  const labels = request => Array.from(request.choices, choice => choice.value + ":" + choice.label)
+  const graphEvent = item => feed.eventsFromGraph({ value: [Object.assign({
+    id: "AAMk7", iCalUId: "040000008200E00074C5B7101A82E00807EA0A13", subject: "Weekly sync",
+    isAllDay: false, isCancelled: false,
+    start: { dateTime: "2026-10-19T16:00:00.0000000", timeZone: "UTC" },
+    end: { dateTime: "2026-10-19T16:30:00.0000000", timeZone: "UTC" }
+  }, item)] }, "microsoft:outlook:me@contoso.com")[0]
+
+  const occurrence = graphEvent({ type: "occurrence", seriesMasterId: "AAMkSeries" })
+  assert.strictEqual(occurrence.seriesMasterId, "AAMkSeries")
+  assert.strictEqual(occurrence.graphType, "occurrence")
+  const request = feed.deleteRequest(occurrence, microsoft, true)
+  assert.strictEqual(request.message, "This occurrence will be deleted. The rest of the series stays.")
+  assert.deepStrictEqual(labels(request), ["all:Delete occurrence"])
+
+  const exception = graphEvent({ type: "exception", seriesMasterId: "AAMkSeries" })
+  assert.strictEqual(exception.graphType, "exception")
+  assert.strictEqual(feed.deleteRequest(exception, microsoft, true).message,
+    "This occurrence will be deleted. The rest of the series stays.")
+
+  const single = graphEvent({ type: "singleInstance", seriesMasterId: null })
+  assert.strictEqual(single.seriesMasterId, "")
+  assert.strictEqual(feed.deleteRequest(single, microsoft, true).message, "This event will be permanently deleted.")
+  assert.deepStrictEqual(labels(feed.deleteRequest(single, microsoft, true)), ["all:Delete"])
+}

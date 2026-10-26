@@ -504,6 +504,8 @@ function eventsFromGraph(payload, sourceId) {
       // The write URL needs Graph's own id; an occurrence of a series carries
       // an id of its own, and writing to it changes that occurrence alone.
       graphId: String(item.id || ""),
+      seriesMasterId: String(item.seriesMasterId || ""),
+      graphType: String(item.type || ""),
       sequence: 0,
       summary: String(item.subject || "Untitled event"),
       description: String(item.bodyPreview || ""),
@@ -934,6 +936,7 @@ function deleteRequest(event, source, canReadSeries) {
   var notifies = google && !!value.organizer && value.organizer.self === true
     && Lists.array(value.attendees).some(function(attendee) { return attendee.self !== true })
   var occurrence = String(value.recurringEventId || "") !== ""
+    || !!source && source.kind === "microsoft" && String(value.seriesMasterId || "") !== ""
   var series = Lists.array(value.recurrenceLines).length > 0 || String(value.recurrenceRule || "") !== ""
   var choices = []
   var message = "This event will be permanently deleted."
