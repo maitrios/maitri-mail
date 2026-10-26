@@ -723,11 +723,15 @@ fn an_address_registered_under_another_provider_is_not_an_m365_account() {
         "m365:m365@example.org.invalid",
     ] {
         let output = call_mail_list(&fixture.0, account);
-        assert_eq!(output.status.code(), Some(1), "{account}: {output:?}");
+        assert_eq!(
+            output.status.code(),
+            Some(1),
+            "unexpected exit status/output for unknown-account scenario"
+        );
         assert_eq!(
             serde_json::from_slice::<Value>(&output.stdout).unwrap()["error"]["code"],
             "mail_account_unknown",
-            "{account}"
+            "unexpected error code for unknown-account scenario"
         );
     }
     assert!(
