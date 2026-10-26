@@ -28,7 +28,10 @@ async fn poll(request: &Value) -> Value {
 fn assert_no_secret(answer: &Value) {
     let text = answer.to_string();
     for secret in ["refresh-", "access-", "synthetic-device-code", "id_token"] {
-        assert!(!text.contains(secret), "{secret} in {text}");
+        assert!(
+            !text.contains(secret),
+            "secret marker present in response: {secret}"
+        );
     }
 }
 
