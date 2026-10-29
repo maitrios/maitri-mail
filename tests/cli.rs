@@ -625,7 +625,7 @@ fn imap_outlook_and_m365_destination_previews_require_readonly_credentials() {
             );
             assert_eq!(output.status.code(), Some(1));
             let value: Value = serde_json::from_slice(&output.stdout).unwrap();
-            assert_eq!(value["error"]["code"], expected, "operation={operation}");
+            assert_eq!(value["error"]["code"], expected, "{account}: {operation}");
             assert_eq!(
                 (
                     metadata(&directory),
@@ -723,11 +723,11 @@ fn an_address_registered_under_another_provider_is_not_an_m365_account() {
         "m365:m365@example.org.invalid",
     ] {
         let output = call_mail_list(&fixture.0, account);
-        assert_eq!(output.status.code(), Some(1), "unexpected exit status");
+        assert_eq!(output.status.code(), Some(1), "{account}: {output:?}");
         assert_eq!(
             serde_json::from_slice::<Value>(&output.stdout).unwrap()["error"]["code"],
             "mail_account_unknown",
-            "unexpected error code for unknown account"
+            "{account}"
         );
     }
     assert!(

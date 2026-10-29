@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "maitri.mail",
   "name": "Mail",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "author": "huacnlee",
   "license": "MIT",
   "homepage": "https://huacnlee.github.io/omamail/",

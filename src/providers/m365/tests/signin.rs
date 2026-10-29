@@ -28,10 +28,7 @@ async fn poll(request: &Value) -> Value {
 fn assert_no_secret(answer: &Value) {
     let text = answer.to_string();
     for secret in ["refresh-", "access-", "synthetic-device-code", "id_token"] {
-        assert!(
-            !text.contains(secret),
-            "secret marker present in response: {secret}"
-        );
+        assert!(!text.contains(secret), "{secret} in {text}");
     }
 }
 
@@ -630,7 +627,7 @@ async fn a_burst_of_requests_makes_one_refresh_and_a_revoked_token_is_refreshed_
     let listed = world
         .call("m365.list", json!({"query": "role:inbox", "limit": 5}))
         .await;
-    assert!(listed.is_ok(), "m365.list should succeed after refresh");
+    assert!(listed.is_ok(), "{listed:?}");
     assert_eq!(world.fake.login().len(), 2);
 }
 
